@@ -1,15 +1,14 @@
-import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import { TeamData, NextTeam } from "../lib/definitions";
 import TeamImage from "./team-image";
 
-export default function LadderRow({ data, position }: { data: TeamData; position: String}) {
+export default function LadderRow({ data, position, isPlaying }: { data: TeamData; position: String; isPlaying: boolean}) {
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[5%] flex justify-center flex-row gap-2 font-semibold">
-                <span>{position}</span>
                 {
-                    getMovement(data.movement)
+                    getLiveStatus(isPlaying)
                 }
+                <span>{position}</span>
             </div>
             <div className="w-[8%] flex justify-center">
                 <TeamImage imageLink='' teamKey={data.theme.key} />
@@ -41,27 +40,9 @@ function getNextFixture(nextFixture: NextTeam) {
     return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
 }
 
-function getImageUrl(link: string, teamKey: string) {
-    const imgUrl = `https://www.nrl.com/.theme/${teamKey}/badge-basic24.svg?bust=202406240046`;
-    const image = <img src={imgUrl} className="w-9"></img>;
-    
-    if (link) {
-        return (
-            <a href={link} target="_blank">
-                {image}
-            </a>
-        );
-    }
-
-    return image;
-}
-
-function getMovement(movement: string) {
-    if (movement === 'up') {
-        return <ChevronUpIcon className="w-6 text-green-600 font-semibold"></ChevronUpIcon>;
-    }
-    if (movement === 'down') {
-        return <ChevronDownIcon className="w-6 text-red-600 font-semibold"></ChevronDownIcon>;
+function getLiveStatus(isPlaying: boolean) {
+    if (isPlaying) {
+        return <div className="w-6 border rounded-full live-match border-red-600"></div>;
     }
 
     return null;

@@ -9,3 +9,13 @@
 .page-min-height {
     min-height: calc(100vh - 160px);
 }
+
+.live-match {
+    -webkit-animation: live-animation 2s infinite;
+}
+
+@keyframes live-animation {
+    0% { background-color: #f87171; }
+    50% { background-color: #ef4444; }
+    100% { background-color: #dc2626; }
+}

@@ -14,6 +14,12 @@ export default async function HomePage() {
 
     const currentRound = await getCurrentRound();
     const fixtures = currentRound.fixtures;
+
+    const liveMatch = fixtures.filter((fixture: Match) => {
+        return fixture.matchMode === 'Live';
+    })[0];
+
+    // TODO update ladder based on live match before rendering it
     
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -35,13 +41,29 @@ export default async function HomePage() {
                 </div>
                 {
                     topTeams.map((team: TeamData) => {
-                        return <LadderRow key={team.theme.key} data={team} position={topTeams.indexOf(team) + 1} />
+                        const isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
+                            liveMatch.homeTeam.nickName === team.teamNickname;
+                        
+                        return <LadderRow
+                            key={team.theme.key}
+                            data={team}
+                            position={topTeams.indexOf(team) + 1}
+                            isPlaying={isPlaying}    
+                        />
                     })
                 }
                 <div className="border-2 border-green-400"></div>
                 {
                     ladderStats.map((team: TeamData) => {
-                        return <LadderRow key={team.theme.key} data={team} position={ladderStats.indexOf(team) + 9} />
+                        const isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
+                            liveMatch.homeTeam.nickName === team.teamNickname;
+                        
+                        return <LadderRow 
+                            key={team.theme.key}
+                            data={team}
+                            position={ladderStats.indexOf(team) + 9}
+                            isPlaying={isPlaying}    
+                        />
                     })
                 }
             </div>
