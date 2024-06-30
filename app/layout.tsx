@@ -1,22 +1,29 @@
-import type { Metadata } from "next";
+'use client';
+
+import { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { usePathname } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-    title: "NRL Live Ladder",
-    description: "NRL Live Ladder App by Ryan H",
-};
+async function generateMetadata(): Promise<Metadata> {
+    return {
+        title: 'NRL Live Ladder',
+    }
+}
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {
     const currentYear = new Date().getFullYear();
+    const pathname = usePathname();
 
     return (
         <html lang="en">
             <body className={`${inter.className} antialiased`}>
                 <div className="text-4xl flex items-center justify-center font-semibold text-black sticky top-0 h-20 p-4 border-b border-gray-400 bg-white z-10">
-                    NRL Live Ladder
+                    {
+                        pathname === '/' ? 'NRL Live Ladder' : 'NRL Max Points'
+                    }
                 </div>
                 {children}
                 <footer 

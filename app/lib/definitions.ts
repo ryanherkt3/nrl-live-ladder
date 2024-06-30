@@ -1,4 +1,3 @@
-
 export type TeamData = {
     clubProfileUrl: string;
     movement: string;
