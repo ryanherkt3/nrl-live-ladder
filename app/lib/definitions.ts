@@ -6,6 +6,7 @@ export type TeamData = {
     stats: TeamStats;
     teamNickname: string;
     theme: TeamTheme;
+    designation: 'homeTeam' | 'awayTeam' | undefined;
 };
 
 export type NextTeam = {

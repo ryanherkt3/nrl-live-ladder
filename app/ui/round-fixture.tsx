@@ -23,6 +23,7 @@ export default function RoundFixture({ data, }: { data: Match}) {
                 }
             </span>
 
+            {/* TODO do not bold the non-winner's score */}
             <div className="flex flex-row text-lg items-center justify-between p-2">
                 <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[33%]">
                     <div className="flex flex-col text-center w-[35%]">

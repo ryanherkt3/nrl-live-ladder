@@ -1,16 +1,13 @@
-import { Metadata } from "next";
-import { getLadderStats, getCurrentRound } from "./lib/utils";
+'use client';
+
+import { getLadderTeams, getCurrentRound } from "./lib/utils";
 import LadderRow from "./ui/ladder-row";
 import { TeamData, Match } from "./lib/definitions";
 import RoundFixture from "./ui/round-fixture";
-
-export const metadata: Metadata = {
-    title: 'NRL Live Ladder',
-};
+import { useEffect } from "react";
 
 export default async function HomePage() {
-    const ladderStats = await getLadderStats();
-    const topTeams = ladderStats.splice(0, 8);
+    let allTeams = await getLadderTeams();
 
     const currentRound = await getCurrentRound();
     const fixtures = currentRound.fixtures;
@@ -19,30 +16,89 @@ export default async function HomePage() {
         return fixture.matchMode === 'Live';
     })[0];
 
-    // TODO update ladder based on live match before rendering it
-    
+    // TODO useEffect update page every 45 seconds
+    // useEffect(() => {
+    //     const interval = setInterval(async () => {
+    //         allTeams = await getLadderTeams();
+    //     }, 45000);
+
+    //     // Clean up the interval when the component unmounts
+    //     return clearInterval(interval);
+    // }, []);
+
+    // Update ladder based on live match before rendering it
+    if (liveMatch) {
+        const activeTeams = allTeams.filter((team: TeamData) => {
+            team.designation = liveMatch.homeTeam.nickName === team.teamNickname ? 'homeTeam' : 'awayTeam';
+            
+            return liveMatch.awayTeam.nickName === team.teamNickname ||
+                liveMatch.homeTeam.nickName === team.teamNickname;
+        });
+
+        const draw = liveMatch.homeTeam.score === liveMatch.awayTeam.score;
+        const homeTeamWinning = liveMatch.homeTeam.score > liveMatch.awayTeam.score;
+        const awayTeamWinning = liveMatch.homeTeam.score < liveMatch.awayTeam.score;
+
+        // Only updating stats that are displayed on the ladder
+        for (const team of activeTeams) {
+            const isHomeTeam = team.designation === 'homeTeam';
+            
+            team.stats.played = team.stats.played + 1;
+            team.stats.wins = isHomeTeam ? 
+                (homeTeamWinning && !draw ? (team.stats.wins + 1) : team.stats.wins) :
+                (awayTeamWinning && !draw ? (team.stats.wins + 1) : team.stats.wins);
+            team.stats.drawn = draw ? (team.stats.drawn + 1) : team.stats.drawn;
+            team.stats.lost = isHomeTeam ? 
+                (!homeTeamWinning && !draw ? (team.stats.lost + 1) : team.stats.lost) :
+                (!awayTeamWinning && !draw ? (team.stats.lost + 1) : team.stats.lost);
+            
+            team.stats['points for'] = team.stats['points for'] + (
+                isHomeTeam ? liveMatch.homeTeam.score : liveMatch.awayTeam.score
+            );
+            team.stats['points against'] = team.stats['points against'] + (
+                isHomeTeam ? liveMatch.awayTeam.score : liveMatch.homeTeam.score
+            );
+            team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
+            
+            team.stats.points = isHomeTeam ? 
+                (homeTeamWinning && !draw ? (team.stats.points + 2) : team.stats.points) :
+                (awayTeamWinning && !draw ? (team.stats.points + 2) : team.stats.points);
+        }
+
+        allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
+            return b.stats.points - a.stats.points || b.stats['points difference'] - a.stats['points difference'];
+        });
+    }
+
+    const topTeams = allTeams.splice(0, 8);
+
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
-                    <div className="w-[5%]">Pos</div>
+                    <div className="w-[10%] md:w-[5%]">Pos</div>
                     <div className="w-[8%]">Team</div>
                     <div className="w-[15%]"></div>
                     <div className="w-[6%]">Pld</div>
+                    {/* TODO hide W-D-L for phones */}
                     <div className="w-[6%]">W</div>
                     <div className="w-[6%]">D</div>
                     <div className="w-[6%]">L</div>
                     <div className="w-[6%]">B</div>
-                    <div className="w-[6%]">PF</div>
-                    <div className="w-[6%]">PA</div>
+                    <div className="hidden md:block w-[6%]">PF</div>
+                    <div className="hidden md:block w-[6%]">PA</div>
                     <div className="w-[6%]">PD</div>
-                    <div className="w-[8%]">Next</div>
+                    <div className="w-[15%] md:w-[8%]">Next</div>
                     <div className="w-[6%]">Pts</div>
                 </div>
                 {
                     topTeams.map((team: TeamData) => {
-                        const isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
-                            liveMatch.homeTeam.nickName === team.teamNickname;
+                        let isPlaying = false;
+                        
+                        if (liveMatch) {
+                            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
+                                liveMatch.homeTeam.nickName === team.teamNickname;
+                        }
                         
                         return <LadderRow
                             key={team.theme.key}
@@ -54,14 +110,18 @@ export default async function HomePage() {
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    ladderStats.map((team: TeamData) => {
-                        const isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
-                            liveMatch.homeTeam.nickName === team.teamNickname;
+                    allTeams.map((team: TeamData) => {
+                        let isPlaying = false;
+                        
+                        if (liveMatch) {
+                            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
+                                liveMatch.homeTeam.nickName === team.teamNickname;
+                        }
                         
                         return <LadderRow 
                             key={team.theme.key}
                             data={team}
-                            position={ladderStats.indexOf(team) + 9}
+                            position={allTeams.indexOf(team) + 9}
                             isPlaying={isPlaying}    
                         />
                     })
