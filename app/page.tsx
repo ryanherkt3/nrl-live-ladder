@@ -1,7 +1,8 @@
 import { getNRLInfo } from "./lib/utils";
 import LadderRow from "./ui/ladder-row";
-import { TeamData, Match } from "./lib/definitions";
+import { TeamData, Match, ByeTeam } from "./lib/definitions";
 import RoundFixture from "./ui/round-fixture";
+import TeamImage from "./ui/team-image";
 
 export default async function HomePage() {
     let nrlInfo = await getNRLInfo();
@@ -71,19 +72,18 @@ export default async function HomePage() {
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                     <div className="w-[10%] md:w-[5%]">Pos</div>
-                    <div className="w-[8%]">Team</div>
-                    <div className="w-[15%]"></div>
-                    <div className="w-[6%]">Pld</div>
-                    {/* TODO hide W-D-L for phones (sm) */}
-                    <div className="w-[6%]">W</div>
-                    <div className="w-[6%]">D</div>
-                    <div className="w-[6%]">L</div>
-                    <div className="w-[6%]">B</div>
+                    <div className="w-[15%] sm:w-[8%]">Team</div>
+                    <div className="w-[25%] sm:w-[15%]"></div>
+                    <div className="w-[9%] sm:w-[6%]">Pld</div>
+                    <div className="hidden sm:block sm:w-[6%]">W</div>
+                    <div className="hidden sm:block sm:w-[6%]">D</div>
+                    <div className="hidden sm:block sm:w-[6%]">L</div>
+                    <div className="hidden sm:block sm:w-[6%]">B</div>
                     <div className="hidden md:block w-[6%]">PF</div>
                     <div className="hidden md:block w-[6%]">PA</div>
-                    <div className="w-[6%]">PD</div>
+                    <div className="w-[9%] sm:w-[6%]">PD</div>
                     <div className="w-[15%] md:w-[8%]">Next</div>
-                    <div className="w-[6%]">Pts</div>
+                    <div className="w-[9%] sm:w-[6%]">Pts</div>
                 </div>
                 {
                     topTeams.map((team: TeamData) => {
@@ -126,9 +126,30 @@ export default async function HomePage() {
                 <div className="text-2xl font-semibold text-center">Round {currentRound.selectedRoundId} Fixtures</div>
                 {
                     fixtures.map((fixture: Match) => {
-                        return <RoundFixture key={fixtures.indexOf(fixture)} data={fixture} />
+                        const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
+                        const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
+
+                        let winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
+
+                        return (
+                            <RoundFixture 
+                                key={fixtures.indexOf(fixture)}
+                                data={fixture}
+                                winningTeam={winningTeam}
+                            />
+                        );
                     })
                 }
+                <div className="flex flex-col">
+                    <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+                    <div className="flex flex-row gap-6 justify-center py-2">
+                        {
+                            currentRound.byes.map((team: ByeTeam) => {
+                                return <TeamImage imageLink='' teamKey={team.theme.key} />;
+                            })
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     );

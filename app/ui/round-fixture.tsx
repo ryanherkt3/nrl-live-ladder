@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { Match } from "../lib/definitions";
 import TeamImage from "./team-image";
 
-export default function RoundFixture({ data, }: { data: Match}) {
+export default function RoundFixture({ data, winningTeam }: { data: Match; winningTeam: string}) {
     const isLiveMatch = data.matchMode === "Live";
     
     return (
@@ -22,8 +22,6 @@ export default function RoundFixture({ data, }: { data: Match}) {
                     getDateString(data.clock.kickOffTimeLong)
                 }
             </span>
-
-            {/* TODO do not bold the non-winner's score */}
             <div className="flex flex-row text-lg items-center justify-between p-2">
                 <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[33%]">
                     <div className="flex flex-col text-center w-[35%]">
@@ -34,7 +32,7 @@ export default function RoundFixture({ data, }: { data: Match}) {
                 </div>
                 
                 {
-                    getMatchState(data)
+                    getMatchState(data, winningTeam)
                 }   
                 
                 <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[33%]">
@@ -80,15 +78,37 @@ function getDateString(date: string) {
     return dateString.replace(',', '').replace(number.toString(), numberString);
 }
 
-function getMatchState(matchData: Match) {
+function getMatchState(matchData: Match, winningTeam: string) {
     if (matchData.matchState === 'FullTime' || matchData.matchMode === 'Live') {
         return (
             <div className="flex flex-row gap-6 pb-0 pt-2 items-center justify-center w-[34%]">
-                <div className="font-semibold text-3xl">{matchData.homeTeam.score}</div>
+                <div 
+                    className={
+                        clsx(
+                            'text-3xl',
+                            {
+                                'font-semibold': winningTeam === 'homeTeam'
+                            }
+                        )
+                    }
+                >
+                    {matchData.homeTeam.score}
+                </div>
                 {
                     getMatchContext(matchData)
                 }
-                <div className="font-semibold text-3xl">{matchData.awayTeam.score}</div>
+                <div 
+                    className={
+                        clsx(
+                            'text-3xl',
+                            {
+                                'font-semibold': winningTeam === 'awayTeam'
+                            }
+                        )
+                    }
+                >
+                    {matchData.awayTeam.score}
+                </div>
             </div>
         );
     }

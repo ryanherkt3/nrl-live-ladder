@@ -62,6 +62,14 @@ export type Match = {
     clock: MatchTime
 };
 
+export type ByeTeam = {
+    isCurrentRound: boolean;
+    roundTitle: string;
+    teamNickName: string;
+    theme: TeamTheme;
+    type: string;
+}
+
 export type MatchTime = {
     kickOffTimeLong: string;
     gameTime: string;

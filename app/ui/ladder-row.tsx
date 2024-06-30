@@ -11,10 +11,10 @@ export default function LadderRow({ data, position, isPlaying }: { data: TeamDat
                 }
                 <span>{position}</span>
             </div>
-            <div className="w-[8%] flex justify-center">
+            <div className="w-[15%] sm:w-[8%] flex justify-center">
                 <TeamImage imageLink='' teamKey={data.theme.key} />
             </div>
-            <div className="w-[15%] text-left">
+            <div className="w-[25%] sm:w-[15%] text-left">
                 <span className='hidden md:block'>{data.teamNickname}</span>
                 <span className='block md:hidden'>
                     {
@@ -22,21 +22,20 @@ export default function LadderRow({ data, position, isPlaying }: { data: TeamDat
                     }
                 </span>
             </div>
-            <div className="w-[6%]">{data.stats.played}</div>
-            {/* TODO hide W-D-L for phones (sm) */}
-            <div className="w-[6%]">{data.stats.wins}</div>
-            <div className="w-[6%]">{data.stats.drawn}</div>
-            <div className="w-[6%]">{data.stats.lost}</div>
-            <div className="w-[6%]">{data.stats.byes}</div>
+            <div className="w-[9%] sm:w-[6%]">{data.stats.played}</div>
+            <div className="hidden sm:block sm:w-[6%]">{data.stats.wins}</div>
+            <div className="hidden sm:block sm:w-[6%]">{data.stats.drawn}</div>
+            <div className="hidden sm:block sm:w-[6%]">{data.stats.lost}</div>
+            <div className="hidden sm:block sm:w-[6%]">{data.stats.byes}</div>
             <div className="hidden md:block w-[6%]">{data.stats['points for']}</div>
             <div className="hidden md:block w-[6%]">{data.stats['points against']}</div>
-            <div className="w-[6%]">{data.stats['points difference']}</div>
+            <div className="w-[9%] sm:w-[6%]">{data.stats['points difference']}</div>
             <div className="w-[15%] md:w-[8%] flex justify-center">
                 {
                     getNextFixture(data.next)
                 }
             </div>
-            <div className="w-[6%] font-semibold">{data.stats.points}</div>
+            <div className="w-[9%] sm:w-[6%] font-semibold">{data.stats.points}</div>
         </div>
     );
 }
