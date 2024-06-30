@@ -1,5 +1,5 @@
 export const getNRLInfo = async () => {
-    const apiUrl = "http://127.0.0.1:8080/api/nrlinfo";
+    const apiUrl = `${process.env.FLASK_API_URL}/api/nrlinfo`;
     
     const nrlInfoReq = await fetch(apiUrl, {cache: "no-store"});
     const nrlInfoReqJson = nrlInfoReq.json();
