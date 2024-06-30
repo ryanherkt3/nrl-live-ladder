@@ -1,20 +1,10 @@
-export const getLadderTeams = async () => {
-    const apiUrl = "https://nrl-live-ladder.vercel.app/api/ladderdata";
+export const getNRLInfo = async () => {
+    const apiUrl = "http://127.0.0.1:8080/api/nrlinfo";
     
-    const ladderReq = await fetch(apiUrl, {cache: "no-store"});
-    const ladderJson = await ladderReq.json();
-    const ladderStats = ladderJson.positions;
+    const nrlInfoReq = await fetch(apiUrl, {cache: "no-store"});
+    const nrlInfoReqJson = nrlInfoReq.json();
 
-    return ladderStats;
-}
-
-export const getCurrentRound = async () => {
-    const apiUrl = "https://nrl-live-ladder.vercel.app/api/drawdata";
-    
-    const drawReq = await fetch(apiUrl, {cache: "no-store"});
-    const drawJson = await drawReq.json();
-
-    return drawJson;
+    return nrlInfoReqJson;
 }
 
 export const getShortCode = (name: string) => {

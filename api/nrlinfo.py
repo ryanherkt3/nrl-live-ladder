@@ -10,13 +10,14 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
 }
 
-@app.route('/api/drawdata', methods=['GET'])
-def draw_data():
-    return requests.get("https://www.nrl.com/draw/data", headers=headers).json()
+@app.route('/api/nrlinfo', methods=['GET'])
+def nrl_info():
+    test = {
+        "draw": requests.get("https://www.nrl.com/draw/data", headers=headers).json(),
+        "ladder": requests.get("https://www.nrl.com/ladder/data", headers=headers).json()
+    }
 
-@app.route('/api/ladderdata', methods=['GET'])
-def ladder_data():
-    return requests.get("https://www.nrl.com/ladder/data", headers=headers).json()
+    return test
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

@@ -23,7 +23,7 @@ export default function LadderRow({ data, position, isPlaying }: { data: TeamDat
                 </span>
             </div>
             <div className="w-[6%]">{data.stats.played}</div>
-            {/* TODO hide W-D-L for phones */}
+            {/* TODO hide W-D-L for phones (sm) */}
             <div className="w-[6%]">{data.stats.wins}</div>
             <div className="w-[6%]">{data.stats.drawn}</div>
             <div className="w-[6%]">{data.stats.lost}</div>

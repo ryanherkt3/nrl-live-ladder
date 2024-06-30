@@ -1,15 +1,14 @@
-'use client';
-
-import { getLadderTeams, getCurrentRound } from "./lib/utils";
+import { getNRLInfo } from "./lib/utils";
 import LadderRow from "./ui/ladder-row";
 import { TeamData, Match } from "./lib/definitions";
 import RoundFixture from "./ui/round-fixture";
-import { useEffect } from "react";
 
 export default async function HomePage() {
-    let allTeams = await getLadderTeams();
+    let nrlInfo = await getNRLInfo();
+    
+    let allTeams = nrlInfo.ladder.positions;
 
-    const currentRound = await getCurrentRound();
+    const currentRound = nrlInfo.draw;
     const fixtures = currentRound.fixtures;
 
     const liveMatch = fixtures.filter((fixture: Match) => {
@@ -18,12 +17,7 @@ export default async function HomePage() {
 
     // TODO useEffect update page every 45 seconds
     // useEffect(() => {
-    //     const interval = setInterval(async () => {
-    //         allTeams = await getLadderTeams();
-    //     }, 45000);
-
-    //     // Clean up the interval when the component unmounts
-    //     return clearInterval(interval);
+    //     
     // }, []);
 
     // Update ladder based on live match before rendering it
@@ -80,7 +74,7 @@ export default async function HomePage() {
                     <div className="w-[8%]">Team</div>
                     <div className="w-[15%]"></div>
                     <div className="w-[6%]">Pld</div>
-                    {/* TODO hide W-D-L for phones */}
+                    {/* TODO hide W-D-L for phones (sm) */}
                     <div className="w-[6%]">W</div>
                     <div className="w-[6%]">D</div>
                     <div className="w-[6%]">L</div>
