@@ -145,7 +145,7 @@ export default async function HomePage() {
                     <div className="flex flex-row gap-6 justify-center py-2">
                         {
                             currentRound.byes.map((team: ByeTeam) => {
-                                return <TeamImage imageLink='' teamKey={team.theme.key} />;
+                                return <TeamImage key={team.theme.key} imageLink='' teamKey={team.theme.key} />;
                             })
                         }
                     </div>

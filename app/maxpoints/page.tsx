@@ -30,7 +30,7 @@ export default async function MaxPointsPage() {
                         const maxPoints = getMaxPoints(team.stats.lost);
                         
                         return (
-                            <div className="flex flex-row gap-2 py-1 text-md text-center">
+                            <div key={team.teamNickname} className="flex flex-row gap-2 py-1 text-md text-center">
                                 <div className="text-left font-semibold w-[15%]">{team.teamNickname}</div>
                                 {
                                     getPointCells(lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints)
@@ -46,7 +46,7 @@ export default async function MaxPointsPage() {
                         const maxPoints = getMaxPoints(team.stats.lost);
                         
                         return (
-                            <div className="flex flex-row gap-2 py-1 text-md text-center">
+                            <div key={team.teamNickname} className="flex flex-row gap-2 py-1 text-md text-center">
                                 <div className="text-left font-semibold w-[15%]">{team.teamNickname}</div>
                                 {
                                     getPointCells(lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints)
