@@ -22,9 +22,9 @@ export default function RoundFixture({ data, winningTeam }: { data: Match; winni
                     getDateString(data.clock.kickOffTimeLong)
                 }
             </span>
-            <div className="flex flex-row text-lg items-center justify-between p-2">
-                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[33%]">
-                    <div className="flex flex-col text-center w-[35%]">
+            <div className="flex flex-col md:flex-row text-lg items-center justify-between p-2">
+                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
+                    <div className="flex flex-col text-center order-1 md:order-0 md:w-[35%]">
                         <div className="font-semibold">{data.homeTeam.nickName}</div>
                         <div>{data.homeTeam.teamPosition}</div>
                     </div>
@@ -35,9 +35,9 @@ export default function RoundFixture({ data, winningTeam }: { data: Match; winni
                     getMatchState(data, winningTeam)
                 }   
                 
-                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[33%]">
+                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
                     <TeamImage imageLink='' teamKey={data.awayTeam.theme.key} />
-                    <div className="flex flex-col text-center w-[35%]">
+                    <div className="flex flex-col text-center md:w-[35%]">
                         <div className="font-semibold">{data.awayTeam.nickName}</div>
                         <div>{data.awayTeam.teamPosition}</div>
                     </div>
@@ -79,9 +79,13 @@ function getDateString(date: string) {
 }
 
 function getMatchState(matchData: Match, winningTeam: string) {
+    let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
+    
     if (matchData.matchState === 'FullTime' || matchData.matchMode === 'Live') {
+        commonClasses += 'pt-2';
+
         return (
-            <div className="flex flex-row gap-6 pb-0 pt-2 items-center justify-center w-[34%]">
+            <div className={commonClasses}>
                 <div 
                     className={
                         clsx(
@@ -116,7 +120,7 @@ function getMatchState(matchData: Match, winningTeam: string) {
     const kickoffTime = new Date(matchData.clock.kickOffTimeLong).toLocaleString('en-NZ', { timeStyle:'short' });
 
     return (
-        <div className="flex flex-row gap-6 pb-0 items-center justify-center w-[34%]">
+        <div className={commonClasses}>
             <div>{kickoffTime}</div>
         </div>
     )
@@ -145,7 +149,7 @@ function getMatchContext(matchData: Match) {
 
     if (matchData.matchMode === 'Live') {
         return (
-            <div className="flex flex-col gap-2 items-center text-md">
+            <div className="flex flex-col md:flex-row gap-2 items-center text-md">
                 <div className="border rounded-md p-1 border-red-500 bg-red-500 text-white">{matchPeriod}</div>
                 <div>{matchData.clock.gameTime}</div>
             </div>
