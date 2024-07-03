@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { Match } from "../lib/definitions";
 import TeamImage from "./team-image";
+import moment from "moment";
 
 export default function RoundFixture({ data, winningTeam }: { data: Match; winningTeam: string}) {
     const isLiveMatch = data.matchMode === "Live";
@@ -117,7 +118,7 @@ function getMatchState(matchData: Match, winningTeam: string) {
         );
     }
 
-    const kickoffTime = new Date(matchData.clock.kickOffTimeLong).toLocaleString('en-NZ', { timeStyle:'short' });
+    const kickoffTime = moment(matchData.clock.kickOffTimeLong).format('LT');
 
     return (
         <div className={commonClasses}>

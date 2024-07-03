@@ -10,7 +10,7 @@ export default function NavBar() {
     const isMaxPtsPage = pathname === '/maxpoints';
 
     return (
-        <div className="text-3xl md:text-4xl flex justify-between font-semibold text-black sticky top-0 h-20 px-6 py-4 border-b border-gray-400 bg-white z-10">
+        <div className="text-2xl md:text-4xl flex justify-between items-center font-semibold text-black sticky top-0 h-20 px-6 py-4 border-b border-gray-400 bg-white z-10">
             <span>
                 {
                     isLadderPage ? 'NRL Live Ladder' : (isMaxPtsPage ? 'NRL Max Points' : '404 Page')
@@ -21,7 +21,7 @@ export default function NavBar() {
                     href="/"
                     className={
                         clsx(
-                            'text-xl',
+                            'text-lg md:text-xl',
                             {
                                 'text-green-400': isLadderPage
                             }
@@ -34,7 +34,7 @@ export default function NavBar() {
                     href="/maxpoints"
                     className={
                         clsx(
-                            'text-xl',
+                            'text-lg md:text-xl',
                             {
                                 'text-green-400': isMaxPtsPage
                             }
