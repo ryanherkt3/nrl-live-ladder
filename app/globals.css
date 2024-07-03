@@ -14,6 +14,124 @@
     -webkit-animation: live-animation 2s infinite;
 }
 
+table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+td {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+/* Table borders */
+
+td.bg-broncos {
+    border: 2px solid #ffce34;
+}
+td.bg-raiders {
+    border: 2px solid #0C8E48;
+}
+td.bg-bulldogs {
+    border: 2px solid #042471;
+}
+td.bg-sharks {
+    border: 2px solid #0772A8;
+}
+td.bg-dolphins {
+    border: 2px solid #C7181D;
+}
+td.bg-titans {
+    border: 2px solid #0955A2;
+}
+td.bg-seaeagles {
+    border: 2px solid #541739;
+}
+td.bg-storm {
+    border: 2px solid #4F378B;
+}
+td.bg-knights {
+    border: 2px solid #022789;
+}
+td.bg-cowboys {
+    border: 2px solid #111B37;
+}
+td.bg-eels {
+    border: 2px solid #042E8E;
+}
+td.bg-panthers {
+    border: 2px solid #231F24;
+}
+td.bg-rabbitohs {
+    border: 2px solid #E72E2F;
+}
+td.bg-dragons {
+    border: 2px solid #AF1E29;
+}
+td.bg-roosters {
+    border: 2px solid #061E45;
+}
+td.bg-warriors {
+    border: 2px solid #008445;
+}
+td.bg-weststigers {
+    border: 2px solid #DF6A03;
+}
+
+/* Backgrounds */
+
+.bg-broncos {
+    background-color: #ffce34;
+}
+.bg-raiders {
+    background-color: #0C8E48;
+}
+.bg-bulldogs {
+    background-color: #042471;
+}
+.bg-sharks {
+    background-color: #0772A8;
+}
+.bg-dolphins {
+    background-color: #C7181D;
+}
+.bg-titans {
+    background-color: #0955A2;
+}
+.bg-seaeagles {
+    background-color: #541739;
+}
+.bg-storm {
+    background-color: #4F378B;
+}
+.bg-knights {
+    background-color: #022789;
+}
+.bg-cowboys {
+    background-color: #111B37;
+}
+.bg-eels {
+    background-color: #042E8E;
+}
+.bg-panthers {
+    background-color: #231F24;
+}
+.bg-rabbitohs {
+    background-color: #E72E2F;
+}
+.bg-dragons {
+    background-color: #AF1E29;
+}
+.bg-roosters {
+    background-color: #061E45;
+}
+.bg-warriors {
+    background-color: #008445;
+}
+.bg-weststigers {
+    background-color: #DF6A03;
+}
+
 @keyframes live-animation {
     0% { background-color: #f87171; }
     50% { background-color: #ef4444; }

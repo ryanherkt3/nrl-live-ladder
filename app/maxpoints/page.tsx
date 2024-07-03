@@ -13,75 +13,78 @@ export default async function MaxPointsPage() {
 
     const topTeams = allTeams.splice(0, 8);
 
-    const firstPlaceMaxPts = getMaxPoints(topTeams[0].stats.lost);
+    const firstPlaceMaxPts = getMaxPoints(topTeams[0].stats.lost, topTeams[0].stats.drawn);
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
-    // TODO formatting
-
     return (
-        <div className="px-8 py-6 flex flex-col gap-6 page-min-height">
-            <div>
-                <div className="flex flex-row gap-2 text-md pb-4 font-semibold text-center">
-                    <div className="text-left font-semibold w-full">Team</div>
-                </div>
-                {
-                    topTeams.map((team: TeamData) => {
-                        const currentPoints = team.stats.points;
-                        const maxPoints = getMaxPoints(team.stats.lost);
-                        
-                        return (
-                            <div key={team.teamNickname} className="flex flex-row gap-2 py-1 text-md text-center">
-                                <div className="text-left font-semibold w-[15%]">{team.teamNickname}</div>
-                                {
-                                    getPointCells(lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints)
-                                }
-                            </div>
-                        ) 
-                    })
-                }
-                <div className="border-2 border-green-400"></div>
-                {
-                    allTeams.map((team: TeamData) => {
-                        const currentPoints = team.stats.points;
-                        const maxPoints = getMaxPoints(team.stats.lost);
-                        
-                        return (
-                            <div key={team.teamNickname} className="flex flex-row gap-2 py-1 text-md text-center">
-                                <div className="text-left font-semibold w-[15%]">{team.teamNickname}</div>
-                                {
-                                    getPointCells(lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints)
-                                }
-                            </div>
-                        )
-                    })
-                }
-            </div>
+        <div className="px-6 py-8 page-min-height">
+            <table>
+                <tbody>
+                    <tr className="text-md font-semibold text-center">
+                        <th style={{width: '15%'}} className="text-left pb-4 font-semibold">Team</th>
+                        <th className="text-left pb-4 font-semibold">Points</th>
+                    </tr>
+                    {
+                        getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts)
+                    }
+                    <tr style={{width: '100%'}} className="border-4 border-green-400"></tr>
+                    {
+                        getTableRows(allTeams, firstPlaceMaxPts, lastPlacePts)
+                    }
+                </tbody>
+            </table>
         </div>
     );
 }
 
-function getMaxPoints(losses: number) {
+function getMaxPoints(losses: number, draws: number) {
     const rounds = 24;
     const byes = 3;
+    const perfectSeasonPts = 2 * rounds;
+
+    const pointsLost = perfectSeasonPts - (2 * losses) - draws;
+    const byePointsToAdd = 2 * byes;
     
-    return (2 * (rounds + byes)) - (2 * losses);
+    return pointsLost + byePointsToAdd;
 }
 
-function getPointCells(min: number, max: number, currentPts: number, maxPoints: number) {
-    let pointCells = [];
-    
-    for (var i = min; i <= max; i++) {
+function getPointCells(min: number, max: number, currentPts: number, maxPoints: number, nickname: string) {
+    const pointCells = [];
+    const bgClass = `bg-${nickname} font-semibold ${nickname === 'broncos' ? 'text-black' : 'text-white'}`;
+
+    for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
             pointCells.push(
-                <div className="w-[2%] bg-green-400 font-semibold" key={i}>{i}</div>
-            );
+                <td style={{width: '10px'}} className={bgClass}>
+                    {i === currentPts || i === maxPoints ? i : ''}
+                </td>
+            )
         }
         else {
             pointCells.push(
-                <div className="w-[2%]" key={i}></div>
-            );
+                <td style={{width: '10px'}}></td>
+            )
         }
     }
     
-    return pointCells; 
+    return pointCells;
+}
+
+function getTableRows(teamList: Array<TeamData>, firstPlaceMaxPts: number, lastPlacePts: number) {
+    return teamList.map((team: TeamData) => {
+        const currentPoints = team.stats.points;
+        const maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
+        const cssNickname = team.teamNickname.toLowerCase().replace(' ', '');
+        
+        return (
+            <tr key={team.teamNickname} className="text-md text-center">
+                <td style={{width: '15%'}} className="text-left font-semibold">{team.teamNickname}</td>
+                {
+                    getPointCells(
+                        lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints, cssNickname
+                    )
+                }
+            </tr>
+        ) 
+    });
 }

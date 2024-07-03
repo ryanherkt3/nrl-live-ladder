@@ -124,6 +124,7 @@ export default async function HomePage() {
 
             <div className="flex flex-col gap-4">
                 <div className="text-2xl font-semibold text-center">Round {currentRound.selectedRoundId} Fixtures</div>
+                <div className="text-lg text-center">All fixtures are in your local timezone</div>
                 {
                     fixtures.map((fixture: Match) => {
                         const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
