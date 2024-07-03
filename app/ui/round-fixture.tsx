@@ -1,3 +1,5 @@
+'use client';
+
 import clsx from "clsx";
 import { Match } from "../lib/definitions";
 import TeamImage from "./team-image";
