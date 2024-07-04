@@ -4,8 +4,7 @@ import Ladder from "./ui/ladder";
 import useSWR from 'swr'
 
 export default function HomePage() {
-    // TODO try w/o useSWR plugin
-    const fetcher = (...args) => fetch(...args).then(res => res.json());
+    const fetcher = (...args: any[]) => fetch(...args).then(res => res.json());
     const { data, error, isLoading } = useSWR('/api/nrlinfo', fetcher);
  
     if (error) {
