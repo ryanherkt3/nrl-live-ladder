@@ -4,6 +4,7 @@ import SkeletonLadderRow from "./skeleton-ladder-row";
 export default function SkeletonLadder() {
     return (
         <>
+            <div className="flex flex-row self-end shimmer w-[200px] h-7"></div>
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                     <div className="w-[10%] md:w-[5%]">Pos</div>
