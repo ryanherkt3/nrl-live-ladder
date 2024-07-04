@@ -1,10 +1,11 @@
 'use client';
 
 import Ladder from "./ui/ladder";
-import useSWR from 'swr'
+import useSWR from 'swr';
+import axios from 'axios';
 
 export default function HomePage() {
-    const fetcher = (...args: any[]) => fetch(...args).then(res => res.json());
+    const fetcher = (url: string) => axios.get(url).then(res => res.data)
     const { data, error, isLoading } = useSWR('/api/nrlinfo', fetcher);
  
     if (error) {
