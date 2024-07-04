@@ -86,7 +86,7 @@ function getMatchState(matchData: Match, winningTeam: string) {
     let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
     
     if (matchData.matchState === 'FullTime' || matchData.matchMode === 'Live') {
-        commonClasses += 'pt-2';
+        commonClasses += ' pt-2';
 
         return (
             <div className={commonClasses}>
@@ -153,7 +153,7 @@ function getMatchContext(matchData: Match) {
 
     if (matchData.matchMode === 'Live') {
         return (
-            <div className="flex flex-col md:flex-row gap-2 items-center text-md">
+            <div className="flex flex-col gap-2 items-center text-md">
                 <div className="border rounded-md p-1 border-red-500 bg-red-500 text-white">{matchPeriod}</div>
                 <div>{matchData.clock.gameTime}</div>
             </div>
