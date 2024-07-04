@@ -14,6 +14,31 @@
     -webkit-animation: live-animation 2s infinite;
 }
 
+/* Skeletons */
+
+.shimmer {
+    background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
+}
+
+.shimmer-date {
+    background: linear-gradient(-45deg, #9ca3af 40%, #fafafa 50%, #9ca3af 60%);
+}
+
+.shimmer,
+.shimmer-date {
+    background-size: 300%;
+    background-position-x: 100%;
+    animation: shimmer 1s infinite linear;
+}
+
+@keyframes shimmer {
+    to {
+       background-position-x: 0%
+    }
+ }
+
+/* Table */
+
 table {
     width: 100%;
     table-layout: fixed;
