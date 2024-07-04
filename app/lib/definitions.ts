@@ -29,6 +29,7 @@ export type TeamStats = {
     'home record': string,
     'away record': string,
     points: number,
+    noByePoints: number
     'bonus points': number,
     streak: string,
     form: string,
