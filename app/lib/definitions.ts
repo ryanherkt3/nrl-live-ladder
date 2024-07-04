@@ -3,6 +3,7 @@ export type TeamData = {
     movement: string;
     next: NextTeam;
     stats: TeamStats;
+    liveStats: LiveTeamStats;
     teamNickname: string;
     theme: TeamTheme;
     designation: 'homeTeam' | 'awayTeam' | undefined;
@@ -29,7 +30,7 @@ export type TeamStats = {
     'home record': string,
     'away record': string,
     points: number,
-    noByePoints: number
+    noByePoints: number,
     'bonus points': number,
     streak: string,
     form: string,
@@ -40,6 +41,19 @@ export type TeamStats = {
     'day record': string,
     'night record': string,
     'players used': number
+};
+
+export type LiveTeamStats = {
+    played: number,
+    wins: number,
+    drawn: number,
+    lost: number,
+    byes: number,
+    'points for': number,
+    'points against': number,
+    'points difference': number
+    points: number,
+    noByePoints: number,
 };
 
 export type TeamTheme = {

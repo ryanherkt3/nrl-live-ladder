@@ -7,6 +7,7 @@ import moment from "moment";
 
 export default function RoundFixture({ data, winningTeam }: { data: Match; winningTeam: string}) {
     const isLiveMatch = data.matchMode === "Live";
+    const isFullTime = !isLiveMatch && data.matchState === "FullTime";
     
     // TODO list position when "no byes" is toggled on
     return (
@@ -17,7 +18,8 @@ export default function RoundFixture({ data, winningTeam }: { data: Match; winni
                         'text-center text-lg text-white font-semibold',
                         {
                             'live-match': isLiveMatch,
-                            'bg-gray-400': !isLiveMatch,
+                            'bg-green-400': isFullTime,
+                            'bg-gray-400': !isLiveMatch && !isFullTime,
                         }
                     )
                 }
@@ -77,8 +79,6 @@ function getDateString(date: string) {
         numberString = `${number}th`;
     }
 
-    // dateString.replace(',', '').replace(number.toString(), numberString);
-
     return dateString.replace(',', '').replace(number.toString(), numberString);
 }
 
@@ -132,7 +132,9 @@ function getMatchState(matchData: Match, winningTeam: string) {
 
 function getMatchContext(matchData: Match) {
     if (matchData.matchState === 'FullTime') {
-        return <div>FULL TIME</div>
+        return (
+            <div className="border rounded-md p-1 border-green-400 bg-green-400 text-white">FULL TIME</div>
+        );
     }
 
     let matchPeriod = '';
