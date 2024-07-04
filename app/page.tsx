@@ -25,8 +25,7 @@ export default function HomePage() {
     }
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
-            {/* <Ladder nrlInfo={data} /> */}
-            <SkeletonLadder />
+            <Ladder nrlInfo={data} />
         </div>
     );
 }
