@@ -69,7 +69,7 @@ function getTableRows(
         const cssNickname = team.teamNickname.toLowerCase().replace(' ', '');
 
         const bestFinish = allTeams.filter((team2: TeamData) => {
-            return maxPoints <= team2.stats.points;
+            return maxPoints < team2.stats.points;
         }).length + 1;
         
         return (
@@ -103,7 +103,7 @@ function getPointCells(
     const pointCells = [];
     
     // TODO if qualified put (T2/4/8 next to name)
-    const bgClass = `hidden md:table-cell ${bestFinish >= 9 ? 'bg-faded' : `bg-${nickname}`} font-semibold ${nickname === 'broncos' && bestFinish >= 9 ? 'text-black' : 'text-white'}`;
+    const bgClass = `hidden md:table-cell ${bestFinish >= 9 ? 'bg-faded' : `bg-${nickname}`} font-semibold ${nickname === 'broncos' && bestFinish < 9 ? 'text-black' : 'text-white'}`;
 
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {

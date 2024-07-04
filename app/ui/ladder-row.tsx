@@ -2,7 +2,19 @@ import { TeamData, NextTeam } from "../lib/definitions";
 import { getShortCode } from "../lib/utils";
 import TeamImage from "./team-image";
 
-export default function LadderRow({ data, position, isPlaying }: { data: TeamData; position: String; isPlaying: boolean}) {
+export default function LadderRow(
+    { 
+        data, 
+        position,
+        isPlaying,
+        byePoints 
+    }: { 
+        data: TeamData;
+        position: String;
+        isPlaying: boolean;
+        byePoints: boolean
+    }
+) {
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
@@ -26,7 +38,9 @@ export default function LadderRow({ data, position, isPlaying }: { data: TeamDat
             <div className="hidden sm:block sm:w-[6%]">{data.stats.wins}</div>
             <div className="hidden sm:block sm:w-[6%]">{data.stats.drawn}</div>
             <div className="hidden sm:block sm:w-[6%]">{data.stats.lost}</div>
-            <div className="hidden sm:block sm:w-[6%]">{data.stats.byes}</div>
+            <div className="hidden sm:block sm:w-[6%]">
+                {byePoints ? 0 : data.stats.byes}
+            </div>
             <div className="hidden md:block w-[6%]">{data.stats['points for']}</div>
             <div className="hidden md:block w-[6%]">{data.stats['points against']}</div>
             <div className="w-[9%] sm:w-[6%]">{data.stats['points difference']}</div>
@@ -35,7 +49,9 @@ export default function LadderRow({ data, position, isPlaying }: { data: TeamDat
                     getNextFixture(data.next)
                 }
             </div>
-            <div className="w-[9%] sm:w-[6%] font-semibold">{data.stats.points}</div>
+            <div className="w-[9%] sm:w-[6%] font-semibold">
+                {byePoints ? data.stats.noByePoints : data.stats.points}
+            </div>
         </div>
     );
 }

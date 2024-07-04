@@ -1,9 +1,11 @@
 import LadderRow from "./ladder-row";
 import { TeamData, Match } from "../lib/definitions";
 import Fixtures from "./fixtures";
+import ByeToggleSection from "./byetoggle";
+import { useState } from "react";
 
 export default function Ladder({nrlInfo}: {nrlInfo: any}) {
-    let allTeams = nrlInfo.ladder.positions;
+    const [allTeams, setAllTeams] = useState(nrlInfo.ladder.positions);
 
     const currentRound = nrlInfo.draw;
     const fixtures = currentRound.fixtures;
@@ -60,15 +62,26 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                         (draw ? (team.stats.points + 1) : team.stats.points)) ;
         }
 
-        allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
+        setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return b.stats.points - a.stats.points || b.stats['points difference'] - a.stats['points difference'];
-        });
+        }));
     }
 
-    const topTeams = allTeams.splice(0, 8);
+    const [byePoints, setByePoints] = useState(false);
+
+    const updateByePoints = (val: boolean) => {
+        setByePoints(val);
+        setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+            const diffSort = b.stats['points difference'] - a.stats['points difference'];
+            const ptsSort = byePoints ? b.stats.points - a.stats.points : b.stats.noByePoints - a.stats.noByePoints;
+            
+            return ptsSort || diffSort;
+        }));
+    }
 
     return (
         <>
+            <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                     <div className="w-[10%] md:w-[5%]">Pos</div>
@@ -86,11 +99,11 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                     <div className="w-[9%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(topTeams, liveMatch, 1)
+                    getLadderRow(allTeams.slice(0,8), liveMatch, 1, byePoints)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    getLadderRow(allTeams, liveMatch, 9)
+                    getLadderRow(allTeams.slice(8), liveMatch, 9, byePoints)
                 }
             </div>
             <Fixtures currentRound={currentRound} fixtures={fixtures} />
@@ -98,7 +111,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     );
 }
 
-function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, indexAdd: number) {
+function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, indexAdd: number, byePoints: boolean) {
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
@@ -115,6 +128,7 @@ function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, i
             data={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}    
+            byePoints={byePoints}    
         />
     })
 }

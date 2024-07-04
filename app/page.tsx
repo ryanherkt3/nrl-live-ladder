@@ -1,13 +1,30 @@
-import { getNRLInfo } from "./lib/utils";
-import Ladder from "./ui/ladder";
+'use client';
 
-export default async function HomePage() {
-    // TODO add byes toggle to show ladder w/o bye points
-    let nrlInfo = await getNRLInfo();
-    
+import Ladder from "./ui/ladder";
+import useSWR from 'swr'
+
+export default function HomePage() {
+    // TODO try w/o useSWR plugin
+    const fetcher = (...args) => fetch(...args).then(res => res.json());
+    const { data, error, isLoading } = useSWR('/api/nrlinfo', fetcher);
+ 
+    if (error) {
+        return (
+            <div className="px-8 py-6 flex flex-col gap-6">
+                Failed to load!
+            </div>
+        );
+    }
+    if (isLoading) {
+        return (
+            <div className="px-8 py-6 flex flex-col gap-6">
+                Loading...
+            </div>
+        );
+    }
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
-            <Ladder nrlInfo={nrlInfo} />
+            <Ladder nrlInfo={data} />
         </div>
     );
 }
