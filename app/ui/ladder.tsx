@@ -2,10 +2,10 @@ import LadderRow from "./ladder-row";
 import { TeamData, Match } from "../lib/definitions";
 import Fixtures from "./fixtures";
 import ByeToggleSection from "./byetoggle";
-import { useState } from "react";
+// import { useState } from "react";
 
 export default function Ladder({nrlInfo}: {nrlInfo: any}) {
-    const [allTeams, setAllTeams] = useState(nrlInfo.ladder.positions);
+    let allTeams = nrlInfo.ladder.positions;
 
     const currentRound = nrlInfo.draw;
     const fixtures = currentRound.fixtures;
@@ -13,11 +13,6 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
     })[0];
-
-    // TODO useEffect update page every 45 seconds
-    // useEffect(() => {
-    //     
-    // }, []);
 
     // Update ladder based on live match before rendering it
     if (liveMatch) {
@@ -62,26 +57,27 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                         (draw ? (team.stats.points + 1) : team.stats.points)) ;
         }
 
-        setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+        allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
             return b.stats.points - a.stats.points || b.stats['points difference'] - a.stats['points difference'];
-        }));
+        });
     }
 
-    const [byePoints, setByePoints] = useState(false);
+    // const [byePoints, setByePoints] = useState(false);
+    let byePoints = false;
 
     const updateByePoints = (val: boolean) => {
-        setByePoints(val);
-        setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
-            const diffSort = b.stats['points difference'] - a.stats['points difference'];
-            const ptsSort = byePoints ? b.stats.points - a.stats.points : b.stats.noByePoints - a.stats.noByePoints;
+        // setByePoints(val);
+        // setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+        //     const diffSort = b.stats['points difference'] - a.stats['points difference'];
+        //     const ptsSort = byePoints ? b.stats.points - a.stats.points : b.stats.noByePoints - a.stats.noByePoints;
             
-            return ptsSort || diffSort;
-        }));
+        //     return ptsSort || diffSort;
+        // }));
     }
 
     return (
         <>
-            <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
+            {/* <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} /> */}
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                     <div className="w-[10%] md:w-[5%]">Pos</div>
