@@ -5,6 +5,7 @@ import RoundFixture from "./ui/round-fixture";
 import TeamImage from "./ui/team-image";
 
 export default async function HomePage() {
+    // TODO add byes toggle to show ladder w/o bye points
     let nrlInfo = await getNRLInfo();
     
     let allTeams = nrlInfo.ladder.positions;
@@ -40,12 +41,12 @@ export default async function HomePage() {
             
             team.stats.played = team.stats.played + 1;
             team.stats.wins = isHomeTeam ? 
-                (homeTeamWinning && !draw ? (team.stats.wins + 1) : team.stats.wins) :
-                (awayTeamWinning && !draw ? (team.stats.wins + 1) : team.stats.wins);
+                (homeTeamWinning ? (team.stats.wins + 1) : team.stats.wins) :
+                (awayTeamWinning ? (team.stats.wins + 1) : team.stats.wins);
             team.stats.drawn = draw ? (team.stats.drawn + 1) : team.stats.drawn;
             team.stats.lost = isHomeTeam ? 
-                (!homeTeamWinning && !draw ? (team.stats.lost + 1) : team.stats.lost) :
-                (!awayTeamWinning && !draw ? (team.stats.lost + 1) : team.stats.lost);
+                (!homeTeamWinning ? (team.stats.lost + 1) : team.stats.lost) :
+                (!awayTeamWinning ? (team.stats.lost + 1) : team.stats.lost);
             
             team.stats['points for'] = team.stats['points for'] + (
                 isHomeTeam ? liveMatch.homeTeam.score : liveMatch.awayTeam.score
@@ -56,8 +57,12 @@ export default async function HomePage() {
             team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
             
             team.stats.points = isHomeTeam ? 
-                (homeTeamWinning && !draw ? (team.stats.points + 2) : team.stats.points) :
-                (awayTeamWinning && !draw ? (team.stats.points + 2) : team.stats.points);
+                (homeTeamWinning ? 
+                    (team.stats.points + 2) : 
+                    (draw ? (team.stats.points + 1) : team.stats.points)) :
+                (awayTeamWinning ? 
+                        (team.stats.points + 2) : 
+                        (draw ? (team.stats.points + 1) : team.stats.points)) ;
         }
 
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
@@ -86,39 +91,11 @@ export default async function HomePage() {
                     <div className="w-[9%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    topTeams.map((team: TeamData) => {
-                        let isPlaying = false;
-                        
-                        if (liveMatch) {
-                            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
-                                liveMatch.homeTeam.nickName === team.teamNickname;
-                        }
-                        
-                        return <LadderRow
-                            key={team.theme.key}
-                            data={team}
-                            position={topTeams.indexOf(team) + 1}
-                            isPlaying={isPlaying}    
-                        />
-                    })
+                    getLadderRow(topTeams, liveMatch, 1)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    allTeams.map((team: TeamData) => {
-                        let isPlaying = false;
-                        
-                        if (liveMatch) {
-                            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
-                                liveMatch.homeTeam.nickName === team.teamNickname;
-                        }
-                        
-                        return <LadderRow 
-                            key={team.theme.key}
-                            data={team}
-                            position={allTeams.indexOf(team) + 9}
-                            isPlaying={isPlaying}    
-                        />
-                    })
+                    getLadderRow(allTeams, liveMatch, 9)
                 }
             </div>
 
@@ -154,4 +131,23 @@ export default async function HomePage() {
             </div>
         </div>
     );
+}
+
+function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, indexAdd: number) {
+    return teamList.map((team: TeamData) => {
+        let isPlaying = false;
+
+        if (liveMatch) {
+            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
+                liveMatch.homeTeam.nickName === team.teamNickname;
+        }
+
+        const ladderPos = teamList.indexOf(team) + indexAdd;
+        return <LadderRow
+            key={team.theme.key}
+            data={team}
+            position={ladderPos.toString()}
+            isPlaying={isPlaying}    
+        />
+    })
 }

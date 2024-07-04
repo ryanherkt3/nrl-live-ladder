@@ -77,6 +77,9 @@ td.bg-warriors {
 td.bg-weststigers {
     border: 2px solid #DF6A03;
 }
+td.bg-faded {
+    border: 2px solid #9ca3af;
+}
 
 /* Backgrounds */
 
@@ -130,6 +133,9 @@ td.bg-weststigers {
 }
 .bg-weststigers {
     background-color: #DF6A03;
+}
+.bg-faded {
+    background-color: #9ca3af;
 }
 
 @keyframes live-animation {
