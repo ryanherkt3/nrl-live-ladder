@@ -19,41 +19,41 @@ export type NextTeam = {
 };
 
 export type TeamStats = {
-    played: number,
-    wins: number,
-    drawn: number,
-    lost: number,
-    byes: number,
-    'points for': number,
-    'points against': number,
-    'points difference': number,
-    'home record': string,
-    'away record': string,
-    points: number,
-    noByePoints: number,
-    'bonus points': number,
-    streak: string,
-    form: string,
-    'average losing margin': number,
-    'average winning margin': number,
-    'golden point': number,
-    'close games': number,
-    'day record': string,
-    'night record': string,
-    'players used': number
+    played: number;
+    wins: number;
+    drawn: number;
+    lost: number;
+    byes: number;
+    'points for': number;
+    'points against': number;
+    'points difference': number;
+    'home record': string;
+    'away record': string;
+    points: number;
+    noByePoints: number;
+    'bonus points': number;
+    streak: string;
+    form: string;
+    'average losing margin': number;
+    'average winning margin': number;
+    'golden point': number;
+    'close games': number;
+    'day record': string;
+    'night record': string;
+    'players used': number;
 };
 
 export type LiveTeamStats = {
-    played: number,
-    wins: number,
-    drawn: number,
-    lost: number,
-    byes: number,
-    'points for': number,
-    'points against': number,
+    played: number;
+    wins: number;
+    drawn: number;
+    lost: number;
+    byes: number;
+    'points for': number;
+    'points against': number;
     'points difference': number
-    points: number,
-    noByePoints: number,
+    points: number;
+    noByePoints: number;
 };
 
 export type TeamTheme = {
@@ -73,7 +73,7 @@ export type Match = {
     callToAction: CTA;
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;
-    clock: MatchTime
+    clock: MatchTime;
 };
 
 export type ByeTeam = {

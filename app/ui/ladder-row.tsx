@@ -15,6 +15,8 @@ export default function LadderRow(
         byePoints: boolean
     }
 ) {
+    let statsData = isPlaying && data.liveStats ? data.liveStats : data.stats;
+
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
@@ -34,23 +36,23 @@ export default function LadderRow(
                     }
                 </span>
             </div>
-            <div className="w-[9%] sm:w-[6%]">{data.stats.played}</div>
-            <div className="hidden sm:block sm:w-[6%]">{data.stats.wins}</div>
-            <div className="hidden sm:block sm:w-[6%]">{data.stats.drawn}</div>
-            <div className="hidden sm:block sm:w-[6%]">{data.stats.lost}</div>
+            <div className="w-[9%] sm:w-[6%]">{statsData.played}</div>
+            <div className="hidden sm:block sm:w-[6%]">{statsData.wins}</div>
+            <div className="hidden sm:block sm:w-[6%]">{statsData.drawn}</div>
+            <div className="hidden sm:block sm:w-[6%]">{statsData.lost}</div>
             <div className="hidden sm:block sm:w-[6%]">
-                {byePoints ? 0 : data.stats.byes}
+                {byePoints ? statsData.byes : 0}
             </div>
-            <div className="hidden md:block w-[6%]">{data.stats['points for']}</div>
-            <div className="hidden md:block w-[6%]">{data.stats['points against']}</div>
-            <div className="w-[9%] sm:w-[6%]">{data.stats['points difference']}</div>
+            <div className="hidden md:block w-[6%]">{statsData['points for']}</div>
+            <div className="hidden md:block w-[6%]">{statsData['points against']}</div>
+            <div className="w-[9%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="w-[15%] md:w-[8%] flex justify-center">
                 {
                     getNextFixture(data.next)
                 }
             </div>
             <div className="w-[9%] sm:w-[6%] font-semibold">
-                {byePoints ? data.stats.noByePoints : data.stats.points}
+                {byePoints ? statsData.points : statsData.noByePoints}
             </div>
         </div>
     );

@@ -1,8 +1,19 @@
-import { Match, ByeTeam } from "../lib/definitions";
+import { Match, ByeTeam, TeamData } from "../lib/definitions";
 import RoundFixture from "./round-fixture";
 import TeamImage from "./team-image";
 
-export default function Fixtures({ currentRound, fixtures }: { currentRound: any; fixtures: Array<Match>}) {
+export default function Fixtures(
+    { 
+        currentRound,
+        fixtures,
+        ladder
+    }:
+    { 
+        currentRound: any; 
+        fixtures: Array<Match>,
+        ladder: Array<TeamData>
+    }
+) {
     return (
         <div className="flex flex-col gap-4">
             <div className="text-2xl font-semibold text-center">Round {currentRound.selectedRoundId} Fixtures</div>
@@ -19,6 +30,7 @@ export default function Fixtures({ currentRound, fixtures }: { currentRound: any
                             key={fixtures.indexOf(fixture)}
                             data={fixture}
                             winningTeam={winningTeam}
+                            ladder={ladder}
                         />
                     );
                 })

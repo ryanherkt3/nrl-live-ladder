@@ -3,7 +3,7 @@ import SkeletonLadderRow from "./skeleton-ladder-row";
 
 export default function SkeletonLadder() {
     return (
-        <>
+        <div className="px-8 py-6 flex flex-col gap-6">
             <div className="flex flex-row self-end shimmer w-[200px] h-7"></div>
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
@@ -30,7 +30,7 @@ export default function SkeletonLadder() {
                 }
             </div>
             <SkeletonFixtures />
-        </>
+        </div>
     );
 }
 

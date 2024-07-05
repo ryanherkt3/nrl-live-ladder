@@ -47,3 +47,19 @@ export const getShortCode = (name: string) => {
             return 'NRL';
     }
 }
+
+export const getNumberSuffix = (num: number) => {
+    if ([1, 21].includes(num)) {
+        return `${num}st`;
+    }
+
+    if ([2, 22].includes(num)) {
+        return `${num}nd`;
+    }
+
+    if ([3, 23].includes(num)) {
+        return `${num}rd`;
+    }
+
+    return `${num}th`;
+}

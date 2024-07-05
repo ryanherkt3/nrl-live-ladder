@@ -1,15 +1,36 @@
 'use client';
 
 import clsx from "clsx";
-import { Match } from "../lib/definitions";
+import { Match, TeamData } from "../lib/definitions";
 import TeamImage from "./team-image";
 import moment from "moment";
+import { getNumberSuffix } from "../lib/utils";
 
-export default function RoundFixture({ data, winningTeam }: { data: Match; winningTeam: string}) {
+export default function RoundFixture(
+    { 
+        data,
+        winningTeam,
+        ladder 
+    }: 
+    { 
+        data: Match,
+        winningTeam: string,  
+        ladder: Array<TeamData>
+    }
+) {
     const isLiveMatch = data.matchMode === "Live";
     const isFullTime = !isLiveMatch && data.matchState === "FullTime";
+
+    // Get ladder position of teams
+    const homeTeamObj = ladder.filter((team: TeamData) => {
+        return team.teamNickname === data.homeTeam.nickName;
+    });
+    const awayTeamObj = ladder.filter((team: TeamData) => {
+        return team.teamNickname === data.awayTeam.nickName;
+    });
+    const homeTeamPos = getNumberSuffix(ladder.indexOf(homeTeamObj[0]) + 1);
+    const awayTeamPos = getNumberSuffix(ladder.indexOf(awayTeamObj[0]) + 1);
     
-    // TODO list position when "no byes" is toggled on
     return (
         <div className="flex flex-col">
             <span 
@@ -29,25 +50,11 @@ export default function RoundFixture({ data, winningTeam }: { data: Match; winni
                 }
             </span>
             <div className="flex flex-col md:flex-row text-lg items-center justify-between p-2">
-                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
-                    <div className="flex flex-col text-center order-1 md:order-0 md:w-[35%]">
-                        <div className="font-semibold">{data.homeTeam.nickName}</div>
-                        <div>{data.homeTeam.teamPosition}</div>
-                    </div>
-                    <TeamImage imageLink='' teamKey={data.homeTeam.theme.key} />
-                </div>
-                
+                <TeamSection teamName={data.homeTeam.nickName} imgKey={data.homeTeam.theme.key} position={homeTeamPos} />
                 {
                     getMatchState(data, winningTeam)
                 }   
-                
-                <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
-                    <TeamImage imageLink='' teamKey={data.awayTeam.theme.key} />
-                    <div className="flex flex-col text-center md:w-[35%]">
-                        <div className="font-semibold">{data.awayTeam.nickName}</div>
-                        <div>{data.awayTeam.teamPosition}</div>
-                    </div>
-                </div>
+                <TeamSection teamName={data.awayTeam.nickName} imgKey={data.awayTeam.theme.key} position={awayTeamPos} />
             </div>
         </div>
     );
@@ -63,23 +70,9 @@ function getDateString(date: string) {
         }
     );
 
-    let number = parseInt(dateString.split(', ')[1].split(' ')[0]);
-    let numberString = '';
+    const number = parseInt(dateString.split(', ')[1].split(' ')[0]);
 
-    if ([1, 21].includes(number)) {
-        numberString = `${number}st`;
-    }
-    else if ([2, 22].includes(number)) {
-        numberString = `${number}nd`;
-    }
-    else if ([3, 23].includes(number)) {
-        numberString = `${number}rd`;
-    }
-    else {
-        numberString = `${number}th`;
-    }
-
-    return dateString.replace(',', '').replace(number.toString(), numberString);
+    return dateString.replace(',', '').replace(number.toString(), getNumberSuffix(number));
 }
 
 function getMatchState(matchData: Match, winningTeam: string) {
@@ -90,33 +83,11 @@ function getMatchState(matchData: Match, winningTeam: string) {
 
         return (
             <div className={commonClasses}>
-                <div 
-                    className={
-                        clsx(
-                            'text-3xl',
-                            {
-                                'font-semibold': winningTeam === 'homeTeam'
-                            }
-                        )
-                    }
-                >
-                    {matchData.homeTeam.score}
-                </div>
+                <Score score={matchData.homeTeam.score} winCondition={winningTeam === 'homeTeam'} />
                 {
                     getMatchContext(matchData)
                 }
-                <div 
-                    className={
-                        clsx(
-                            'text-3xl',
-                            {
-                                'font-semibold': winningTeam === 'awayTeam'
-                            }
-                        )
-                    }
-                >
-                    {matchData.awayTeam.score}
-                </div>
+                <Score score={matchData.awayTeam.score} winCondition={winningTeam === 'awayTeam'} />
             </div>
         );
     }
@@ -163,4 +134,22 @@ function getMatchContext(matchData: Match) {
     }
 
     return null;
+}
+
+// Internal components
+
+function Score({score, winCondition}: {score: number, winCondition: boolean}) {
+    return <div className={clsx('text-3xl', {'font-semibold': winCondition})}>{score}</div>;
+}
+
+function TeamSection({teamName, position, imgKey} : {teamName: string, position: string, imgKey: string}) {
+    return (
+        <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
+            <div className="flex flex-col text-center order-1 md:order-0 md:w-[35%]">
+                <div className="font-semibold">{teamName}</div>
+                <div>{position}</div>
+            </div>
+            <TeamImage imageLink='' teamKey={imgKey} />
+        </div>
+    )
 }
