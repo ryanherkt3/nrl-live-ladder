@@ -63,6 +63,11 @@ function getNextFixture(nextFixture: NextTeam) {
         return 'BYE';
     }
 
+    // Team is eliminated for the season
+    if (!nextFixture.matchCentreUrl || !nextFixture.theme.key) {
+        return null;
+    }
+
     return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
 }
 

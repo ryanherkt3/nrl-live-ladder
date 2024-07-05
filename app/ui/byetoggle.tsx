@@ -13,7 +13,7 @@ function ByeToggle({setByeValue, byeValue, byeValueCb}: {setByeValue: boolean, b
     return (
         <div 
             className="flex flex-row gap-3 font-semibold text-xl cursor-pointer"
-            onClick={() => byeValueCb()}    
+            onClick={() => byeValueCb(byeValue)}    
         >
             <div 
                 className={

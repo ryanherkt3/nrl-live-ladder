@@ -60,10 +60,10 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     }
 
     // Update ladder based on live match before rendering it
-    if (liveMatch) {
-        const [homeScore, setHomeScore] = useState(-1);
-        const [awayScore, setAwayScore] = useState(-1);
+    const [homeScore, setHomeScore] = useState(-1);
+    const [awayScore, setAwayScore] = useState(-1);
 
+    if (liveMatch) {
         // Only update stats if either score has changed
         if (liveMatch.homeTeam.score !== homeScore || liveMatch.awayTeam.score !== awayScore) {
             if (liveMatch.homeTeam.score !== homeScore) {
@@ -87,10 +87,13 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
         }        
     }
 
-    const updateByePoints = () => {
-        const updateVal = !byePoints;
+    const updateByePoints = (newValue: boolean) => {
+        if (newValue === byePoints) {
+            return; // do not set
+        }
+        
         setByePoints(!byePoints);
-        updateAllTeams(updateVal);
+        updateAllTeams(!byePoints);
     }
     
     return (
@@ -132,17 +135,20 @@ function setTeamStats(team: TeamData, match: Match) {
     
     const isHomeTeam = team.designation === 'homeTeam';
 
-    team.liveStats = team.liveStats || team.stats;
-    console.log(team.liveStats); 
+    // Set team's live stats if not defined (deep clone team.stats - no reference to it)
+    if (!team.liveStats) {
+        team.liveStats = JSON.parse(JSON.stringify(team.stats));
+    }
 
     team.liveStats.played = team.stats.played + 1;
-    team.liveStats.wins = isHomeTeam ? 
-        (homeTeamWinning ? (team.stats.wins + 1) : team.stats.wins) :
-        (awayTeamWinning ? (team.stats.wins + 1) : team.stats.wins);
+
+    team.liveStats.wins = (isHomeTeam && homeTeamWinning) || (!isHomeTeam && awayTeamWinning) ? 
+        (team.stats.wins + 1) : team.stats.wins;
+
     team.liveStats.drawn = draw ? (team.stats.drawn + 1) : team.stats.drawn;
-    team.liveStats.lost = isHomeTeam ? 
-        (!homeTeamWinning ? (team.stats.lost + 1) : team.stats.lost) :
-        (!awayTeamWinning ? (team.stats.lost + 1) : team.stats.lost);
+
+    team.liveStats.lost = (isHomeTeam && !homeTeamWinning && !draw) || (!isHomeTeam && !awayTeamWinning && !draw) ?
+        (team.stats.lost + 1) : team.stats.lost;
     
     team.liveStats['points for'] = team.stats['points for'] + (
         isHomeTeam ? match.homeTeam.score : match.awayTeam.score
@@ -150,7 +156,7 @@ function setTeamStats(team: TeamData, match: Match) {
     team.liveStats['points against'] = team.stats['points against'] + (
         isHomeTeam ? match.awayTeam.score : match.homeTeam.score
     );
-    team.liveStats['points difference'] = team.stats['points for'] - team.stats['points against'];
+    team.liveStats['points difference'] = team.liveStats['points for'] - team.liveStats['points against'];
     
     team.liveStats.points = isHomeTeam ? 
         (homeTeamWinning ? (team.stats.points + 2) : 

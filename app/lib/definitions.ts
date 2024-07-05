@@ -51,7 +51,7 @@ export type LiveTeamStats = {
     byes: number;
     'points for': number;
     'points against': number;
-    'points difference': number
+    'points difference': number;
     points: number;
     noByePoints: number;
 };
@@ -66,7 +66,7 @@ export type Match = {
     roundTitle: string;
     type: string;
     matchMode: 'Pre' | 'Post' | 'Live';
-    matchState: 'Upcoming' | 'FirstHalf'  | 'HalfTime' | 'SecondHalf' | 'FullTime';
+    matchState: 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'FullTime';
     venue: string;
     venueCity: string;
     matchCentreUrl: string;

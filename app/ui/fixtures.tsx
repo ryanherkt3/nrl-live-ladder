@@ -9,7 +9,7 @@ export default function Fixtures(
         ladder
     }:
     { 
-        currentRound: any; 
+        currentRound: any,
         fixtures: Array<Match>,
         ladder: Array<TeamData>
     }
