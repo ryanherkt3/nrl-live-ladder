@@ -35,7 +35,7 @@ export type TeamTheme = {
 
 export type Match = {
     matchMode: 'Pre' | 'Post' | 'Live';
-    matchState: 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'FullTime';
+    matchState: 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'FullTime' | 'ExtraTime';
     matchCentreUrl: string;
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;

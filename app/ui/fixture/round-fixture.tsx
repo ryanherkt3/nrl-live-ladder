@@ -120,6 +120,9 @@ function getMatchContext(matchData: Match) {
         case 'SecondHalf':
             matchPeriod = '2ND HALF';
             break;
+        case 'ExtraTime':
+            matchPeriod = 'EXTRA TIME';
+            break;
         default:
             matchPeriod = 'UPCOMING';
             break;
