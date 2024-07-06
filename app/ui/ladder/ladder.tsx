@@ -21,49 +21,41 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
                 if (b.liveStats && a.liveStats) {
                     if (byePoints) {
                         return b.liveStats.points - a.liveStats.points || 
-                            b.liveStats['points difference'] - a.liveStats['points difference'] ||
-                            a.teamNickname.localeCompare(b.teamNickname);
+                            b.liveStats['points difference'] - a.liveStats['points difference'];
                     }
 
                     return b.liveStats.noByePoints - a.liveStats.noByePoints || 
-                        b.liveStats['points difference'] - a.liveStats['points difference'] ||
-                        a.teamNickname.localeCompare(b.teamNickname);
+                        b.liveStats['points difference'] - a.liveStats['points difference'];
                 }
                     
                 if (a.liveStats) {
                     if (showByes) {
                         return b.stats.points - a.liveStats.points || 
-                            b.stats['points difference'] - a.liveStats['points difference'] ||
-                            a.teamNickname.localeCompare(b.teamNickname);
+                            b.stats['points difference'] - a.liveStats['points difference'];
                     }
 
                     return b.stats.noByePoints - a.liveStats.noByePoints || 
-                        b.stats['points difference'] - a.liveStats['points difference'] ||
-                        a.teamNickname.localeCompare(b.teamNickname);
+                        b.stats['points difference'] - a.liveStats['points difference'];
                 }
                 
                 if (b.liveStats) {
                     if (showByes) {
                         return b.liveStats.points - a.stats.points || 
-                            b.liveStats['points difference'] - a.stats['points difference'] ||
-                            a.teamNickname.localeCompare(b.teamNickname);
+                            b.liveStats['points difference'] - a.stats['points difference'];
                     }
 
                     return b.liveStats.noByePoints - a.stats.noByePoints || 
-                        b.liveStats['points difference'] - a.stats['points difference'] ||
-                        a.teamNickname.localeCompare(b.teamNickname);
+                        b.liveStats['points difference'] - a.stats['points difference'];
                 }
             }
             
             if (showByes) {
                 return b.stats.points - a.stats.points || 
-                    b.stats['points difference'] - a.stats['points difference'] ||
-                    a.teamNickname.localeCompare(b.teamNickname);
+                    b.stats['points difference'] - a.stats['points difference'];
             }
 
             return b.stats.noByePoints - a.stats.noByePoints || 
-                b.stats['points difference'] - a.stats['points difference'] ||
-                a.teamNickname.localeCompare(b.teamNickname);
+                b.stats['points difference'] - a.stats['points difference'];
         }));
     }
 
