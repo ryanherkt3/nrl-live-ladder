@@ -25,7 +25,7 @@ export default function LadderRow(
                 }
                 <span>{position}</span>
             </div>
-            <div className="w-[15%] sm:w-[8%] flex justify-center">
+            <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
                 <TeamImage imageLink='' teamKey={data.theme.key} />
             </div>
             <div className="w-[25%] sm:w-[15%] text-left">
@@ -36,7 +36,7 @@ export default function LadderRow(
                     }
                 </span>
             </div>
-            <div className="w-[9%] sm:w-[6%]">{statsData.played}</div>
+            <div className="w-[15%] sm:w-[6%]">{statsData.played}</div>
             <div className="hidden sm:block sm:w-[6%]">{statsData.wins}</div>
             <div className="hidden sm:block sm:w-[6%]">{statsData.drawn}</div>
             <div className="hidden sm:block sm:w-[6%]">{statsData.lost}</div>
@@ -45,13 +45,13 @@ export default function LadderRow(
             </div>
             <div className="hidden md:block w-[6%]">{statsData['points for']}</div>
             <div className="hidden md:block w-[6%]">{statsData['points against']}</div>
-            <div className="w-[9%] sm:w-[6%]">{statsData['points difference']}</div>
-            <div className="w-[15%] md:w-[8%] flex justify-center">
+            <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
+            <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
                     getNextFixture(data.next)
                 }
             </div>
-            <div className="w-[9%] sm:w-[6%] font-semibold">
+            <div className="w-[15%] sm:w-[6%] font-semibold">
                 {byePoints ? statsData.points : statsData.noByePoints}
             </div>
         </div>

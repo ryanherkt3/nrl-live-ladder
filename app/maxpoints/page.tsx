@@ -17,7 +17,14 @@ export default async function MaxPointsPage() {
     const firstPlaceMaxPts = getMaxPoints(topTeams[0].stats.lost, topTeams[0].stats.drawn);
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
-    const thClass = 'table-cell md:hidden text-centre md:text-left pb-4 font-semibold';
+    const minPointsForSpots = {
+        t2: getMaxPoints(topTeams[1].stats.lost, topTeams[1].stats.drawn),
+        t4: getMaxPoints(topTeams[4].stats.lost, topTeams[4].stats.drawn),
+        t8: getMaxPoints(bottomTeams[0].stats.lost, bottomTeams[0].stats.drawn),
+        elim: topTeams[7].stats.points,
+    };
+
+    const thClass = 'table-cell md:hidden text-centre md:text-left pb-4 font-semibold w-[20%]';
 
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
@@ -27,18 +34,18 @@ export default async function MaxPointsPage() {
             <table>
                 <tbody>
                     <tr className="text-md font-semibold text-center">
-                        <th style={{width: '15%'}} className="text-left pb-4 font-semibold">Team</th>
+                        <th className="text-left pb-4 font-semibold w-[15%]">Team</th>
                         <th className="hidden md:table-cell text-left pb-4 font-semibold">Points</th>
-                        <th style={{width: '20%'}} className={thClass}>Points</th>
-                        <th style={{width: '20%'}} className={thClass}>Max</th>
-                        <th style={{width: '20%'}} className={thClass}>Best</th>
+                        <th className={thClass}>Points</th>
+                        <th className={thClass}>Max</th>
+                        <th className={thClass}>Best</th>
                     </tr>
                     {
-                        getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, allTeams)
+                        getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
                     }
                     <tr style={{width: '100%'}} className="border-4 border-green-400"></tr>
                     {
-                        getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, allTeams)
+                        getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
                     }
                 </tbody>
             </table>
@@ -61,7 +68,8 @@ function getTableRows(
     teamList: Array<TeamData>,
     firstPlaceMaxPts: number,
     lastPlacePts: number,
-    allTeams: Array<TeamData>
+    allTeams: Array<TeamData>,
+    minPointsForSpots: any // TODO fix type
 ) {
     return teamList.map((team: TeamData) => {
         const currentPoints = team.stats.points;
@@ -71,20 +79,34 @@ function getTableRows(
         const bestFinish = allTeams.filter((team2: TeamData) => {
             return maxPoints < team2.stats.points;
         }).length + 1;
+
+        // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
+        let qualificationStatus = '';
+        if (maxPoints < minPointsForSpots.elim) {
+            qualificationStatus = '(E)';
+        }
+        else if (currentPoints > minPointsForSpots.t2) {
+            qualificationStatus = '(T2)';
+        }
+        else if (currentPoints > minPointsForSpots.t4) {
+            qualificationStatus = '(T4)';
+        }
+        else if (currentPoints > minPointsForSpots.t8) {
+            qualificationStatus = '(Q)';
+        }
         
         return (
             <tr key={team.teamNickname} className="text-md text-center">
-                <td style={{width: '15%'}} className="text-left font-semibold">
-                    <span className="hidden md:block">{team.teamNickname}</span>
+                <td className="text-left font-semibold w-[15%]">
+                    <span className="hidden md:block">{team.teamNickname} {qualificationStatus}</span>
                     <span className="block md:hidden">
-                        {
-                            getShortCode(team.teamNickname)
-                        }
+                        { getShortCode(team.teamNickname) } {qualificationStatus}
                     </span>
                 </td>
                 {
                     getPointCells(
-                        lastPlacePts, firstPlaceMaxPts, currentPoints, maxPoints, cssNickname, bestFinish
+                        lastPlacePts, firstPlaceMaxPts, currentPoints, 
+                        maxPoints, cssNickname, bestFinish, qualificationStatus
                     )
                 }
             </tr>
@@ -99,32 +121,34 @@ function getPointCells(
     maxPoints: number,
     nickname: string,
     bestFinish: number,
+    qualificationStatus: string,
 ) {
     const pointCells = [];
+    const isEliminated = qualificationStatus.includes('E');
     
-    // TODO if qualified put (T2/4/8 next to name)
-    const bgClass = `hidden md:table-cell ${bestFinish >= 9 ? 'bg-faded' : `bg-${nickname}`} font-semibold ${nickname === 'broncos' && bestFinish < 9 ? 'text-black' : 'text-white'}`;
+    // TODO make clsx instead
+    const bgClass = `hidden md:table-cell w-[10px] ${isEliminated ? 'bg-faded' : `bg-${nickname}`} font-semibold ${nickname === 'broncos' && !isEliminated ? 'text-black' : 'text-white'}`;
 
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
             pointCells.push(
-                <td style={{width: '10px'}} className={bgClass}>
+                <td className={bgClass}>
                     {i === currentPts || i === maxPoints ? i : ''}
                 </td>
             )
         }
         else {
             pointCells.push(
-                <td style={{width: '10px'}} className='hidden md:table-cell'></td>
+                <td className='hidden md:table-cell w-[10px]'></td>
             )
         }
     }
 
-    const tdClass = 'table-cell md:hidden text-centre md:text-left pb-1 font-semibold';
+    const tdClass = 'table-cell md:hidden text-centre md:text-left pb-1 font-semibold w-[20%]';
     pointCells.push(
-        <td style={{width: '20%'}} className={tdClass}>{currentPts}</td>,
-        <td style={{width: '20%'}} className={tdClass}>{maxPoints}</td>,
-        <td style={{width: '20%'}} className={tdClass}>
+        <td className={tdClass}>{currentPts}</td>,
+        <td className={tdClass}>{maxPoints}</td>,
+        <td className={tdClass}>
             {
                 convertNumberToPosition(bestFinish)
             }

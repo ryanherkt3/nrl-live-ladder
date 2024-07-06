@@ -16,7 +16,5 @@ export default function HomePage() {
         return <SkeletonLadder />;
     }
 
-    return (
-        <Ladder nrlInfo={nrlInfo} />
-    );
+    return <Ladder nrlInfo={nrlInfo} />;
 }

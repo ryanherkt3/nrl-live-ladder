@@ -1,22 +1,43 @@
-import { Match, ByeTeam, TeamData } from "../lib/definitions";
+import { Match, ByeTeam, TeamData, DrawInfo } from "../lib/definitions";
 import RoundFixture from "./round-fixture";
 import TeamImage from "./team-image";
 
 export default function Fixtures(
     { 
-        currentRound,
+        drawInfo,
         fixtures,
         ladder
     }:
     { 
-        currentRound: any,
+        drawInfo: DrawInfo,
         fixtures: Array<Match>,
         ladder: Array<TeamData>
     }
 ) {
+    const roundNum = drawInfo.selectedRoundId;
+
+    const lastRoundNum = 27;
+    const weeksOfFinalsFootball = 4;
+    const grandFinalRoundNum = lastRoundNum + weeksOfFinalsFootball;
+
+    const inFinalsFootball = roundNum >= lastRoundNum + 1;
+
+    let roundHeading = `Round ${roundNum} Fixtures`;
+    if (roundNum >= lastRoundNum + 1 && roundNum <= grandFinalRoundNum - 1) {
+        roundHeading = `Finals Week ${roundNum - lastRoundNum} Fixtures`;
+    }
+    else if (roundNum === grandFinalRoundNum) {
+        roundHeading = 'GRAND FINAL';
+    }
+
+    // No fixtures to display in off-season
+    if (roundNum > grandFinalRoundNum) {
+        return null; 
+    }
+    
     return (
         <div className="flex flex-col gap-4">
-            <div className="text-2xl font-semibold text-center">Round {currentRound.selectedRoundId} Fixtures</div>
+            <div className="text-2xl font-semibold text-center">{roundHeading}</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
                 fixtures.map((fixture: Match) => {
@@ -35,16 +56,29 @@ export default function Fixtures(
                     );
                 })
             }
-            <div className="flex flex-col">
+            {
+                getByesSection(drawInfo, inFinalsFootball)
+            }
+        </div>
+    );
+}
+
+function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
+    // No teams on byes in finals football
+    if (inFinalsFootball) {
+        return null;
+    }
+    
+    return (
+        <div className="flex flex-col">
                 <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
                 <div className="flex flex-row gap-6 justify-center py-2">
                     {
-                        currentRound.byes.map((team: ByeTeam) => {
+                        drawInfo.byes.map((team: ByeTeam) => {
                             return <TeamImage key={team.theme.key} imageLink='' teamKey={team.theme.key} />;
                         })
                     }
                 </div>
             </div>
-        </div>
     );
 }

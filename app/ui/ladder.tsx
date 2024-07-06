@@ -1,69 +1,80 @@
 import LadderRow from "./ladder-row";
-import { TeamData, Match } from "../lib/definitions";
+import { TeamData, Match, APIInfo } from "../lib/definitions";
 import Fixtures from "./fixtures";
-import ByeToggleSection from "./byetoggle";
+import ByeToggleSection from "./bye-toggle";
 import { useState } from "react";
 
-export default function Ladder({nrlInfo}: {nrlInfo: any}) {
+export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     const [allTeams, setAllTeams] = useState(nrlInfo.ladder.positions);
     const [byePoints, setByePoints] = useState(true);
 
-    const currentRound = nrlInfo.draw;
-    const fixtures = currentRound.fixtures;
+    const drawInfo = nrlInfo.draw;
+    const fixtures = drawInfo.fixtures;
 
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
     })[0];
-
+    
     const updateAllTeams = (showByes: boolean) => {
         setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             if (liveMatch) {
                 if (b.liveStats && a.liveStats) {
                     if (byePoints) {
                         return b.liveStats.points - a.liveStats.points || 
-                            b.liveStats['points difference'] - a.liveStats['points difference'];
+                            b.liveStats['points difference'] - a.liveStats['points difference'] ||
+                            b.teamNickname.localeCompare(a.teamNickname);
                     }
 
                     return b.liveStats.noByePoints - a.liveStats.noByePoints || 
-                        b.liveStats['points difference'] - a.liveStats['points difference'];
+                        b.liveStats['points difference'] - a.liveStats['points difference'] ||
+                        b.teamNickname.localeCompare(a.teamNickname);
                 }
                     
                 if (a.liveStats) {
                     if (showByes) {
                         return b.stats.points - a.liveStats.points || 
-                            b.stats['points difference'] - a.liveStats['points difference'];
+                            b.stats['points difference'] - a.liveStats['points difference'] ||
+                            b.teamNickname.localeCompare(a.teamNickname);
                     }
 
                     return b.stats.noByePoints - a.liveStats.noByePoints || 
-                        b.stats['points difference'] - a.liveStats['points difference'];
+                        b.stats['points difference'] - a.liveStats['points difference'] ||
+                        b.teamNickname.localeCompare(a.teamNickname);
                 }
                 
                 if (b.liveStats) {
                     if (showByes) {
                         return b.liveStats.points - a.stats.points || 
-                            b.liveStats['points difference'] - a.stats['points difference'];
+                            b.liveStats['points difference'] - a.stats['points difference'] ||
+                            b.teamNickname.localeCompare(a.teamNickname);
                     }
 
                     return b.liveStats.noByePoints - a.stats.noByePoints || 
-                        b.liveStats['points difference'] - a.stats['points difference'];
+                        b.liveStats['points difference'] - a.stats['points difference'] ||
+                        b.teamNickname.localeCompare(a.teamNickname);
                 }
             }
             
             if (showByes) {
                 return b.stats.points - a.stats.points || 
-                    b.stats['points difference'] - a.stats['points difference'];
+                    b.stats['points difference'] - a.stats['points difference'] ||
+                    b.teamNickname.localeCompare(a.teamNickname);
             }
 
             return b.stats.noByePoints - a.stats.noByePoints || 
-                b.stats['points difference'] - a.stats['points difference'];
+                b.stats['points difference'] - a.stats['points difference'] ||
+                b.teamNickname.localeCompare(a.teamNickname);
         }));
     }
+
+    // Do not update ladder if finals football is on 
+    const isFinalsFootball = drawInfo.selectedRoundId > 27;
 
     // Update ladder based on live match before rendering it
     const [homeScore, setHomeScore] = useState(-1);
     const [awayScore, setAwayScore] = useState(-1);
 
-    if (liveMatch) {
+    if (liveMatch && !isFinalsFootball) {
         // Only update stats if either score has changed
         if (liveMatch.homeTeam.score !== homeScore || liveMatch.awayTeam.score !== awayScore) {
             if (liveMatch.homeTeam.score !== homeScore) {
@@ -88,32 +99,56 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     }
 
     const updateByePoints = (newValue: boolean) => {
+        // Do not set if the value is the same
         if (newValue === byePoints) {
-            return; // do not set
+            return; 
         }
         
         setByePoints(!byePoints);
         updateAllTeams(!byePoints);
     }
+
+    // TODO update ladder if matchMode post, matchState fulltime but API not updated (bug appears on page refresh)
+    // check if matches played has incremented - if not update stats (not liveStats)
+    // let completedMatchNotUpdated = fixtures.filter((fixture: Match) => {
+    //     return fixture.matchMode === 'Post' && fixture.matchState === 'FullTime';
+    // });
+    // completedMatchNotUpdated = completedMatchNotUpdated[completedMatchNotUpdated.length - 1];
+
+    // if (completedMatchNotUpdated) {
+    //     const teams = allTeams.filter((team: TeamData) => {
+    //         team.designation = completedMatchNotUpdated.homeTeam.nickName === team.teamNickname ? 'homeTeam' : 'awayTeam';
+            
+    //         return completedMatchNotUpdated.awayTeam.nickName === team.teamNickname ||
+    //             completedMatchNotUpdated.homeTeam.nickName === team.teamNickname;
+    //     });
+
+    //     // ...
+    // }
     
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
-            <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
+            {
+                // Do not show bye toggle if in first or last round
+                [1, 27].includes(drawInfo.selectedRoundId) ? 
+                    null : 
+                    <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
+            }
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
-                    <div className="w-[10%] md:w-[5%]">Pos</div>
-                    <div className="w-[15%] sm:w-[8%]">Team</div>
+                    <div className="w-[10%] md:w-[5%]">#</div>
+                    <div className="hidden sm:block w-[15%] sm:w-[8%]">Team</div>
                     <div className="w-[25%] sm:w-[15%]"></div>
-                    <div className="w-[9%] sm:w-[6%]">Pld</div>
+                    <div className="w-[15%] sm:w-[6%]">P</div>
                     <div className="hidden sm:block sm:w-[6%]">W</div>
                     <div className="hidden sm:block sm:w-[6%]">D</div>
                     <div className="hidden sm:block sm:w-[6%]">L</div>
                     <div className="hidden sm:block sm:w-[6%]">B</div>
                     <div className="hidden md:block w-[6%]">PF</div>
                     <div className="hidden md:block w-[6%]">PA</div>
-                    <div className="w-[9%] sm:w-[6%]">PD</div>
-                    <div className="w-[15%] md:w-[8%]">Next</div>
-                    <div className="w-[9%] sm:w-[6%]">Pts</div>
+                    <div className="hidden xs:block w-[15%] sm:w-[6%]">PD</div>
+                    <div className="w-[25%] sm:w-[15%] md:w-[8%]">Next</div>
+                    <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
                     getLadderRow(allTeams.slice(0,8), liveMatch, 1, byePoints)
@@ -123,7 +158,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                     getLadderRow(allTeams.slice(8), liveMatch, 9, byePoints)
                 }
             </div>
-            <Fixtures currentRound={currentRound} fixtures={fixtures} ladder={allTeams} />
+            <Fixtures drawInfo={drawInfo} fixtures={fixtures} ladder={allTeams} />
         </div>
     );
 }
