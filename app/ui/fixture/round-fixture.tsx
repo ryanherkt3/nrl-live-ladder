@@ -1,10 +1,11 @@
 'use client';
 
 import clsx from "clsx";
-import { Match, TeamData } from "../lib/definitions";
-import TeamImage from "./team-image";
+import { Match, TeamData } from "../../lib/definitions";
 import moment from "moment";
-import { getNumberSuffix } from "../lib/utils";
+import { getNumberSuffix } from "../../lib/utils";
+import Score from "./score";
+import TeamSection from "./team-section";
 
 export default function RoundFixture(
     { 
@@ -134,22 +135,4 @@ function getMatchContext(matchData: Match) {
     }
 
     return null;
-}
-
-// Internal components
-
-function Score({score, winCondition}: {score: number, winCondition: boolean}) {
-    return <div className={clsx('text-3xl', {'font-semibold': winCondition})}>{score}</div>;
-}
-
-function TeamSection({teamName, position, imgKey} : {teamName: string, position: string, imgKey: string}) {
-    return (
-        <div className="flex flex-row gap-6 pb-0 items-center justify-center w-full md:w-[33%]">
-            <div className="flex flex-col text-center order-1 md:order-0 md:w-[35%]">
-                <div className="font-semibold">{teamName}</div>
-                <div>{position}</div>
-            </div>
-            <TeamImage imageLink='' teamKey={imgKey} />
-        </div>
-    )
 }

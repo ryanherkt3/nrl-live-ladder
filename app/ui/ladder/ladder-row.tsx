@@ -1,6 +1,6 @@
-import { TeamData, NextTeam } from "../lib/definitions";
-import { getShortCode } from "../lib/utils";
-import TeamImage from "./team-image";
+import { TeamData, NextTeam } from "../../lib/definitions";
+import { getShortCode } from "../../lib/utils";
+import TeamImage from "../team-image";
 
 export default function LadderRow(
     { 

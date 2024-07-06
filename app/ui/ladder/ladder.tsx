@@ -1,7 +1,7 @@
 import LadderRow from "./ladder-row";
-import { TeamData, Match, APIInfo } from "../lib/definitions";
-import Fixtures from "./fixtures";
-import ByeToggleSection from "./bye-toggle";
+import { TeamData, Match, APIInfo } from "../../lib/definitions";
+import Fixtures from "../fixture/fixtures";
+import ByeToggleSection from "../bye-toggle";
 import { useState } from "react";
 
 export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
@@ -22,48 +22,48 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
                     if (byePoints) {
                         return b.liveStats.points - a.liveStats.points || 
                             b.liveStats['points difference'] - a.liveStats['points difference'] ||
-                            b.teamNickname.localeCompare(a.teamNickname);
+                            a.teamNickname.localeCompare(b.teamNickname);
                     }
 
                     return b.liveStats.noByePoints - a.liveStats.noByePoints || 
                         b.liveStats['points difference'] - a.liveStats['points difference'] ||
-                        b.teamNickname.localeCompare(a.teamNickname);
+                        a.teamNickname.localeCompare(b.teamNickname);
                 }
                     
                 if (a.liveStats) {
                     if (showByes) {
                         return b.stats.points - a.liveStats.points || 
                             b.stats['points difference'] - a.liveStats['points difference'] ||
-                            b.teamNickname.localeCompare(a.teamNickname);
+                            a.teamNickname.localeCompare(b.teamNickname);
                     }
 
                     return b.stats.noByePoints - a.liveStats.noByePoints || 
                         b.stats['points difference'] - a.liveStats['points difference'] ||
-                        b.teamNickname.localeCompare(a.teamNickname);
+                        a.teamNickname.localeCompare(b.teamNickname);
                 }
                 
                 if (b.liveStats) {
                     if (showByes) {
                         return b.liveStats.points - a.stats.points || 
                             b.liveStats['points difference'] - a.stats['points difference'] ||
-                            b.teamNickname.localeCompare(a.teamNickname);
+                            a.teamNickname.localeCompare(b.teamNickname);
                     }
 
                     return b.liveStats.noByePoints - a.stats.noByePoints || 
                         b.liveStats['points difference'] - a.stats['points difference'] ||
-                        b.teamNickname.localeCompare(a.teamNickname);
+                        a.teamNickname.localeCompare(b.teamNickname);
                 }
             }
             
             if (showByes) {
                 return b.stats.points - a.stats.points || 
                     b.stats['points difference'] - a.stats['points difference'] ||
-                    b.teamNickname.localeCompare(a.teamNickname);
+                    a.teamNickname.localeCompare(b.teamNickname);
             }
 
             return b.stats.noByePoints - a.stats.noByePoints || 
                 b.stats['points difference'] - a.stats['points difference'] ||
-                b.teamNickname.localeCompare(a.teamNickname);
+                a.teamNickname.localeCompare(b.teamNickname);
         }));
     }
 

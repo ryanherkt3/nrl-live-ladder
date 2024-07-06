@@ -1,6 +1,6 @@
-import { Match, ByeTeam, TeamData, DrawInfo } from "../lib/definitions";
+import { Match, ByeTeam, TeamData, DrawInfo } from "../../lib/definitions";
 import RoundFixture from "./round-fixture";
-import TeamImage from "./team-image";
+import TeamImage from "../team-image";
 
 export default function Fixtures(
     { 

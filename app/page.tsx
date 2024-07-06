@@ -1,6 +1,6 @@
 'use client';
 
-import Ladder from "./ui/ladder";
+import Ladder from "./ui/ladder/ladder";
 import useSWR from 'swr';
 import axios from 'axios';
 import SkeletonLadder from "./ui/skeletons/skeleton-ladder";

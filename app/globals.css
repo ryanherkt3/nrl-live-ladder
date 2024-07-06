@@ -20,7 +20,7 @@
     100% { background-color: #dc2626; }
 }
 
-/* Skeletons */
+/* Shimmer */
 
 .shimmer {
     background: linear-gradient(-45deg, #eee 40%, #fafafa 50%, #eee 60%);
@@ -55,116 +55,77 @@ td {
     padding-bottom: 4px;
 }
 
-/* Table borders */
+/* Table borders & backgrounds */
 
 td.bg-broncos {
-    border: 2px solid #ffce34;
+    background: #FFCE34;
+    border: 2px solid #FFCE34;
 }
 td.bg-raiders {
+    background: #0C8E48;
     border: 2px solid #0C8E48;
 }
 td.bg-bulldogs {
+    background: #042471;
     border: 2px solid #042471;
 }
 td.bg-sharks {
+    background: #0772A8;
     border: 2px solid #0772A8;
 }
 td.bg-dolphins {
+    background: #C7181D;
     border: 2px solid #C7181D;
 }
 td.bg-titans {
+    background: #0955A2;
     border: 2px solid #0955A2;
 }
 td.bg-seaeagles {
+    background: #541739;
     border: 2px solid #541739;
 }
 td.bg-storm {
+    background: #4F378B;
     border: 2px solid #4F378B;
 }
 td.bg-knights {
+    background: #022789;
     border: 2px solid #022789;
 }
 td.bg-cowboys {
+    background: #111B37;
     border: 2px solid #111B37;
 }
 td.bg-eels {
+    background: #042E8E;
     border: 2px solid #042E8E;
 }
 td.bg-panthers {
+    background: #231F24;
     border: 2px solid #231F24;
 }
 td.bg-rabbitohs {
+    background: #E72E2F;
     border: 2px solid #E72E2F;
 }
 td.bg-dragons {
+    background: #AF1E29;
     border: 2px solid #AF1E29;
 }
 td.bg-roosters {
+    background: #061E45;
     border: 2px solid #061E45;
 }
 td.bg-warriors {
+    background: #008445;
     border: 2px solid #008445;
 }
 td.bg-weststigers {
+    background: #DF6A03;
     border: 2px solid #DF6A03;
 }
 td.bg-faded {
-    border: 2px solid #9ca3af;
-}
-
-/* Backgrounds */
-
-.bg-broncos {
-    background-color: #ffce34;
-}
-.bg-raiders {
-    background-color: #0C8E48;
-}
-.bg-bulldogs {
-    background-color: #042471;
-}
-.bg-sharks {
-    background-color: #0772A8;
-}
-.bg-dolphins {
-    background-color: #C7181D;
-}
-.bg-titans {
-    background-color: #0955A2;
-}
-.bg-seaeagles {
-    background-color: #541739;
-}
-.bg-storm {
-    background-color: #4F378B;
-}
-.bg-knights {
-    background-color: #022789;
-}
-.bg-cowboys {
-    background-color: #111B37;
-}
-.bg-eels {
-    background-color: #042E8E;
-}
-.bg-panthers {
-    background-color: #231F24;
-}
-.bg-rabbitohs {
-    background-color: #E72E2F;
-}
-.bg-dragons {
-    background-color: #AF1E29;
-}
-.bg-roosters {
-    background-color: #061E45;
-}
-.bg-warriors {
-    background-color: #008445;
-}
-.bg-weststigers {
-    background-color: #DF6A03;
-}
-.bg-faded {
-    background-color: #9ca3af;
+    background: #9CA3AF;
+    border: 2px solid #9CA3AF;
 }

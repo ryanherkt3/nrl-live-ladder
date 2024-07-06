@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { getNRLInfo, getShortCode } from "../lib/utils";
 import { TeamData } from "../lib/definitions";
+import clsx from "clsx";
 
 export const metadata: Metadata = {
     title: 'NRL Max Points',
@@ -125,21 +126,33 @@ function getPointCells(
 ) {
     const pointCells = [];
     const isEliminated = qualificationStatus.includes('E');
-    
-    // TODO make clsx instead
-    const bgClass = `hidden md:table-cell w-[10px] ${isEliminated ? 'bg-faded' : `bg-${nickname}`} font-semibold ${nickname === 'broncos' && !isEliminated ? 'text-black' : 'text-white'}`;
 
+    let commonClasses = 'hidden md:table-cell w-[10px]';
+    
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
+            const broncosAndNotEliminated = nickname === 'broncos' && !isEliminated;
             pointCells.push(
-                <td className={bgClass}>
+                <td 
+                    className={
+                        clsx(
+                            `${commonClasses} font-semibold`,
+                            {
+                                'bg-faded': isEliminated,
+                                [`bg-${nickname}`]: !isEliminated,
+                                'text-black': broncosAndNotEliminated,
+                                'text-white': !broncosAndNotEliminated,
+                            }
+                        )        
+                    }
+                >
                     {i === currentPts || i === maxPoints ? i : ''}
                 </td>
             )
         }
         else {
             pointCells.push(
-                <td className='hidden md:table-cell w-[10px]'></td>
+                <td className={commonClasses}></td>
             )
         }
     }
