@@ -25,31 +25,20 @@ export default async function MaxPointsPage() {
         elim: topTeams[7].stats.points,
     };
 
-    const thClass = 'table-cell md:hidden text-centre md:text-left pb-4 font-semibold w-[20%]';
-
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
             <div className="text-xl font-semibold text-center">
                 See where your team stands in the race for Finals Football
             </div>
-            <table>
-                <tbody>
-                    <tr className="text-md font-semibold text-center">
-                        <th className="text-left pb-4 font-semibold w-[15%]">Team</th>
-                        <th className="hidden md:table-cell text-left pb-4 font-semibold">Points</th>
-                        <th className={thClass}>Points</th>
-                        <th className={thClass}>Max</th>
-                        <th className={thClass}>Best</th>
-                    </tr>
-                    {
-                        getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
-                    }
-                    <tr style={{width: '100%'}} className="border-4 border-green-400"></tr>
-                    {
-                        getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
-                    }
-                </tbody>
-            </table>
+            <div className="flex flex-col">
+                {
+                    getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
+                }
+                <div className="border-4 border-green-400"></div>
+                {
+                    getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
+                }
+            </div>
         </div>
     );
 }
@@ -75,11 +64,9 @@ function getTableRows(
     return teamList.map((team: TeamData) => {
         const currentPoints = team.stats.points;
         const maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
-        const cssNickname = team.teamNickname.toLowerCase().replace(' ', '');
-
-        const bestFinish = allTeams.filter((team2: TeamData) => {
-            return maxPoints < team2.stats.points;
-        }).length + 1;
+        
+        const nickname = team.teamNickname;
+        const cssNickname = nickname.toLowerCase().replace(' ', '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
@@ -97,20 +84,24 @@ function getTableRows(
         }
         
         return (
-            <tr key={team.teamNickname} className="text-md text-center">
-                <td className="text-left font-semibold w-[15%]">
-                    <span className="hidden md:block">{team.teamNickname} {qualificationStatus}</span>
-                    <span className="block md:hidden">
-                        { getShortCode(team.teamNickname) } {qualificationStatus}
+            <div key={nickname} className="flex flex-row text-md text-center">
+                <div className="text-left flex items-center font-semibold w-[15%] mr-4">
+                    <span className="hidden md:block">
+                        {
+                            nickname === 'Wests Tigers' ? 'Tigers' : nickname
+                        } {qualificationStatus}
                     </span>
-                </td>
+                    <span className="block md:hidden">
+                        { getShortCode(nickname) } {qualificationStatus}
+                    </span>
+                </div>
                 {
                     getPointCells(
                         lastPlacePts, firstPlaceMaxPts, currentPoints, 
-                        maxPoints, cssNickname, bestFinish, qualificationStatus
+                        maxPoints, cssNickname, qualificationStatus
                     )
                 }
-            </tr>
+            </div>
         ) 
     });
 }
@@ -121,22 +112,21 @@ function getPointCells(
     currentPts: number,
     maxPoints: number,
     nickname: string,
-    bestFinish: number,
     qualificationStatus: string,
 ) {
     const pointCells = [];
     const isEliminated = qualificationStatus.includes('E');
 
-    let commonClasses = 'hidden md:table-cell w-[10px]';
+    let commonClasses = 'w-[2%] sm:w-[2.5%] sm:w-[3%] py-1';
     
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
             const broncosAndNotEliminated = nickname === 'broncos' && !isEliminated;
             pointCells.push(
-                <td 
+                <div 
                     className={
                         clsx(
-                            `${commonClasses} font-semibold`,
+                            `${commonClasses} relative font-semibold`,
                             {
                                 'bg-faded': isEliminated,
                                 [`bg-${nickname}`]: !isEliminated,
@@ -146,40 +136,29 @@ function getPointCells(
                         )        
                     }
                 >
-                    {i === currentPts || i === maxPoints ? i : ''}
-                </td>
+                    <span 
+                        className={
+                            clsx(
+                                {
+                                    'left-2': i === currentPts,
+                                    'right-5 sm:right-3 md:right-2': i === maxPoints,
+                                    'absolute z-20': i === currentPts || i === maxPoints,
+                                    'relative': i !== currentPts || i !== maxPoints,
+                                }
+                            )        
+                        }
+                    >
+                        {i === currentPts || i === maxPoints ? i : ''}
+                    </span>
+                </div>
             )
         }
         else {
             pointCells.push(
-                <td className={commonClasses}></td>
+                <div className={commonClasses}></div>
             )
         }
     }
-
-    const tdClass = 'table-cell md:hidden text-centre md:text-left pb-1 font-semibold w-[20%]';
-    pointCells.push(
-        <td className={tdClass}>{currentPts}</td>,
-        <td className={tdClass}>{maxPoints}</td>,
-        <td className={tdClass}>
-            {
-                convertNumberToPosition(bestFinish)
-            }
-        </td>,
-    )
     
     return pointCells;
-}
-
-function convertNumberToPosition(pos: number) {
-    switch(pos) {
-        case 1:
-            return `1st`;
-        case 2:
-            return `2nd`;
-        case 3:
-            return `3rd`;
-        default:
-            return `${pos}th`;
-    }
 }

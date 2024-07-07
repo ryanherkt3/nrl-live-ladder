@@ -41,91 +41,79 @@
     to {
        background-position-x: 0%
     }
- }
-
-/* Table */
-
-table {
-    width: 100%;
-    table-layout: fixed;
-}
-
-td {
-    padding-top: 4px;
-    padding-bottom: 4px;
 }
 
 /* Table borders & backgrounds */
 
-td.bg-broncos {
+.bg-broncos {
     background: #FFCE34;
     border: 2px solid #FFCE34;
 }
-td.bg-raiders {
+.bg-raiders {
     background: #0C8E48;
     border: 2px solid #0C8E48;
 }
-td.bg-bulldogs {
+.bg-bulldogs {
     background: #042471;
     border: 2px solid #042471;
 }
-td.bg-sharks {
+.bg-sharks {
     background: #0772A8;
     border: 2px solid #0772A8;
 }
-td.bg-dolphins {
+.bg-dolphins {
     background: #C7181D;
     border: 2px solid #C7181D;
 }
-td.bg-titans {
+.bg-titans {
     background: #0955A2;
     border: 2px solid #0955A2;
 }
-td.bg-seaeagles {
+.bg-seaeagles {
     background: #541739;
     border: 2px solid #541739;
 }
-td.bg-storm {
+.bg-storm {
     background: #4F378B;
     border: 2px solid #4F378B;
 }
-td.bg-knights {
+.bg-knights {
     background: #022789;
     border: 2px solid #022789;
 }
-td.bg-cowboys {
+.bg-cowboys {
     background: #111B37;
     border: 2px solid #111B37;
 }
-td.bg-eels {
+.bg-eels {
     background: #042E8E;
     border: 2px solid #042E8E;
 }
-td.bg-panthers {
+.bg-panthers {
     background: #231F24;
     border: 2px solid #231F24;
 }
-td.bg-rabbitohs {
+.bg-rabbitohs {
     background: #E72E2F;
     border: 2px solid #E72E2F;
 }
-td.bg-dragons {
+.bg-dragons {
     background: #AF1E29;
     border: 2px solid #AF1E29;
 }
-td.bg-roosters {
+.bg-roosters {
     background: #061E45;
     border: 2px solid #061E45;
 }
-td.bg-warriors {
+.bg-warriors {
     background: #008445;
     border: 2px solid #008445;
 }
-td.bg-weststigers {
+.bg-weststigers {
     background: #DF6A03;
     border: 2px solid #DF6A03;
 }
-td.bg-faded {
+.bg-faded {
     background: #9CA3AF;
     border: 2px solid #9CA3AF;
 }
