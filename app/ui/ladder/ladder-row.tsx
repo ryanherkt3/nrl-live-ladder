@@ -21,9 +21,8 @@ export default function LadderRow(
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
                 {
-                    getLiveStatus(isPlaying)
+                    isPlaying ? getLiveStatus(isPlaying) : <span>{position}</span>
                 }
-                <span>{position}</span>
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
                 <TeamImage imageLink='' teamKey={data.theme.key} />
@@ -73,7 +72,7 @@ function getNextFixture(nextFixture: NextTeam) {
 
 function getLiveStatus(isPlaying: boolean) {
     if (isPlaying) {
-        return <div className="w-6 border rounded-full live-match border-red-600"></div>;
+        return <div className="w-6 h-6 border rounded-full live-match border-red-600"></div>;
     }
 
     return null;

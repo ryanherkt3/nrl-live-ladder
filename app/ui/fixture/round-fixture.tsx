@@ -105,7 +105,9 @@ function getMatchState(matchData: Match, winningTeam: string) {
 function getMatchContext(matchData: Match) {
     if (matchData.matchState === 'FullTime') {
         return (
-            <div className="border rounded-md p-1 border-green-400 bg-green-400 text-white">FULL TIME</div>
+            <div className="border rounded-md px-2 py-1 w-fit border-green-400 bg-green-400 text-white">
+                FULL TIME
+            </div>
         );
     }
 
@@ -131,7 +133,9 @@ function getMatchContext(matchData: Match) {
     if (matchData.matchMode === 'Live') {
         return (
             <div className="flex flex-col gap-2 items-center text-md">
-                <div className="border rounded-md p-1 border-red-500 bg-red-500 text-white">{matchPeriod}</div>
+                <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
+                    {matchPeriod}
+                </div>
                 <div>{matchData.clock.gameTime}</div>
             </div>
         )
