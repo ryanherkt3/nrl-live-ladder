@@ -172,6 +172,14 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
     const homeTeamWinning = match.homeTeam.score > match.awayTeam.score;
     const awayTeamWinning = match.homeTeam.score < match.awayTeam.score;
 
+    const homeWin = isHomeTeam && homeTeamWinning;
+    const awayWin = !isHomeTeam && awayTeamWinning;
+    const winning = homeWin || awayWin;
+
+    const homeLost = isHomeTeam && !homeTeamWinning && !draw;
+    const awayLost = !isHomeTeam && homeTeamWinning;
+    const losing = homeLost || awayLost;
+
     // Set team's live stats if not defined (deep clone team.stats - no reference to it)
     if (!team.liveStats) {
         team.liveStats = JSON.parse(JSON.stringify(team.stats));
@@ -179,29 +187,82 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
 
     const statsToUpdate = updateLive ? team.liveStats : team.stats;
 
-    statsToUpdate.played = statsToUpdate.played + 1;
+    if (updateLive) {
+        if (team.liveStats.played === team.stats.played) {
+            team.liveStats.played += 1;
+        }
 
-    statsToUpdate.wins = (isHomeTeam && homeTeamWinning) || (!isHomeTeam && awayTeamWinning) ? 
-        (statsToUpdate.wins + 1) : statsToUpdate.wins;
+        if (team.liveStats.wins - team.stats.wins === 1 && !winning) {
+            // Win to draw/loss
+            team.liveStats.wins = team.stats.wins - 1;
+        }
+        else if (team.liveStats.wins === team.stats.wins && winning) {
+            // Draw/loss to win
+            team.liveStats.wins = team.stats.wins + 1;
+        }
 
-    statsToUpdate.drawn = draw ? (statsToUpdate.drawn + 1) : statsToUpdate.drawn;
+        if (team.liveStats.drawn === team.stats.drawn && draw) {
+            // Win/loss to draw
+            team.liveStats.drawn = team.stats.drawn + 1;
+        }
+        else if (team.liveStats.drawn - team.stats.drawn === 1 && !draw) {
+            // Draw to win/loss
+            team.liveStats.drawn = team.stats.drawn - 1;
+        }
 
-    statsToUpdate.lost = (isHomeTeam && !homeTeamWinning && !draw) || (!isHomeTeam && !awayTeamWinning && !draw) ?
-        (statsToUpdate.lost + 1) : statsToUpdate.lost;
+        if (team.liveStats.lost - team.stats.lost === 1 && (draw || winning)) {
+            // Loss to win/draw
+            team.liveStats.lost = team.stats.lost - 1;
+        }
+        else if (team.liveStats.lost === team.stats.lost && losing) {
+            // Win/draw to loss
+            team.liveStats.lost = team.stats.lost + 1;
+        }
 
-    statsToUpdate['points for'] = statsToUpdate['points for'] + (
-        isHomeTeam ? match.homeTeam.score : match.awayTeam.score
-    );
-    statsToUpdate['points against'] = statsToUpdate['points against'] + (
-        isHomeTeam ? match.awayTeam.score : match.homeTeam.score
-    );
-    statsToUpdate['points difference'] = statsToUpdate['points for'] - statsToUpdate['points against'];
+        team.liveStats['points for'] = team.stats['points for'] + (
+            isHomeTeam ? match.homeTeam.score : match.awayTeam.score
+        );
+        team.liveStats['points against'] = team.stats['points against'] + (
+            isHomeTeam ? match.awayTeam.score : match.homeTeam.score
+        );
+        team.liveStats['points difference'] = team.liveStats['points for'] - team.liveStats['points against'];
 
-    statsToUpdate.points = isHomeTeam ? 
-        (homeTeamWinning ? (statsToUpdate.points + 2) : 
-            (draw ? (statsToUpdate.points + 1) : statsToUpdate.points)) :
-        (awayTeamWinning ? (statsToUpdate.points + 2) : 
-                (draw ? (statsToUpdate.points + 1) : statsToUpdate.points));
+        if (team.liveStats.points === team.stats.points) {
+            if (winning) {
+                // Loss to win
+                team.liveStats.points = team.stats.points + 2;
+            }
+            else if (draw) {
+                // Loss to draw
+                team.liveStats.points = team.stats.points + 1;
+            }
+        } 
+        else if ((team.liveStats.points - team.stats.points === 2 && draw) || 
+            (team.liveStats.points - team.stats.points === 1 && losing)) {
+            // 1. Win to draw
+            // 2. Draw to loss
+            team.liveStats.points = team.stats.points - 1;
+        } 
+        else if (team.liveStats.points - team.stats.points === 1 && winning) {
+            // Draw to win
+            team.liveStats.points = team.stats.points + 1;
+        }
+    }
+    else {
+        const teamScore = (isHomeTeam ? match.homeTeam.score : match.awayTeam.score) || 0;
+        const oppScore = (isHomeTeam ? match.awayTeam.score : match.homeTeam.score) || 0;
+        
+        team.stats.played += 1;
+        team.stats.wins = winning ? team.stats.wins + 1 : team.stats.wins;
+        team.stats.drawn = draw ? team.stats.drawn + 1 : team.stats.drawn;
+        team.stats.lost = losing ? team.stats.lost + 1 : team.stats.lost;
+        team.stats['points for'] += teamScore;
+        team.stats['points against'] += oppScore;
+        team.stats['points difference'] += teamScore - oppScore;
+        team.stats.points = winning ?
+            team.stats.points + 2 :
+            (draw ? team.stats.points + 1 : team.stats.points);
+    }
 
     statsToUpdate.byes = statsToUpdate.byes;
     statsToUpdate.noByePoints = (statsToUpdate.wins * 2) + statsToUpdate.drawn;

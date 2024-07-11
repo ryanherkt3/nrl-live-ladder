@@ -71,14 +71,14 @@ function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
     
     return (
         <div className="flex flex-col">
-                <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
-                <div className="flex flex-row gap-6 justify-center py-2">
-                    {
-                        drawInfo.byes.map((team: ByeTeam) => {
-                            return <TeamImage key={team.theme.key} imageLink='' teamKey={team.theme.key} />;
-                        })
-                    }
-                </div>
+            <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+            <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
+                {
+                    drawInfo.byes.map((team: ByeTeam) => {
+                        return <TeamImage key={team.theme.key} imageLink='' teamKey={team.theme.key} />;
+                    })
+                }
             </div>
+        </div>
     );
 }

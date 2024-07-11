@@ -58,11 +58,15 @@ export default function LadderRow(
 }
 
 function getNextFixture(nextFixture: NextTeam) {
+    // TODO https://www.nrl.com/draw/data?competition=111&team={teamId}&season={currentYear}
+    // Get index (i.e. if round 2 get entry at index 1)
+    // import useSWRImmutable from 'swr/immutable'
+    
     if (nextFixture.isBye) {
         return 'BYE';
     }
 
-    // Team is eliminated for the season
+    // Team is eliminated for the season (or the next fixture is not yet known)
     if (!nextFixture.matchCentreUrl || !nextFixture.theme.key) {
         return null;
     }
