@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# NRL Live Ladder Website
 
-## Getting Started
+This website (https://nrl-live-ladder.vercel.app) is built using [Next.js](https://nextjs.org/) - a modern React framework, and hosted on [Vercel](https://vercel.com/).
 
-First, run the development server:
+For a package manager, npm is preferred (Node.js must also be installed) - https://docs.npmjs.com/downloading-and-installing-node-js-and-npm.
+
+### Installation
+
+```bash
+npx create-next-app@latest nrl-live-ladder --use-npm --example "https://github.com/ryanherkt3/nrl-live-ladder/tree/main"
+npm install
+```
+
+### Local Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+And browse to http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Website Features
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+* Live ladder & fixtures - automatic updates of the ladder and fixtures as they happen, so you don't have to refresh the page.
+* "No Byes" ladder - use the toggles at the top of the page to view the ladder as if bye points counted for nothing.
+* "Max points" page - see how high (or low) your team can finish on the ladder with a visual chart showing where each team stands in the race for Finals Football.
 
-## Learn More
+### Future improvements
 
-To learn more about Next.js, take a look at the following resources:
+* Make SWR requests on the main page once a minute instead of infrequently.
+* Have the game clock for live fixtures update every second.
+* Make a "live" version of the "Max points" page.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Bug reports, Feature requests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+For any bugs or feature requests, create an issue on the repo's [Issues page](https://github.com/ryanherkt3/nrl-live-ladder/issues) with the appropriate label.
