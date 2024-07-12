@@ -20,7 +20,7 @@ export default function RoundFixture(
     }
 ) {
     const isLiveMatch = data.matchMode === "Live";
-    const isFullTime = !isLiveMatch && data.matchState === "FullTime";
+    const isFullTime = data.matchState === "FullTime";
 
     // Get ladder position of teams
     const homeTeamObj = ladder.filter((team: TeamData) => {
@@ -136,6 +136,7 @@ function getMatchContext(matchData: Match) {
                 <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
                     {matchPeriod}
                 </div>
+                {/* TODO modify to tick every second */}
                 <div>{matchData.clock.gameTime}</div>
             </div>
         )

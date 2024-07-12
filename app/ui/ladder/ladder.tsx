@@ -17,7 +17,6 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     })[0];
     
     const updateAllTeams = (showByes: boolean) => {
-        // TODO log outcome - problem may be with state
         setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             if (liveMatch) {
                 if (b.liveStats && a.liveStats) {
@@ -272,7 +271,7 @@ function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, i
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
-        if (liveMatch) {
+        if (liveMatch && liveMatch.matchState !== 'FullTime') {
             isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
                 liveMatch.homeTeam.nickName === team.teamNickname;
         }
