@@ -18,7 +18,7 @@ For local development, Python is also required. To download version 3.12 go to h
 Then, to install the required Python packages, run:
 
 ```bash
-pip install -r /path/to/requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Local Development
