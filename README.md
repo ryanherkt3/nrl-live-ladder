@@ -6,9 +6,19 @@ For a package manager, npm is preferred (Node.js must also be installed) - https
 
 ### Installation
 
+To clone the local repository and install the Node/NPM packages, run:
+
 ```bash
 npx create-next-app@latest nrl-live-ladder --use-npm --example "https://github.com/ryanherkt3/nrl-live-ladder/tree/main"
 npm install
+```
+
+For local development, Python is also required. To download version 3.12 go to https://www.python.org/downloads/.
+
+Then, to install the required Python packages, run:
+
+```bash
+pip install -r /path/to/requirements.txt
 ```
 
 ### Local Development
