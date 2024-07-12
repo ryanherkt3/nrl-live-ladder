@@ -63,12 +63,18 @@ export type APIInfo = {
     ladder: LadderInfo;
 }
 
+export type LadderInfo = {
+    positions: TeamData[];
+}
+
 export type DrawInfo = {
     fixtures: Match[];
     byes: ByeTeam[];
     selectedRoundId: number;
+    filterTeams: FilteredTeam[];
 }
 
-export type LadderInfo = {
-    positions: TeamData[];
+export type FilteredTeam = {
+    name: string;
+    value: number;
 }

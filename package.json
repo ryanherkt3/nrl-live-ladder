@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "flask-dev": "python -m flask --app api/nrlinfo run -p 8080",
+    "flask-dev": "python -m flask --app api/routes run -p 8080",
     "next-dev": "next dev",
     "dev": "npx concurrently \"npm run next-dev\" \"npm run flask-dev\"",
     "build": "next build",

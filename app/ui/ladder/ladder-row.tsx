@@ -1,21 +1,31 @@
 import { TeamData, NextTeam } from "../../lib/definitions";
 import { getShortCode } from "../../lib/utils";
+import SkeletonByeCell from "../skeletons/skeleton-bye-cell";
 import TeamImage from "../team-image";
+import axios from "axios";
+import useSWRImmutable from "swr/immutable";
 
 export default function LadderRow(
     { 
-        data, 
+        teamData, 
         position,
         isPlaying,
-        byePoints 
+        isOnBye,
+        byePoints,
+        currentRound,
+        teamId
     }: { 
-        data: TeamData;
+        teamData: TeamData;
         position: String;
         isPlaying: boolean;
-        byePoints: boolean
+        isOnBye: boolean;
+        byePoints: boolean;
+        currentRound: number;
+        teamId: number;
     }
 ) {
-    let statsData = isPlaying && data.liveStats ? data.liveStats : data.stats;
+    let statsData = isPlaying && teamData.liveStats ? teamData.liveStats : teamData.stats;
+    const byeCounted = isOnBye && teamData.next.isBye && statsData.played + statsData.byes === currentRound;
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
@@ -25,13 +35,13 @@ export default function LadderRow(
                 }
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
-                <TeamImage imageLink='' teamKey={data.theme.key} />
+                <TeamImage imageLink='' teamKey={teamData.theme.key} />
             </div>
             <div className="w-[25%] sm:w-[15%] text-left">
-                <span className='hidden md:block'>{data.teamNickname}</span>
+                <span className='hidden md:block'>{teamData.teamNickname}</span>
                 <span className='block md:hidden'>
                     {
-                        getShortCode(data.teamNickname)
+                        getShortCode(teamData.teamNickname)
                     }
                 </span>
             </div>
@@ -47,7 +57,7 @@ export default function LadderRow(
             <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
-                    getNextFixture(data.next)
+                    getNextFixture(teamData.next, currentRound, byeCounted, isPlaying, teamId)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -57,21 +67,58 @@ export default function LadderRow(
     );
 }
 
-function getNextFixture(nextFixture: NextTeam) {
-    // TODO https://www.nrl.com/draw/data?competition=111&team={teamId}&season={currentYear}
-    // Get index (i.e. if round 2 get entry at index 1)
-    // import useSWRImmutable from 'swr/immutable'
+function getNextFixture(
+    nextFixture: NextTeam,
+    currentRound: number,
+    byeCounted: boolean,
+    isPlaying: boolean,
+    teamId: number,
+) {
+    // Get the next fixture if:
+    // 1. the bye has been counted already
+    // 2. the team is playing their current opponent
+    if (byeCounted || isPlaying) {
+        const fetcher = (url: string) => axios.get(url).then(res => res.data)
+        const { data: nextRound, error, isLoading } = useSWRImmutable(`/api/nextround?teamid=${teamId}`, fetcher);
+
+        if (nextRound) {
+            // Team is eliminated for the season (or the next fixture is not yet known)
+            if (currentRound === 27) {
+                return null;
+            }
+            
+            const matchAfterBye = nextRound.fixtures[currentRound];
+
+            if (error) {
+                return null;
+            }
+            if (isLoading) {
+                return <SkeletonByeCell />;
+            }
+
+            if (matchAfterBye.type === 'Bye') {
+                return 'BYE';
+            }
+
+            const opponent = matchAfterBye.homeTeam.teamId === teamId ?
+                matchAfterBye.awayTeam : matchAfterBye.homeTeam;
+            const imageLink = `https://nrl.com${matchAfterBye.matchCentreUrl}`;
+
+            return <TeamImage imageLink={imageLink} teamKey={opponent.theme.key} />;
+        }
+    }
+    else {
+        if (nextFixture.isBye) {
+            return 'BYE';
+        }
     
-    if (nextFixture.isBye) {
-        return 'BYE';
+        // Team is eliminated for the season (or the next fixture is not yet known)
+        if (!nextFixture.matchCentreUrl) {
+            return null;
+        }
+    
+        return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
     }
-
-    // Team is eliminated for the season (or the next fixture is not yet known)
-    if (!nextFixture.matchCentreUrl || !nextFixture.theme.key) {
-        return null;
-    }
-
-    return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
 }
 
 function getLiveStatus(isPlaying: boolean) {

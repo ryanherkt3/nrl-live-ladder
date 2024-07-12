@@ -1,6 +1,7 @@
 import requests
 
 from flask import Flask
+from flask import request
 from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
@@ -12,12 +13,20 @@ headers = {
 
 @app.route('/api/nrlinfo', methods=['GET'])
 def nrl_info():
-    test = {
+    nrlInfo = {
         "draw": requests.get("https://www.nrl.com/draw/data", headers=headers).json(),
         "ladder": requests.get("https://www.nrl.com/ladder/data", headers=headers).json()
     }
 
-    return test
+    return nrlInfo
+
+@app.route('/api/nextround', methods=['GET'])
+def next_round():
+    teamId = request.args.get('teamid')
+
+    apiUrl = f"https://www.nrl.com/draw/data?competition=111&team={teamId}"
+
+    return requests.get(apiUrl, headers=headers).json()
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

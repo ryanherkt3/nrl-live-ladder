@@ -1,5 +1,5 @@
 import LadderRow from "./ladder-row";
-import { TeamData, Match, APIInfo } from "../../lib/definitions";
+import { TeamData, Match, APIInfo, DrawInfo, FilteredTeam, ByeTeam } from "../../lib/definitions";
 import Fixtures from "../fixture/fixtures";
 import ByeToggleSection from "../bye-toggle";
 import { useState } from "react";
@@ -11,6 +11,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
 
     const drawInfo = nrlInfo.draw;
     const fixtures = drawInfo.fixtures;
+    const currentRound = drawInfo.selectedRoundId;
 
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
@@ -61,7 +62,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     }
 
     // Do not update ladder if finals football is on 
-    const isFinalsFootball = drawInfo.selectedRoundId > 27;
+    const isFinalsFootball = currentRound > 27;
 
     // Update ladder based on live match before rendering it
     const [homeScore, setHomeScore] = useState(-1);
@@ -113,7 +114,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
 
             const homeTeam = lastFinishedMatch.homeTeam;
             const awayTeam = lastFinishedMatch.awayTeam;
-            const ladderStatsNotUpdated = drawInfo.selectedRoundId - team.stats.played - team.stats.byes === 1;
+            const ladderStatsNotUpdated = currentRound - team.stats.played - team.stats.byes === 1;
 
             return (homeTeam.nickName === team.teamNickname && ladderStatsNotUpdated) ||
                 (awayTeam.nickName === team.teamNickname && ladderStatsNotUpdated);
@@ -127,12 +128,12 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
             liveStatsUpdated = true;
         }
     }
-    
+
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             {
                 // Do not show bye toggle if in first or last round
-                [1, 27].includes(drawInfo.selectedRoundId) ? 
+                [1, 27].includes(currentRound) ? 
                     null : 
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
@@ -153,11 +154,11 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(allTeams.slice(0,8), liveMatch, 1, byePoints)
+                    getLadderRow(allTeams.slice(0,8), liveMatch, 1, byePoints, currentRound, drawInfo)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    getLadderRow(allTeams.slice(8), liveMatch, 9, byePoints)
+                    getLadderRow(allTeams.slice(8), liveMatch, 9, byePoints, currentRound, drawInfo)
                 }
             </div>
             <Fixtures drawInfo={drawInfo} fixtures={fixtures} ladder={allTeams} />
@@ -193,29 +194,29 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
 
         if (team.liveStats.wins - team.stats.wins === 1 && !winning) {
             // Win to draw/loss
-            team.liveStats.wins = team.stats.wins - 1;
+            team.liveStats.wins = team.liveStats.wins - 1;
         }
         else if (team.liveStats.wins === team.stats.wins && winning) {
             // Draw/loss to win
-            team.liveStats.wins = team.stats.wins + 1;
+            team.liveStats.wins = team.liveStats.wins + 1;
         }
 
         if (team.liveStats.drawn === team.stats.drawn && draw) {
             // Win/loss to draw
-            team.liveStats.drawn = team.stats.drawn + 1;
+            team.liveStats.drawn = team.liveStats.drawn + 1;
         }
         else if (team.liveStats.drawn - team.stats.drawn === 1 && !draw) {
             // Draw to win/loss
-            team.liveStats.drawn = team.stats.drawn - 1;
+            team.liveStats.drawn = team.liveStats.drawn - 1;
         }
 
         if (team.liveStats.lost - team.stats.lost === 1 && (draw || winning)) {
             // Loss to win/draw
-            team.liveStats.lost = team.stats.lost - 1;
+            team.liveStats.lost = team.liveStats.lost - 1;
         }
         else if (team.liveStats.lost === team.stats.lost && losing) {
             // Win/draw to loss
-            team.liveStats.lost = team.stats.lost + 1;
+            team.liveStats.lost = team.liveStats.lost + 1;
         }
 
         team.liveStats['points for'] = team.stats['points for'] + (
@@ -229,22 +230,22 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
         if (team.liveStats.points === team.stats.points) {
             if (winning) {
                 // Loss to win
-                team.liveStats.points = team.stats.points + 2;
+                team.liveStats.points = team.liveStats.points + 2;
             }
             else if (draw) {
                 // Loss to draw
-                team.liveStats.points = team.stats.points + 1;
+                team.liveStats.points = team.liveStats.points + 1;
             }
         } 
         else if ((team.liveStats.points - team.stats.points === 2 && draw) || 
             (team.liveStats.points - team.stats.points === 1 && losing)) {
             // 1. Win to draw
             // 2. Draw to loss
-            team.liveStats.points = team.stats.points - 1;
+            team.liveStats.points = team.liveStats.points - 1;
         } 
         else if (team.liveStats.points - team.stats.points === 1 && winning) {
             // Draw to win
-            team.liveStats.points = team.stats.points + 1;
+            team.liveStats.points = team.liveStats.points + 1;
         }
     }
     else {
@@ -267,7 +268,14 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
     statsToUpdate.noByePoints = (statsToUpdate.wins * 2) + statsToUpdate.drawn;
 }
 
-function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, indexAdd: number, byePoints: boolean) {
+function getLadderRow(
+    teamList: Array<TeamData>,
+    liveMatch: Match | undefined,
+    indexAdd: number,
+    byePoints: boolean,
+    currentRound: number,
+    drawInfo: DrawInfo,
+) {
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
@@ -279,12 +287,26 @@ function getLadderRow(teamList: Array<TeamData>, liveMatch: Match | undefined, i
         team.stats.noByePoints = (team.stats.wins * 2) + team.stats.drawn;
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
+        
+        const filteredTeamInfo = drawInfo.filterTeams.filter((filterTeam: FilteredTeam) => {
+            return team.theme.key.replace('-', ' ') === filterTeam.name.toLowerCase()
+        });
+
+        const isOnBye = !!(
+            drawInfo.byes.filter((filterTeam: ByeTeam) => {
+                return filterTeam.theme.key === team.theme.key
+            }).length
+        );
+
         return <LadderRow
             key={team.theme.key}
-            data={team}
+            teamData={team}
             position={ladderPos.toString()}
-            isPlaying={isPlaying}    
+            isPlaying={isPlaying}
+            isOnBye={isOnBye}
             byePoints={byePoints}
+            currentRound={currentRound}
+            teamId={filteredTeamInfo[0].value}
         />;
     })
 }
