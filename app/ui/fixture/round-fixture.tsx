@@ -39,8 +39,8 @@ export default function RoundFixture(
                     clsx(
                         'text-center text-lg text-white font-semibold',
                         {
-                            'live-match': isLiveMatch,
                             'bg-green-400': isFullTime,
+                            'live-match': isLiveMatch && !isFullTime,
                             'bg-gray-400': !isLiveMatch && !isFullTime,
                         }
                     )

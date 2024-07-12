@@ -279,7 +279,7 @@ function getLadderRow(
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
-        if (liveMatch && liveMatch.matchState !== 'FullTime') {
+        if (liveMatch) {
             isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
                 liveMatch.homeTeam.nickName === team.teamNickname;
         }
