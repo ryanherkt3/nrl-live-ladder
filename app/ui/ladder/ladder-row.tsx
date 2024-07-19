@@ -1,5 +1,5 @@
 import { TeamData, NextTeam } from "../../lib/definitions";
-import { getShortCode } from "../../lib/utils";
+import { getShortCode, NUMS } from "../../lib/utils";
 import SkeletonByeCell from "../skeletons/skeleton-bye-cell";
 import TeamImage from "../team-image";
 import axios from "axios";
@@ -87,7 +87,7 @@ function getNextFixture(
             
             if (data) {
                 // Team is eliminated for the season (or the next fixture is not yet known)
-                if (currentRound === 27) {
+                if (currentRound === NUMS.ROUNDS) {
                     return null;
                 }
                 

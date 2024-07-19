@@ -1,3 +1,4 @@
+import { NUMS } from "@/app/lib/utils";
 import SkeletonFixtures from "./skeleton-fixtures";
 import SkeletonLadderRow from "./skeleton-ladder-row";
 
@@ -22,11 +23,11 @@ export default function SkeletonLadder() {
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(1, 8)
+                    getLadderRow(1, NUMS.FINALS_TEAMS)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    getLadderRow(9, 17)
+                    getLadderRow(NUMS.FINALS_TEAMS + 1, NUMS.TEAMS)
                 }
             </div>
             <SkeletonFixtures />

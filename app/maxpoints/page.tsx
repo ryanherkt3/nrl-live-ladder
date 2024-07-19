@@ -1,26 +1,42 @@
 import { Metadata } from "next";
-import { getNRLInfo, getShortCode } from "../lib/utils";
+import { getNRLInfo, getShortCode, NUMS } from "../lib/utils";
 import { TeamData } from "../lib/definitions";
 import clsx from "clsx";
+// import useSWR from "swr";
+// import axios from "axios";
 
 export const metadata: Metadata = {
     title: 'NRL Max Points',
 }
 
 export default async function MaxPointsPage() {
-    let nrlInfo = await getNRLInfo();
+    // const fetcher = (url: string) => axios.get(url).then(res => res.data)
+    // const { data: nrlInfo, error, isLoading } = useSWR('/api/nrlinfo', fetcher);
     
+    // if (error) {
+    //     return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
+    // }
+    // if (isLoading) {
+    //     // TODO skeleton max points page
+    //     return <div className="px-8 py-6 flex flex-col gap-6">Loading...</div>;
+    // }
+
+    // TODO get live teams via filter
+    // const homeTeam;
+    // const awayTeam;
+    let nrlInfo = await getNRLInfo();
+
     let allTeams = nrlInfo.ladder.positions;
     
     const topTeams = [...allTeams];
-    const bottomTeams = topTeams.splice(8);
+    const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
 
     const firstPlaceMaxPts = getMaxPoints(topTeams[0].stats.lost, topTeams[0].stats.drawn);
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
     const minPointsForSpots = {
         t2: getMaxPoints(topTeams[1].stats.lost, topTeams[1].stats.drawn),
-        t4: getMaxPoints(topTeams[4].stats.lost, topTeams[4].stats.drawn),
+        t4: getMaxPoints(topTeams[3].stats.lost, topTeams[3].stats.drawn),
         t8: getMaxPoints(bottomTeams[0].stats.lost, bottomTeams[0].stats.drawn),
         elim: topTeams[7].stats.points,
     };
@@ -44,14 +60,12 @@ export default async function MaxPointsPage() {
 }
 
 function getMaxPoints(losses: number, draws: number) {
-    const rounds = 24;
-    const byes = 3;
-    const perfectSeasonPts = 2 * rounds;
+    const byes = NUMS.BYES;
+    const perfectSeasonPts = NUMS.WIN_POINTS * NUMS.MATCHES;
 
-    const pointsLost = perfectSeasonPts - (2 * losses) - draws;
-    const byePointsToAdd = 2 * byes;
+    const pointsLost = perfectSeasonPts - (NUMS.WIN_POINTS * losses) - draws;
     
-    return pointsLost + byePointsToAdd;
+    return pointsLost + (NUMS.WIN_POINTS * byes);
 }
 
 function getTableRows(

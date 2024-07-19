@@ -1,6 +1,7 @@
 import { Match, ByeTeam, TeamData, DrawInfo } from "../../lib/definitions";
 import RoundFixture from "./round-fixture";
 import TeamImage from "../team-image";
+import { NUMS } from "@/app/lib/utils";
 
 export default function Fixtures(
     { 
@@ -16,14 +17,13 @@ export default function Fixtures(
 ) {
     const roundNum = drawInfo.selectedRoundId;
 
-    const lastRoundNum = 27;
-    const weeksOfFinalsFootball = 4;
-    const grandFinalRoundNum = lastRoundNum + weeksOfFinalsFootball;
+    const lastRoundNum = NUMS.ROUNDS;
+    const grandFinalRoundNum = lastRoundNum + NUMS.FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
 
     let roundHeading = `Round ${roundNum} Fixtures`;
-    if (roundNum >= lastRoundNum + 1 && roundNum <= grandFinalRoundNum - 1) {
+    if (inFinalsFootball && roundNum <= grandFinalRoundNum - 1) {
         roundHeading = `Finals Week ${roundNum - lastRoundNum} Fixtures`;
     }
     else if (roundNum === grandFinalRoundNum) {

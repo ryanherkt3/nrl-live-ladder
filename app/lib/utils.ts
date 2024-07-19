@@ -63,3 +63,13 @@ export const getNumberSuffix = (num: number) => {
 
     return `${num}th`;
 }
+
+export const NUMS = Object.freeze({
+    ROUNDS: 27, // done
+    FINALS_WEEKS: 4, // done
+    BYES: 3, // done
+    MATCHES: 24, // done
+    TEAMS: 17, // done
+    FINALS_TEAMS: 8, // done
+    WIN_POINTS: 2, // done
+});
