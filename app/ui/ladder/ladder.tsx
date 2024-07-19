@@ -22,42 +22,58 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
             if (liveMatch) {
                 if (b.liveStats && a.liveStats) {
                     if (byePoints) {
-                        return b.liveStats.points - a.liveStats.points || 
-                            b.liveStats['points difference'] - a.liveStats['points difference'];
+                        if (b.liveStats.points !== a.liveStats.points) {
+                            return b.liveStats.points - a.liveStats.points;
+                        } 
+                        return b.liveStats['points difference'] - a.liveStats['points difference'];
                     }
 
-                    return b.liveStats.noByePoints - a.liveStats.noByePoints || 
-                        b.liveStats['points difference'] - a.liveStats['points difference'];
+                    if (b.liveStats.noByePoints !== a.liveStats.noByePoints) {
+                        return b.liveStats.noByePoints - a.liveStats.noByePoints
+                    }
+                    return b.liveStats['points difference'] - a.liveStats['points difference'];
                 }
                     
                 if (a.liveStats) {
                     if (showByes) {
-                        return b.stats.points - a.liveStats.points || 
-                            b.stats['points difference'] - a.liveStats['points difference'];
+                        if (b.stats.points !== a.liveStats.points) {
+                            return b.stats.points - a.liveStats.points;
+                        }
+                        return b.stats['points difference'] - a.liveStats['points difference'];
                     }
 
-                    return b.stats.noByePoints - a.liveStats.noByePoints || 
-                        b.stats['points difference'] - a.liveStats['points difference'];
+                    if (b.stats.noByePoints !== a.liveStats.noByePoints) {
+                        return b.stats.noByePoints - a.liveStats.noByePoints
+                    }
+                    return b.stats['points difference'] - a.liveStats['points difference'];
                 }
                 
                 if (b.liveStats) {
                     if (showByes) {
-                        return b.liveStats.points - a.stats.points || 
-                            b.liveStats['points difference'] - a.stats['points difference'];
+                        if (b.liveStats.points !== a.stats.points) {
+                            return b.liveStats.points - a.stats.points;
+                        }
+                        return b.liveStats['points difference'] - a.stats['points difference'];
                     }
-
-                    return b.liveStats.noByePoints - a.stats.noByePoints || 
-                        b.liveStats['points difference'] - a.stats['points difference'];
+                    
+                    if (b.liveStats.noByePoints !== a.stats.noByePoints) {
+                        return b.liveStats.noByePoints - a.stats.noByePoints;
+                    }
+                    return b.liveStats['points difference'] - a.stats['points difference'];
                 }
             }
             
             if (showByes) {
-                return b.stats.points - a.stats.points || 
-                    b.stats['points difference'] - a.stats['points difference'];
+                if (b.stats.points !== a.stats.points) {
+                    return b.stats.points - a.stats.points;
+                }
+                return b.stats['points difference'] - a.stats['points difference'];
             }
 
-            return b.stats.noByePoints - a.stats.noByePoints || 
-                b.stats['points difference'] - a.stats['points difference'];
+            if (b.stats.points !== a.stats.noByePoints) {
+                return b.stats.noByePoints - a.stats.noByePoints;
+            }
+            return b.stats['points difference'] - a.stats['points difference'];
         }));
     }
 
@@ -279,6 +295,7 @@ function getLadderRow(
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
+        // TODO on full time still show next opponent
         if (liveMatch) {
             isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
                 liveMatch.homeTeam.nickName === team.teamNickname;
