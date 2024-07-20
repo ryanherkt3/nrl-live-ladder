@@ -251,7 +251,8 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
         );
         team.liveStats['points difference'] = team.liveStats['points for'] - team.liveStats['points against'];
 
-        team.liveStats.points = (NUMS.WIN_POINTS * team.liveStats.wins) + team.liveStats.drawn;
+        team.liveStats.points = (NUMS.WIN_POINTS * team.liveStats.wins) + team.liveStats.drawn + 
+            (NUMS.WIN_POINTS * team.liveStats.byes);
     }
     else {
         const teamScore = (isHomeTeam ? match.homeTeam.score : match.awayTeam.score) || 0;
@@ -267,6 +268,7 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
         team.stats.points = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn;
     }
 
+    statsToUpdate.byes = statsToUpdate.byes;
     statsToUpdate.noByePoints = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn;
 }
 
