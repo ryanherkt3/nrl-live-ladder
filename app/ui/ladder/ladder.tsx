@@ -265,7 +265,8 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
         team.stats['points for'] += teamScore;
         team.stats['points against'] += oppScore;
         team.stats['points difference'] += teamScore - oppScore;
-        team.stats.points = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn;
+        team.stats.points = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn  + 
+            (NUMS.WIN_POINTS * team.stats.byes);
     }
 
     statsToUpdate.byes = statsToUpdate.byes;
