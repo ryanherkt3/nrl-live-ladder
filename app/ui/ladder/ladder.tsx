@@ -20,50 +20,6 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     
     const updateAllTeams = (showByes: boolean) => {
         setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
-            if (liveMatch) {
-                if (b.liveStats && a.liveStats) {
-                    if (byePoints) {
-                        if (b.liveStats.points !== a.liveStats.points) {
-                            return b.liveStats.points - a.liveStats.points;
-                        } 
-                        return b.liveStats['points difference'] - a.liveStats['points difference'];
-                    }
-
-                    if (b.liveStats.noByePoints !== a.liveStats.noByePoints) {
-                        return b.liveStats.noByePoints - a.liveStats.noByePoints;
-                    }
-                    return b.liveStats['points difference'] - a.liveStats['points difference'];
-                }
-                    
-                if (a.liveStats) {
-                    if (showByes) {
-                        if (b.stats.points !== a.liveStats.points) {
-                            return b.stats.points - a.liveStats.points;
-                        }
-                        return b.stats['points difference'] - a.liveStats['points difference'];
-                    }
-
-                    if (b.stats.noByePoints !== a.liveStats.noByePoints) {
-                        return b.stats.noByePoints - a.liveStats.noByePoints;
-                    }
-                    return b.stats['points difference'] - a.liveStats['points difference'];
-                }
-                
-                if (b.liveStats) {
-                    if (showByes) {
-                        if (b.liveStats.points !== a.stats.points) {
-                            return b.liveStats.points - a.stats.points;
-                        }
-                        return b.liveStats['points difference'] - a.stats['points difference'];
-                    }
-                    
-                    if (b.liveStats.noByePoints !== a.stats.noByePoints) {
-                        return b.liveStats.noByePoints - a.stats.noByePoints;
-                    }
-                    return b.liveStats['points difference'] - a.stats['points difference'];
-                }
-            }
-            
             if (showByes) {
                 if (b.stats.points !== a.stats.points) {
                     return b.stats.points - a.stats.points;
@@ -123,7 +79,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     const completedMatches = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Post' && fixture.matchState === 'FullTime';
     });
-    const lastFinishedMatch = completedMatches[completedMatches.length - 1];
+    let lastFinishedMatch = completedMatches[completedMatches.length - 1];
 
     if (lastFinishedMatch && !isFinalsFootball) {
         const teams = allTeams.filter((team: TeamData) => {
@@ -242,35 +198,23 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
             // Win/draw to loss
             team.liveStats.lost += 1;
         }
-
-        team.liveStats['points for'] = team.stats['points for'] + (
-            isHomeTeam ? match.homeTeam.score : match.awayTeam.score
-        );
-        team.liveStats['points against'] = team.stats['points against'] + (
-            isHomeTeam ? match.awayTeam.score : match.homeTeam.score
-        );
-        team.liveStats['points difference'] = team.liveStats['points for'] - team.liveStats['points against'];
-
-        team.liveStats.points = (NUMS.WIN_POINTS * team.liveStats.wins) + team.liveStats.drawn + 
-            (NUMS.WIN_POINTS * team.liveStats.byes);
     }
     else {
-        const teamScore = (isHomeTeam ? match.homeTeam.score : match.awayTeam.score) || 0;
-        const oppScore = (isHomeTeam ? match.awayTeam.score : match.homeTeam.score) || 0;
-        
         team.stats.played += 1;
         team.stats.wins = winning ? team.stats.wins + 1 : team.stats.wins;
         team.stats.drawn = draw ? team.stats.drawn + 1 : team.stats.drawn;
         team.stats.lost = losing ? team.stats.lost + 1 : team.stats.lost;
-        team.stats['points for'] += teamScore;
-        team.stats['points against'] += oppScore;
-        team.stats['points difference'] += teamScore - oppScore;
-        team.stats.points = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn  + 
-            (NUMS.WIN_POINTS * team.stats.byes);
     }
-
-    statsToUpdate.byes = statsToUpdate.byes;
-    statsToUpdate.noByePoints = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn;
+    const teamScore = (isHomeTeam ? match.homeTeam.score : match.awayTeam.score) || 0;
+    const oppScore = (isHomeTeam ? match.awayTeam.score : match.homeTeam.score) || 0;
+    
+    statsToUpdate['points for'] = team.stats['points for'] + teamScore;
+    statsToUpdate['points against'] = team.stats['points against'] + oppScore;
+    statsToUpdate['points difference'] = statsToUpdate['points for'] - statsToUpdate['points against'];
+    
+    team.stats.points = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn + 
+        (NUMS.WIN_POINTS * team.stats.byes);
+    team.stats.noByePoints = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn;
 }
 
 function getLadderRow(

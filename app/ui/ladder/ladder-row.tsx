@@ -64,7 +64,7 @@ export default function LadderRow(
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
-                {byePoints ? statsData.points : statsData.noByePoints}
+                {byePoints ? teamData.stats.points : teamData.stats.noByePoints}
             </div>
         </div>
     );
