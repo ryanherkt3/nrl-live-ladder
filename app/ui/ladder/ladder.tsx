@@ -234,7 +234,8 @@ function getLadderRow(
                 liveMatch.homeTeam.nickName === team.teamNickname;
         }
 
-        team.stats.noByePoints = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn;
+        const statsToUse = liveMatch && team.liveStats ? team.liveStats : team.stats;
+        team.stats.noByePoints = (NUMS.WIN_POINTS * statsToUse.wins) + statsToUse.drawn;
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
         
