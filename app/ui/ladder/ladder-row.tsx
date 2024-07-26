@@ -30,6 +30,8 @@ export default function LadderRow(
     const fetcher = (url: string) => axios.get(url).then(res => res.data)
     const nextRound = useSWRImmutable(isOnBye || isPlaying ? `/api/nextround?teamid=${teamId}` : null, fetcher);
 
+    const hasPlayed = !isPlaying && currentRound - statsData.played - statsData.byes === 0;
+
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
@@ -60,7 +62,7 @@ export default function LadderRow(
             <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
-                    getNextFixture(teamData.next, currentRound, byeCounted, isPlaying, teamId, nextRound)
+                    getNextFixture(teamData.next, currentRound, byeCounted, isPlaying, teamId, nextRound, hasPlayed)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -77,6 +79,7 @@ function getNextFixture(
     isPlaying: boolean,
     teamId: number,
     nextRound: any, // TODO fix type
+    hasPlayed: boolean,
 ) {
     // Get the next fixture if:
     // 1. the bye has been counted already
@@ -91,7 +94,7 @@ function getNextFixture(
                     return null;
                 }
                 
-                const matchAfterBye = data.fixtures[currentRound];
+                const matchAfterBye = data.fixtures[hasPlayed ? currentRound + 1 : currentRound];
     
                 if (matchAfterBye.type === 'Bye') {
                     return 'BYE';

@@ -16,7 +16,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
 
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
-    })[0];
+    });
     
     const updateAllTeams = (showByes: boolean) => {
         setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
@@ -41,28 +41,30 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
     const [homeScore, setHomeScore] = useState(-1);
     const [awayScore, setAwayScore] = useState(-1);
 
-    if (liveMatch && !isFinalsFootball) {
-        // Only update stats if either score has changed
-        if (liveMatch.homeTeam.score !== homeScore || liveMatch.awayTeam.score !== awayScore) {
-            if (liveMatch.homeTeam.score !== homeScore) {
-                setHomeScore(liveMatch.homeTeam.score);
-            }
-            if (liveMatch.awayTeam.score !== awayScore) {
-                setAwayScore(liveMatch.awayTeam.score);                
-            }            
-            
-            const playingTeams = allTeams.filter((team: TeamData) => {
-                return liveMatch.awayTeam.nickName === team.teamNickname ||
-                    liveMatch.homeTeam.nickName === team.teamNickname;
-            });
-
-            for (const team of playingTeams) {
-                team.designation = liveMatch.homeTeam.nickName === team.teamNickname ? 'homeTeam' : 'awayTeam';
-                updateTeamStats(true, team, liveMatch);
-            }
+    if (liveMatch.length && !isFinalsFootball) {
+        for (const match of liveMatch) {
+            // Only update stats if either score has changed
+            if (match.homeTeam.score !== homeScore || match.awayTeam.score !== awayScore) {
+                if (match.homeTeam.score !== homeScore) {
+                    setHomeScore(match.homeTeam.score);
+                }
+                if (match.awayTeam.score !== awayScore) {
+                    setAwayScore(match.awayTeam.score);                
+                }            
+                
+                const playingTeams = allTeams.filter((team: TeamData) => {
+                    return match.awayTeam.nickName === team.teamNickname ||
+                        match.homeTeam.nickName === team.teamNickname;
+                });
     
-            updateAllTeams(byePoints);
-        }        
+                for (const team of playingTeams) {
+                    team.designation = match.homeTeam.nickName === team.teamNickname ? 'homeTeam' : 'awayTeam';
+                    updateTeamStats(true, team, match);
+                }
+        
+                updateAllTeams(byePoints);
+            }
+        }
     }
 
     const updateByePoints = (newValue: boolean) => {
@@ -214,12 +216,12 @@ function updateTeamStats(updateLive: boolean, team: TeamData, match: Match) {
     
     team.stats.points = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn + 
         (NUMS.WIN_POINTS * team.stats.byes);
-    team.stats.noByePoints = (NUMS.WIN_POINTS * statsToUpdate.wins) + statsToUpdate.drawn;
+    team.stats.noByePoints = team.stats.points - (NUMS.WIN_POINTS * statsToUpdate.byes);
 }
 
 function getLadderRow(
     teamList: Array<TeamData>,
-    liveMatch: Match | undefined,
+    liveMatch: Array<Match> | undefined,
     indexAdd: number,
     byePoints: boolean,
     currentRound: number,
@@ -228,14 +230,18 @@ function getLadderRow(
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
-        // TODO on full time still show next opponent
         if (liveMatch) {
-            isPlaying = liveMatch.awayTeam.nickName === team.teamNickname ||
-                liveMatch.homeTeam.nickName === team.teamNickname;
+            for (const match of liveMatch) {
+                isPlaying = match.awayTeam.nickName === team.teamNickname ||
+                    match.homeTeam.nickName === team.teamNickname;
+                    
+                if (isPlaying) {
+                    break;
+                }
+            }
         }
 
-        const statsToUse = liveMatch && team.liveStats ? team.liveStats : team.stats;
-        team.stats.noByePoints = (NUMS.WIN_POINTS * statsToUse.wins) + statsToUse.drawn;
+        team.stats.noByePoints = team.stats.points - (NUMS.WIN_POINTS * team.stats.byes);
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
         
