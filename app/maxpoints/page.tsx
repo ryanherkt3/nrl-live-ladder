@@ -135,7 +135,16 @@ function getPointCells(
     
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
-            const broncosAndNotEliminated = nickname === 'broncos' && !isEliminated;
+            const useAltBg = !isEliminated && 
+                (
+                    nickname === 'roosters' && maxPoints - i <= i - currentPts ||
+                    nickname === 'broncos' && maxPoints - i <= i - currentPts
+                );
+            const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
+                (!isEliminated && useAltBg && nickname === 'broncos');
+
+            const bgName = `bg-${nickname}${useAltBg ? '-alt' : ''}`;
+
             pointCells.push(
                 <div 
                     className={
@@ -143,9 +152,9 @@ function getPointCells(
                             `${commonClasses} relative font-semibold`,
                             {
                                 'bg-faded': isEliminated,
-                                [`bg-${nickname}`]: !isEliminated,
-                                'text-black': broncosAndNotEliminated,
-                                'text-white': !broncosAndNotEliminated,
+                                [bgName]: !isEliminated,
+                                'text-black': blackTextBg,
+                                'text-white': !blackTextBg,
                             }
                         )        
                     }

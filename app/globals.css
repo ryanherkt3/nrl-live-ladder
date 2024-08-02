@@ -46,6 +46,10 @@
 /* Table borders & backgrounds */
 
 .bg-broncos {
+    background: #55183A;
+    border: 2px solid #55183A;
+}
+.bg-broncos-alt {
     background: #FFCE34;
     border: 2px solid #FFCE34;
 }
@@ -86,16 +90,16 @@
     border: 2px solid #111B37;
 }
 .bg-eels {
-    background: #042E8E;
-    border: 2px solid #042E8E;
+    background: #FFD327;
+    border: 2px solid #FFD327;
 }
 .bg-panthers {
-    background: #231F24;
-    border: 2px solid #231F24;
+    background: #F8A1C6;
+    border: 2px solid #F8A1C6;
 }
 .bg-rabbitohs {
-    background: #E72E2F;
-    border: 2px solid #E72E2F;
+    background: #03502F;
+    border: 2px solid #03502F;
 }
 .bg-dragons {
     background: #AF1E29;
@@ -105,9 +109,13 @@
     background: #061E45;
     border: 2px solid #061E45;
 }
+.bg-roosters-alt {
+    background: #E82C2E;
+    border: 2px solid #E82C2E;
+}
 .bg-warriors {
-    background: #008445;
-    border: 2px solid #008445;
+    background: #000000;
+    border: 2px solid #000000;
 }
 .bg-weststigers {
     background: #DF6A03;

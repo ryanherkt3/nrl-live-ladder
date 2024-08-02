@@ -25,12 +25,11 @@ export default function LadderRow(
     }
 ) {
     let statsData = isPlaying && teamData.liveStats ? teamData.liveStats : teamData.stats;
-    const byeCounted = isOnBye && teamData.next.isBye && statsData.played + statsData.byes === currentRound;
-
+    
     const fetcher = (url: string) => axios.get(url).then(res => res.data)
     const nextRound = useSWRImmutable(isOnBye || isPlaying ? `/api/nextround?teamid=${teamId}` : null, fetcher);
 
-    const hasPlayed = !isPlaying && currentRound - statsData.played - statsData.byes === 0;
+    const roundIndex = statsData.played + statsData.byes;
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
@@ -62,7 +61,7 @@ export default function LadderRow(
             <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
-                    getNextFixture(teamData.next, currentRound, byeCounted, isPlaying, teamId, nextRound, hasPlayed)
+                    getNextFixture(teamData.next, roundIndex, teamId, nextRound)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -74,51 +73,44 @@ export default function LadderRow(
 
 function getNextFixture(
     nextFixture: NextTeam,
-    currentRound: number,
-    byeCounted: boolean,
-    isPlaying: boolean,
+    roundIndex: number,
     teamId: number,
     nextRound: any, // TODO fix type
-    hasPlayed: boolean,
 ) {
-    // Get the next fixture if:
-    // 1. the bye has been counted already
-    // 2. the team is playing their current opponent
-    if (byeCounted || isPlaying) {
-        if (nextRound) {
-            const data = nextRound.data;
-            
-            if (data) {
-                // Team is eliminated for the season (or the next fixture is not yet known)
-                if (currentRound === NUMS.ROUNDS) {
-                    return null;
-                }
-                
-                const matchAfterBye = data.fixtures[hasPlayed ? currentRound + 1 : currentRound];
-    
-                if (matchAfterBye.type === 'Bye') {
-                    return 'BYE';
-                }
-    
-                const opponent = matchAfterBye.homeTeam.teamId === teamId ?
-                    matchAfterBye.awayTeam : matchAfterBye.homeTeam;
-                const imageLink = `https://nrl.com${matchAfterBye.matchCentreUrl}`;
-    
-                return <TeamImage imageLink={imageLink} teamKey={opponent.theme.key} />;
-            }
+    // Get the next fixture if nextRound exists
+    if (nextRound && nextRound.data) {
+        // Team is eliminated for the season (or the next fixture is not yet known)
+        if (roundIndex >= NUMS.ROUNDS) {
+            return null;
         }
-        return <SkeletonByeCell />;
+
+        const data = nextRound.data;
+
+        const matchAfterBye = data.fixtures[roundIndex];
+
+        if (matchAfterBye.type === 'Bye') {
+            return 'BYE';
+        }
+
+        const opponent = matchAfterBye.homeTeam.teamId === teamId ? matchAfterBye.awayTeam : matchAfterBye.homeTeam;
+        const imageLink = `https://nrl.com${matchAfterBye.matchCentreUrl}`;
+
+        return <TeamImage imageLink={imageLink} teamKey={opponent.theme.key} />;
     }
     else {
+        if (!nextFixture) {
+            return <SkeletonByeCell />;
+        }
+
         if (nextFixture.isBye) {
             return 'BYE';
         }
-    
+
         // Team is eliminated for the season (or the next fixture is not yet known)
         if (!nextFixture.matchCentreUrl) {
             return null;
         }
-    
+
         return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
     }
 }
