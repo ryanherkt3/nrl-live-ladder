@@ -1,4 +1,4 @@
-import { TeamData, NextTeam } from "../../lib/definitions";
+import { TeamData } from "../../lib/definitions";
 import { getShortCode, NUMS } from "../../lib/utils";
 import SkeletonByeCell from "../skeletons/skeleton-bye-cell";
 import TeamImage from "../team-image";
@@ -10,24 +10,20 @@ export default function LadderRow(
         teamData, 
         position,
         isPlaying,
-        isOnBye,
         byePoints,
-        currentRound,
         teamId
     }: { 
         teamData: TeamData;
         position: String;
         isPlaying: boolean;
-        isOnBye: boolean;
         byePoints: boolean;
-        currentRound: number;
         teamId: number;
     }
 ) {
-    let statsData = isPlaying && teamData.liveStats ? teamData.liveStats : teamData.stats;
+    let statsData = teamData.liveStats || teamData.stats;
     
     const fetcher = (url: string) => axios.get(url).then(res => res.data)
-    const nextRound = useSWRImmutable(isOnBye || isPlaying ? `/api/nextround?teamid=${teamId}` : null, fetcher);
+    const nextRound = useSWRImmutable(`/api/nextround?teamid=${teamId}`, fetcher);
 
     const roundIndex = statsData.played + statsData.byes;
 
@@ -35,7 +31,7 @@ export default function LadderRow(
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
                 {
-                    isPlaying ? getLiveStatus(isPlaying) : <span>{position}</span>
+                    getLadderPosition(isPlaying, position)
                 }
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
@@ -61,7 +57,7 @@ export default function LadderRow(
             <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
-                    getNextFixture(teamData.next, roundIndex, teamId, nextRound)
+                    getNextFixture(roundIndex, teamId, nextRound)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -71,12 +67,8 @@ export default function LadderRow(
     );
 }
 
-function getNextFixture(
-    nextFixture: NextTeam,
-    roundIndex: number,
-    teamId: number,
-    nextRound: any, // TODO fix type
-) {
+// TODO fix nextRound type
+function getNextFixture(roundIndex: number, teamId: number, nextRound: any) {
     // Get the next fixture if nextRound exists
     if (nextRound && nextRound.data) {
         // Team is eliminated for the season (or the next fixture is not yet known)
@@ -97,28 +89,15 @@ function getNextFixture(
 
         return <TeamImage imageLink={imageLink} teamKey={opponent.theme.key} />;
     }
-    else {
-        if (!nextFixture) {
-            return <SkeletonByeCell />;
-        }
 
-        if (nextFixture.isBye) {
-            return 'BYE';
-        }
-
-        // Team is eliminated for the season (or the next fixture is not yet known)
-        if (!nextFixture.matchCentreUrl) {
-            return null;
-        }
-
-        return <TeamImage imageLink={nextFixture.matchCentreUrl} teamKey={nextFixture.theme.key} />;
-    }
+    // Otherwise return a skeleton placeholder
+    return <SkeletonByeCell />;
 }
 
-function getLiveStatus(isPlaying: boolean) {
+function getLadderPosition(isPlaying: boolean, position: String) {
     if (isPlaying) {
         return <div className="w-6 h-6 border rounded-full live-match border-red-600"></div>;
     }
 
-    return null;
+    return <span>{position}</span>;
 }

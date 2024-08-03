@@ -106,6 +106,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: APIInfo}) {
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
             {
                 // Do not show bye toggle if in first or last round
                 [1, NUMS.ROUNDS].includes(currentRound) ? 
@@ -249,20 +250,12 @@ function getLadderRow(
             return team.theme.key.replace('-', ' ') === filterTeam.name.toLowerCase()
         });
 
-        const isOnBye = !!(
-            drawInfo.byes.filter((filterTeam: ByeTeam) => {
-                return filterTeam.theme.key === team.theme.key
-            }).length
-        );
-
         return <LadderRow
             key={team.theme.key}
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}
-            isOnBye={isOnBye}
             byePoints={byePoints}
-            currentRound={currentRound}
             teamId={filteredTeamInfo[0].value}
         />;
     })
