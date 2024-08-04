@@ -28,16 +28,23 @@ export default async function MaxPointsPage() {
 
     let allTeams = nrlInfo.ladder.positions;
     
+    for (const team of allTeams) {
+        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
+    }
+
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
 
-    const firstPlaceMaxPts = getMaxPoints(topTeams[0].stats.lost, topTeams[0].stats.drawn);
+    const firstPlaceMaxPts = allTeams[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
+    const teamsByMaxPoints = allTeams.sort((a: TeamData, b: TeamData) => {
+        return b.stats.maxPoints - a.stats.maxPoints;
+    });
     const minPointsForSpots = {
-        t2: getMaxPoints(topTeams[1].stats.lost, topTeams[1].stats.drawn),
-        t4: getMaxPoints(topTeams[3].stats.lost, topTeams[3].stats.drawn),
-        t8: getMaxPoints(bottomTeams[0].stats.lost, bottomTeams[0].stats.drawn),
+        t2: teamsByMaxPoints[2].stats.maxPoints,
+        t4: teamsByMaxPoints[4].stats.maxPoints,
+        t8: teamsByMaxPoints[8].stats.maxPoints,
         elim: topTeams[7].stats.points,
     };
 
@@ -48,11 +55,11 @@ export default async function MaxPointsPage() {
             </div>
             <div className="flex flex-col">
                 {
-                    getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
+                    getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots)
                 }
                 <div className="border-4 border-green-400"></div>
                 {
-                    getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, allTeams, minPointsForSpots)
+                    getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots)
                 }
             </div>
         </div>
@@ -72,12 +79,11 @@ function getTableRows(
     teamList: Array<TeamData>,
     firstPlaceMaxPts: number,
     lastPlacePts: number,
-    allTeams: Array<TeamData>,
     minPointsForSpots: any // TODO fix type
 ) {
     return teamList.map((team: TeamData) => {
         const currentPoints = team.stats.points;
-        const maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
+        const maxPoints = team.stats.maxPoints;
         
         const nickname = team.teamNickname;
         const cssNickname = nickname.toLowerCase().replace(' ', '');
@@ -96,7 +102,14 @@ function getTableRows(
         else if (currentPoints > minPointsForSpots.t8) {
             qualificationStatus = '(Q)';
         }
-        
+
+        const pointValues = {
+            min: lastPlacePts,
+            max: firstPlaceMaxPts,
+            currentPts: currentPoints, 
+            maxPoints: maxPoints
+        }
+
         return (
             <div key={nickname} className="flex flex-row text-md text-center">
                 <div className="text-left flex items-center font-semibold w-[15%] mr-4">
@@ -110,29 +123,19 @@ function getTableRows(
                     </span>
                 </div>
                 {
-                    getPointCells(
-                        lastPlacePts, firstPlaceMaxPts, currentPoints, 
-                        maxPoints, cssNickname, qualificationStatus
-                    )
+                    getPointCells(pointValues, cssNickname, qualificationStatus.includes('E'))
                 }
             </div>
         ) 
     });
 }
 
-function getPointCells(
-    min: number,
-    max: number,
-    currentPts: number,
-    maxPoints: number,
-    nickname: string,
-    qualificationStatus: string,
-) {
+function getPointCells(pointValues: any, nickname: string, isEliminated: boolean) {
     const pointCells = [];
-    const isEliminated = qualificationStatus.includes('E');
+    const commonClasses = 'w-[2%] sm:w-[2.5%] sm:w-[3%] py-1';
 
-    let commonClasses = 'w-[2%] sm:w-[2.5%] sm:w-[3%] py-1';
-    
+    const {min, max, currentPts, maxPoints} = pointValues;
+
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
             const useAltBg = !isEliminated && 
@@ -159,20 +162,21 @@ function getPointCells(
                         )        
                     }
                 >
-                    <span 
-                        className={
-                            clsx(
-                                {
-                                    'left-2': i === currentPts,
-                                    'right-5 sm:right-3 md:right-2': i === maxPoints,
-                                    'absolute z-5': i === currentPts || i === maxPoints,
-                                    'relative': i !== currentPts || i !== maxPoints,
-                                }
-                            )        
-                        }
-                    >
-                        {i === currentPts || i === maxPoints ? i : ''}
-                    </span>
+                    {i === currentPts || i === maxPoints 
+                        ? <span 
+                            className={
+                                clsx(
+                                    {
+                                        'hidden xs:block left-2': i === currentPts,
+                                        'right-5 sm:right-3 md:right-2': i === maxPoints,
+                                        'absolute z-10': i === currentPts || i === maxPoints,
+                                        'relative': i !== currentPts || i !== maxPoints,
+                                    }
+                                )        
+                            }
+                        >{i}</span>
+                        : null
+                    }
                 </div>
             )
         }

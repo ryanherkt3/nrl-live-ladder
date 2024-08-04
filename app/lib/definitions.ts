@@ -27,6 +27,7 @@ export type TeamStats = {
     'points difference': number;
     points: number;
     noByePoints: number;
+    maxPoints: number;
 };
 
 export type TeamTheme = {
