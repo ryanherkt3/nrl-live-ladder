@@ -165,7 +165,7 @@ function getPointCells(
                                 {
                                     'left-2': i === currentPts,
                                     'right-5 sm:right-3 md:right-2': i === maxPoints,
-                                    'absolute z-20': i === currentPts || i === maxPoints,
+                                    'absolute z-5': i === currentPts || i === maxPoints,
                                     'relative': i !== currentPts || i !== maxPoints,
                                 }
                             )        
