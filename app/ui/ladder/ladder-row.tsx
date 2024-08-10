@@ -20,7 +20,7 @@ export default function LadderRow(
         teamId: number;
     }
 ) {
-    let statsData = teamData.liveStats || teamData.stats;
+    let statsData = teamData.stats;
     
     const fetcher = (url: string) => axios.get(url).then(res => res.data)
     const nextRound = useSWRImmutable(`/api/nextround?teamid=${teamId}`, fetcher);

@@ -43,7 +43,7 @@
     }
 }
 
-/* Table borders & backgrounds */
+/* Table texts & backgrounds */
 
 .bg-broncos {
     background: #55183A;
@@ -124,4 +124,56 @@
 .bg-faded {
     background: #9CA3AF;
     border: 2px solid #9CA3AF;
+}
+
+.live-broncos {
+    background: #55183A;
+}
+.live-raiders {
+    background: #0C8E48;
+}
+.live-bulldogs {
+    background: #042471;
+}
+.live-sharks {
+    background: #0772A8;
+}
+.live-dolphins {
+    background: #C7181D;
+}
+.live-titans {
+    background: #0955A2;
+}
+.live-seaeagles {
+    background: #541739;
+}
+.live-storm {
+    background: #4F378B;
+}
+.live-knights {
+    background: #022789;
+}
+.live-cowboys {
+    background: #111B37;
+}
+.live-eels {
+    background: #FFD327;
+}
+.live-panthers {
+    background: #F8A1C6;
+}
+.live-rabbitohs {
+    background: #03502F;
+}
+.live-dragons {
+    background: #AF1E29;
+}
+.live-roosters {
+    background: #061E45;
+}
+.live-warriors {
+    background: #000000;
+}
+.live-weststigers {
+    background: #DF6A03;
 }

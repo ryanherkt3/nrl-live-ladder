@@ -1,12 +1,8 @@
 export type TeamData = {
-    clubProfileUrl: string;
-    movement: string;
-    next: NextTeam;
     stats: TeamStats;
-    liveStats: TeamStats;
     teamNickname: string;
     theme: TeamTheme;
-    designation: 'homeTeam' | 'awayTeam' | undefined;
+    value: number; // TODO what is this for (?)
 };
 
 export type NextTeam = {
@@ -57,11 +53,6 @@ export type FixtureTeam = {
     nickName: string;
     score: number;
     theme: TeamTheme;
-}
-
-export type APIInfo = {
-    draw: DrawInfo;
-    ladder: LadderInfo;
 }
 
 export type LadderInfo = {
