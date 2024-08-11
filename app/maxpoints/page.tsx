@@ -7,6 +7,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { constructTeamData, constructTeamStats, teamSortFunction } from "../lib/nrl-draw-utils";
 import RoundFixture from "../ui/fixture/round-fixture";
+import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
 
 // export const metadata: Metadata = {
 //     title: 'NRL Max Points',
@@ -14,17 +15,16 @@ import RoundFixture from "../ui/fixture/round-fixture";
 
 export default function MaxPointsPage() {
     const fetcher = (url: string) => axios.get(url).then(res => res.data)
-    const { data: nrlInfo, error, isLoading } = useSWR('/api/seasondraw', fetcher);
+    const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
     
     if (error) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
     }
     if (isLoading) {
-        // TODO skeleton max points page
-        return <div className="px-8 py-6 flex flex-col gap-6">Loading...</div>;
+        return <SkeletonMaxPoints />;
     }
 
-    let nrlDraw: any = Object.values(nrlInfo);
+    let nrlDraw: any = Object.values(seasonDraw);
 
     // Construct list of teams manually
     const teamList: Array<TeamData> = constructTeamData(nrlDraw[0].filterTeams);
@@ -226,7 +226,7 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
 }
 
 function getLiveFixtures(liveMatches: Array<Match>, teamList: Array<TeamData>) {
-    if (liveMatches) {
+    if (liveMatches.length) {
         return (
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>

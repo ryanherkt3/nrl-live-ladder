@@ -1,5 +1,5 @@
 import LadderRow from "./ladder-row";
-import { TeamData, Match, DrawInfo, FilteredTeam } from "../../lib/definitions";
+import { TeamData, Match, DrawInfo } from "../../lib/definitions";
 import Fixtures from "../fixture/fixtures";
 import ByeToggleSection from "../bye-toggle";
 import { useState } from "react";
@@ -23,6 +23,11 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
         setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(showByes, a, b)
         }));
+    }
+
+    let nextRoundInfo;
+    if (currentRoundNo < NUMS.ROUNDS) {
+        nextRoundInfo = nrlInfo[currentRoundNo];
     }
     
     const drawInfo = currentRoundInfo[0];
@@ -77,7 +82,14 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(allTeams.slice(0, NUMS.FINALS_TEAMS), liveMatch, 1, byePoints, drawInfo)
+                    getLadderRow(
+                        allTeams.slice(0, NUMS.FINALS_TEAMS),
+                        liveMatch,
+                        1,
+                        byePoints,
+                        drawInfo,
+                        nextRoundInfo
+                    )
                 }
                 <div className="border-2 border-green-400"></div>
                 {
@@ -86,7 +98,8 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                         liveMatch, 
                         NUMS.FINALS_TEAMS + 1, 
                         byePoints,
-                        drawInfo
+                        drawInfo,
+                        nextRoundInfo
                     )
                 }
             </div>
@@ -101,26 +114,52 @@ function getLadderRow(
     indexAdd: number,
     byePoints: boolean,
     drawInfo: DrawInfo,
+    nextRoundInfo: DrawInfo | undefined,
 ) {
     return teamList.map((team: TeamData) => {
+        // Check if team is currently playing
         let isPlaying = false;
 
         if (liveMatch) {
             for (const match of liveMatch) {
                 isPlaying = match.awayTeam.nickName === team.teamNickname ||
                     match.homeTeam.nickName === team.teamNickname;
-                    
+
                 if (isPlaying) {
                     break;
                 }
             }
         }
+        
+        // Get team's next fixture if there is one
+        let filteredFixture = null;
+        let nextTeam = '';
+        let nextMatchUrl = '';
+
+        if (team.stats.played + team.stats.byes === drawInfo.selectedRoundId && nextRoundInfo) {
+            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                return team.teamNickname === fixture.homeTeam.nickName ||
+                    team.teamNickname === fixture.awayTeam.nickName;
+            });
+        }
+        else {
+            filteredFixture = drawInfo.fixtures.filter((fixture: Match) => {
+                return team.teamNickname === fixture.homeTeam.nickName ||
+                    team.teamNickname === fixture.awayTeam.nickName;
+            });
+        }
+
+        if (filteredFixture.length) {
+            nextTeam = team.teamNickname === filteredFixture[0].homeTeam.nickName ?
+                filteredFixture[0].awayTeam.theme.key :
+                filteredFixture[0].homeTeam.theme.key;
+            nextMatchUrl = `https://nrl.com${filteredFixture[0].matchCentreUrl}`
+        }
+        else if (drawInfo.selectedRoundId !== NUMS.ROUNDS) {
+            nextTeam = 'BYE';
+        }
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
-        
-        const filteredTeamInfo = drawInfo.filterTeams.filter((filterTeam: FilteredTeam) => {
-            return team.theme.key.replace('-', ' ') === filterTeam.name.toLowerCase()
-        });
 
         return <LadderRow
             key={team.theme.key}
@@ -128,7 +167,8 @@ function getLadderRow(
             position={ladderPos.toString()}
             isPlaying={isPlaying}
             byePoints={byePoints}
-            teamId={filteredTeamInfo[0].value}
+            nextTeam={nextTeam}
+            nextMatchUrl={nextMatchUrl}
         />;
     })
 }

@@ -2,7 +2,6 @@ export type TeamData = {
     stats: TeamStats;
     teamNickname: string;
     theme: TeamTheme;
-    value: number; // TODO what is this for (?)
 };
 
 export type NextTeam = {
@@ -55,18 +54,8 @@ export type FixtureTeam = {
     theme: TeamTheme;
 }
 
-export type LadderInfo = {
-    positions: TeamData[];
-}
-
 export type DrawInfo = {
     fixtures: Match[];
     byes: ByeTeam[];
     selectedRoundId: number;
-    filterTeams: FilteredTeam[];
-}
-
-export type FilteredTeam = {
-    name: string;
-    value: number;
 }

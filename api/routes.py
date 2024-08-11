@@ -22,16 +22,3 @@ def season_draw():
         )
 
     return rounds
-
-# TODO deprecate (?) (can use above call to get team's next opponent)
-# i.e. for a team pass next round isBye, round url (if it exists) and team nickname
-@app.route('/api/nextround', methods=['GET'])
-def next_round():
-    teamId = request.args.get('teamid')
-
-    apiUrl = f"https://www.nrl.com/draw/data?competition=111&team={teamId}"
-
-    return requests.get(apiUrl, headers=headers).json()
-
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)

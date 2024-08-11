@@ -25,7 +25,6 @@ export const constructTeamData = (teams: any) => {
                 theme: {
                     key: team.theme.key
                 },
-                value: team.value,
             }
         )
     }

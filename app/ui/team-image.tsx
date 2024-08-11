@@ -1,10 +1,10 @@
-export default function TeamImage({ imageLink, teamKey, }: {imageLink: string, teamKey: string}) {
-    const imgUrl = `https://www.nrl.com/.theme/${teamKey}/badge-basic24.svg?bust=202406240046`;
+export default function TeamImage({ matchLink, teamKey, }: {matchLink: string, teamKey: string}) {
+    const imgUrl = `https://www.nrl.com/.theme/${teamKey}/badge-basic24.svg`;
     const image = <img src={imgUrl} className="w-9"></img>;
     
-    if (imageLink) {
+    if (matchLink) {
         return (
-            <a href={imageLink} target="_blank">
+            <a href={matchLink} target="_blank">
                 {image}
             </a>
         );
