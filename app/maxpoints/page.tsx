@@ -1,6 +1,6 @@
 'use client';
 
-import { getShortCode, NUMS } from "../lib/utils";
+import { getNumberSuffix, getShortCode, NUMS } from "../lib/utils";
 import { DrawInfo, Match, TeamData } from "../lib/definitions";
 import clsx from "clsx";
 import useSWR from "swr";
@@ -72,12 +72,19 @@ export default function MaxPointsPage() {
                 See where your team stands in the race for Finals Football
             </div>
             <div className="flex flex-col">
+                <div className="w-full md:hidden flex flex-row items-center text-center py-1 font-semibold">
+                    <div className="w-[15%] mr-4"></div>
+                    <div className="w-[25%]">Points</div>
+                    <div className="w-[25%]">Max Points</div>
+                    <div className="w-[25%]">Best</div>
+                    <div className="w-[25%]">Worst</div>
+                </div>
                 {
-                    getTableRows(topTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatch)
+                    getTableRows(allTeams, topTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatch)
                 }
                 <div className="border-4 border-green-400"></div>
                 {
-                    getTableRows(bottomTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatch)
+                    getTableRows(allTeams, bottomTeams, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatch)
                 }
             </div>
         </div>
@@ -85,6 +92,7 @@ export default function MaxPointsPage() {
 }
 
 function getTableRows(
+    allTeams: Array<TeamData>,
     teamList: Array<TeamData>,
     firstPlaceMaxPts: number,
     lastPlacePts: number,
@@ -157,28 +165,44 @@ function getTableRows(
                             nickname === 'Wests Tigers' ? 'Tigers' : nickname
                         } {qualificationStatus}
                     </span>
-                    <span className="block md:hidden">
+                    <span 
+                        className={
+                            clsx(
+                                'block md:hidden',
+                                {
+                                    [`bg-${cssNickname}`]: isPlaying && !isEliminated,
+                                    'bg-faded': isPlaying && isEliminated,
+                                    'text-white': isPlaying && !isEliminated && cssNickname !== 'panthers',
+                                    'text-black': isPlaying && cssNickname === 'panthers',
+                                    'bg-transparent text-black': !isPlaying
+                                }
+                            )
+                        }
+                    >
                         { getShortCode(nickname) } {qualificationStatus}
                     </span>
                 </div>
-                <div className="w-full flex flex-row">
+                <div className="w-full hidden md:flex flex-row items-center">
                     {
                         getPointCells(pointValues, cssNickname, isEliminated)
                     }
                 </div>
+                {
+                    getLadderStatus(allTeams, pointValues, nickname)
+                }
             </div>
-        ) 
+        );
     });
 }
 
 // TODO fix pointValues type
 function getPointCells(pointValues: any, nickname: string, isEliminated: boolean) {
     const pointCells = [];
-    const commonClasses = 'flex-1 py-2';
+    const commonClasses = 'flex-1 py-2 h-full';
 
     const {min, max, currentPts, maxPoints} = pointValues;
 
-    const altBgMidPoint = (maxPoints + currentPts) / 2;
+    const altBgMidPoint = maxPoints === currentPts ? 0 : (maxPoints + currentPts) / 2;
 
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
@@ -234,6 +258,27 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
     }
     
     return pointCells;
+}
+
+// TODO fix pointValues type
+function getLadderStatus(teamList: Array<TeamData>, pointValues: any, nickname: String) {
+    const {currentPts, maxPoints} = pointValues;
+
+    const teamsAbove = teamList.filter((team: TeamData) => {
+        return team.stats.points > maxPoints
+    }).length;
+    const teamsBelow = teamList.filter((team: TeamData) => {
+        return team.teamNickname !== nickname && team.stats.maxPoints > currentPts
+    }).length;
+
+    return (
+        <div className="w-full md:hidden flex flex-row items-center">
+            <div className="w-[25%] py-1">{currentPts}</div>
+            <div className="w-[25%]">{maxPoints}</div>
+            <div className="w-[25%]">{getNumberSuffix(teamsAbove + 1)}</div>
+            <div className="w-[25%]">{getNumberSuffix(teamsBelow + 1)}</div>
+        </div>
+    );
 }
 
 function getLiveFixtures(liveMatches: Array<Match>, teamList: Array<TeamData>) {
