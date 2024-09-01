@@ -100,8 +100,10 @@ function getTableRows(
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
+        let isEliminated = false;
         if (maxPoints < minPointsForSpots.elim) {
             qualificationStatus = '(E)';
+            isEliminated = true;
         }
         else if (currentPoints > minPointsForSpots.t2) {
             qualificationStatus = '(T2)';
@@ -141,8 +143,10 @@ function getTableRows(
                             clsx(
                                 'hidden md:block',
                                 {
-                                    [`live-${cssNickname}`]: isPlaying,
-                                    'text-white': isPlaying,
+                                    [`live-${cssNickname}`]: isPlaying && !isEliminated,
+                                    'live-faded': isPlaying && isEliminated,
+                                    'text-white': isPlaying && cssNickname !== 'panthers',
+                                    'text-black': isPlaying && cssNickname === 'panthers',
                                     'bg-transparent text-black': !isPlaying
                                 }
                             )
@@ -157,7 +161,7 @@ function getTableRows(
                     </span>
                 </div>
                 {
-                    getPointCells(pointValues, cssNickname, qualificationStatus.includes('E'))
+                    getPointCells(pointValues, cssNickname, isEliminated)
                 }
             </div>
         ) 
