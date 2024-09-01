@@ -104,8 +104,9 @@ function getTableRows(
         const maxPoints = team.stats.maxPoints;
         
         const nickname = team.teamNickname;
-        const cssNickname = nickname.toLowerCase().replace(' ', '') +
-            (nickname === 'broncos' || nickname === 'roosters' ? '-gradient' : '');
+
+        const bgClassName = nickname.toLowerCase().replace(' ', '') +  
+            (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
@@ -152,10 +153,10 @@ function getTableRows(
                             clsx(
                                 'hidden md:block',
                                 {
-                                    [`bg-${cssNickname}`]: isPlaying && !isEliminated,
+                                    [`bg-${bgClassName}`]: isPlaying && !isEliminated,
                                     'bg-faded': isPlaying && isEliminated,
-                                    'text-white': isPlaying && !isEliminated && cssNickname !== 'panthers',
-                                    'text-black': isPlaying && cssNickname === 'panthers',
+                                    'text-white': isPlaying && !isEliminated && nickname !== 'Panthers',
+                                    'text-black': isPlaying && nickname === 'Panthers',
                                     'bg-transparent text-black': !isPlaying
                                 }
                             )
@@ -170,10 +171,10 @@ function getTableRows(
                             clsx(
                                 'block md:hidden',
                                 {
-                                    [`bg-${cssNickname}`]: isPlaying && !isEliminated,
+                                    [`bg-${bgClassName}`]: isPlaying && !isEliminated,
                                     'bg-faded': isPlaying && isEliminated,
-                                    'text-white': isPlaying && !isEliminated && cssNickname !== 'panthers',
-                                    'text-black': isPlaying && cssNickname === 'panthers',
+                                    'text-white': isPlaying && !isEliminated && nickname !== 'Panthers',
+                                    'text-black': isPlaying && nickname === 'Panthers',
                                     'bg-transparent text-black': !isPlaying
                                 }
                             )
@@ -184,7 +185,7 @@ function getTableRows(
                 </div>
                 <div className="w-full hidden md:flex flex-row items-center">
                     {
-                        getPointCells(pointValues, cssNickname, isEliminated)
+                        getPointCells(pointValues, nickname.toLowerCase(), isEliminated)
                     }
                 </div>
                 {
@@ -208,14 +209,14 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
         if (i >= currentPts && i <= maxPoints) {
 
             const useGradientBg = !isEliminated && i === altBgMidPoint &&
-                (nickname === 'roosters' || nickname === 'broncos');
+                (nickname === 'Roosters' || nickname === 'Broncos');
             const useAltBg = !isEliminated && i > altBgMidPoint &&
                 (
-                    nickname === 'roosters' && maxPoints - i <= i - currentPts ||
-                    nickname === 'broncos' && maxPoints - i <= i - currentPts
+                    nickname === 'Roosters' && maxPoints - i <= i - currentPts ||
+                    nickname === 'Broncos' && maxPoints - i <= i - currentPts
                 );
-            const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
-                (!isEliminated && useAltBg && nickname === 'broncos');
+            const blackTextBg = isEliminated || nickname === 'Panthers' || nickname === 'Eels' ||
+                (!isEliminated && useAltBg && nickname === 'Broncos');
 
             const bgName = `bg-${nickname}${useGradientBg ? '-gradient' : useAltBg ? '-alt' : ''}`;
 
@@ -234,17 +235,7 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
                     }
                 >
                     {i === currentPts || i === maxPoints 
-                        ? <span 
-                            className={
-                                clsx(
-                                    {
-                                        'hidden xs:block': i === currentPts,
-                                        'absolute z-10': i === currentPts || i === maxPoints,
-                                        'relative': i !== currentPts || i !== maxPoints,
-                                    }
-                                )        
-                            }
-                        >{i}</span>
+                        ? <span>{i}</span>
                         : null
                     }
                 </div>
@@ -264,19 +255,19 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
 function getLadderStatus(teamList: Array<TeamData>, pointValues: any, nickname: String) {
     const {currentPts, maxPoints} = pointValues;
 
-    const teamsAbove = teamList.filter((team: TeamData) => {
+    const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         return team.stats.points > maxPoints
     }).length;
-    const teamsBelow = teamList.filter((team: TeamData) => {
-        return team.teamNickname !== nickname && team.stats.maxPoints > currentPts
+    const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
+        return team.teamNickname !== nickname && team.stats.maxPoints >= currentPts
     }).length;
 
     return (
         <div className="w-full md:hidden flex flex-row items-center">
             <div className="w-[25%] py-1">{currentPts}</div>
             <div className="w-[25%]">{maxPoints}</div>
-            <div className="w-[25%]">{getNumberSuffix(teamsAbove + 1)}</div>
-            <div className="w-[25%]">{getNumberSuffix(teamsBelow + 1)}</div>
+            <div className="w-[25%]">{getNumberSuffix(teamsCanFinishAbove + 1)}</div>
+            <div className="w-[25%]">{getNumberSuffix(teamsCanFinishBelow + 1)}</div>
         </div>
     );
 }
