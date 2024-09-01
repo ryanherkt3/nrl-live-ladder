@@ -185,7 +185,7 @@ function getTableRows(
                 </div>
                 <div className="w-full hidden md:flex flex-row items-center">
                     {
-                        getPointCells(pointValues, nickname.toLowerCase(), isEliminated)
+                        getPointCells(pointValues, nickname.toLowerCase().replace(' ', ''), isEliminated)
                     }
                 </div>
                 {
@@ -209,14 +209,14 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
         if (i >= currentPts && i <= maxPoints) {
 
             const useGradientBg = !isEliminated && i === altBgMidPoint &&
-                (nickname === 'Roosters' || nickname === 'Broncos');
+                (nickname === 'roosters' || nickname === 'broncos');
             const useAltBg = !isEliminated && i > altBgMidPoint &&
                 (
-                    nickname === 'Roosters' && maxPoints - i <= i - currentPts ||
-                    nickname === 'Broncos' && maxPoints - i <= i - currentPts
+                    nickname === 'roosters' && maxPoints - i <= i - currentPts ||
+                    nickname === 'broncos' && maxPoints - i <= i - currentPts
                 );
-            const blackTextBg = isEliminated || nickname === 'Panthers' || nickname === 'Eels' ||
-                (!isEliminated && useAltBg && nickname === 'Broncos');
+            const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
+                (!isEliminated && useAltBg && nickname === 'broncos');
 
             const bgName = `bg-${nickname}${useGradientBg ? '-gradient' : useAltBg ? '-alt' : ''}`;
 
