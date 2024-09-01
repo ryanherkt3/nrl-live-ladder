@@ -145,7 +145,7 @@ function getTableRows(
                                 {
                                     [`live-${cssNickname}`]: isPlaying && !isEliminated,
                                     'live-faded': isPlaying && isEliminated,
-                                    'text-white': isPlaying && cssNickname !== 'panthers',
+                                    'text-white': isPlaying && !isEliminated && cssNickname !== 'panthers',
                                     'text-black': isPlaying && cssNickname === 'panthers',
                                     'bg-transparent text-black': !isPlaying
                                 }
