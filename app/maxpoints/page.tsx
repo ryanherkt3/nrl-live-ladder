@@ -180,7 +180,7 @@ function getTableRows(
                             )
                         }
                     >
-                        { getShortCode(nickname) } {qualificationStatus}
+                        {getShortCode(nickname)} {qualificationStatus}
                     </span>
                 </div>
                 <div className="w-full hidden md:flex flex-row items-center">
