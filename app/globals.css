@@ -47,136 +47,85 @@
 
 .bg-broncos {
     background: #55183A;
-    border: 2px solid #55183A;
+}
+.bg-broncos-gradient,
+.live-broncos-gradient {
+    background: linear-gradient(to left, #FFCE34 50%, #55183A 50%);    
 }
 .bg-broncos-alt {
-    background: #FFCE34;
-    border: 2px solid #FFCE34;
+    background: #FFCE34;    
 }
-.bg-raiders {
-    background: #0C8E48;
-    border: 2px solid #0C8E48;
-}
-.bg-bulldogs {
-    background: #042471;
-    border: 2px solid #042471;
-}
-.bg-sharks {
-    background: #0772A8;
-    border: 2px solid #0772A8;
-}
-.bg-dolphins {
-    background: #C7181D;
-    border: 2px solid #C7181D;
-}
-.bg-titans {
-    background: #0955A2;
-    border: 2px solid #0955A2;
-}
-.bg-seaeagles {
-    background: #541739;
-    border: 2px solid #541739;
-}
-.bg-storm {
-    background: #4F378B;
-    border: 2px solid #4F378B;
-}
-.bg-knights {
-    background: #022789;
-    border: 2px solid #022789;
-}
-.bg-cowboys {
-    background: #111B37;
-    border: 2px solid #111B37;
-}
-.bg-eels {
-    background: #FFD327;
-    border: 2px solid #FFD327;
-}
-.bg-panthers {
-    background: #F8A1C6;
-    border: 2px solid #F8A1C6;
-}
-.bg-rabbitohs {
-    background: #03502F;
-    border: 2px solid #03502F;
-}
-.bg-dragons {
-    background: #AF1E29;
-    border: 2px solid #AF1E29;
-}
-.bg-roosters {
-    background: #061E45;
-    border: 2px solid #061E45;
-}
-.bg-roosters-alt {
-    background: #E82C2E;
-    border: 2px solid #E82C2E;
-}
-.bg-warriors {
-    background: #000000;
-    border: 2px solid #000000;
-}
-.bg-weststigers {
-    background: #DF6A03;
-    border: 2px solid #DF6A03;
-}
-.bg-faded {
-    background: #9CA3AF;
-    border: 2px solid #9CA3AF;
-}
-
-.live-broncos {
-    background: #55183A;
-}
+.bg-raiders,
 .live-raiders {
     background: #0C8E48;
 }
+.bg-bulldogs,
 .live-bulldogs {
     background: #042471;
 }
+.bg-sharks,
 .live-sharks {
     background: #0772A8;
 }
+.bg-dolphins,
 .live-dolphins {
     background: #C7181D;
 }
+.bg-titans,
 .live-titans {
     background: #0955A2;
 }
+.bg-seaeagles,
 .live-seaeagles {
     background: #541739;
 }
+.bg-storm,
 .live-storm {
     background: #4F378B;
 }
+.bg-knights,
 .live-knights {
     background: #022789;
 }
+.bg-cowboys,
 .live-cowboys {
     background: #111B37;
 }
+.bg-eels,
 .live-eels {
     background: #FFD327;
 }
+.bg-panthers,
 .live-panthers {
     background: #F8A1C6;
 }
+.bg-rabbitohs,
 .live-rabbitohs {
     background: #03502F;
 }
+.bg-dragons,
 .live-dragons {
     background: #AF1E29;
 }
-.live-roosters {
+.bg-roosters {
     background: #061E45;
 }
+.bg-roosters-gradient,
+.live-roosters-gradient {
+    background: linear-gradient(to left, #E82C2E 50%, #061E45 50%);    
+}
+.bg-roosters-alt {
+    background: #E82C2E;
+}
+.bg-warriors,
 .live-warriors {
     background: #000000;
 }
+.bg-weststigers,
 .live-weststigers {
     background: #DF6A03;
 }
+.bg-faded,
 .live-faded {
     background: #9CA3AF;
 }

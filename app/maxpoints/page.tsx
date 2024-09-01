@@ -96,7 +96,8 @@ function getTableRows(
         const maxPoints = team.stats.maxPoints;
         
         const nickname = team.teamNickname;
-        const cssNickname = nickname.toLowerCase().replace(' ', '');
+        const cssNickname = nickname.toLowerCase().replace(' ', '') +
+            (nickname === 'broncos' || nickname === 'roosters' ? '-gradient' : '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
@@ -160,9 +161,11 @@ function getTableRows(
                         { getShortCode(nickname) } {qualificationStatus}
                     </span>
                 </div>
-                {
-                    getPointCells(pointValues, cssNickname, isEliminated)
-                }
+                <div className="w-full flex flex-row">
+                    {
+                        getPointCells(pointValues, cssNickname, isEliminated)
+                    }
+                </div>
             </div>
         ) 
     });
@@ -171,13 +174,18 @@ function getTableRows(
 // TODO fix pointValues type
 function getPointCells(pointValues: any, nickname: string, isEliminated: boolean) {
     const pointCells = [];
-    const commonClasses = 'w-[2%] sm:w-[2.5%] sm:w-[3%] py-1';
+    const commonClasses = 'flex-1 py-2';
 
     const {min, max, currentPts, maxPoints} = pointValues;
 
+    const altBgMidPoint = (maxPoints + currentPts) / 2;
+
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
-            const useAltBg = !isEliminated && 
+
+            const useGradientBg = !isEliminated && i === altBgMidPoint &&
+                (nickname === 'roosters' || nickname === 'broncos');
+            const useAltBg = !isEliminated && i > altBgMidPoint &&
                 (
                     nickname === 'roosters' && maxPoints - i <= i - currentPts ||
                     nickname === 'broncos' && maxPoints - i <= i - currentPts
@@ -185,7 +193,7 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
             const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
                 (!isEliminated && useAltBg && nickname === 'broncos');
 
-            const bgName = `bg-${nickname}${useAltBg ? '-alt' : ''}`;
+            const bgName = `bg-${nickname}${useGradientBg ? '-gradient' : useAltBg ? '-alt' : ''}`;
 
             pointCells.push(
                 <div 
@@ -206,8 +214,7 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
                             className={
                                 clsx(
                                     {
-                                        'hidden xs:block left-2': i === currentPts,
-                                        'right-5 sm:right-3 md:right-2': i === maxPoints,
+                                        'hidden xs:block': i === currentPts,
                                         'absolute z-10': i === currentPts || i === maxPoints,
                                         'relative': i !== currentPts || i !== maxPoints,
                                     }
