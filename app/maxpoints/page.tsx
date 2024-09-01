@@ -144,8 +144,8 @@ function getTableRows(
                             clsx(
                                 'hidden md:block',
                                 {
-                                    [`live-${cssNickname}`]: isPlaying && !isEliminated,
-                                    'live-faded': isPlaying && isEliminated,
+                                    [`bg-${cssNickname}`]: isPlaying && !isEliminated,
+                                    'bg-faded': isPlaying && isEliminated,
                                     'text-white': isPlaying && !isEliminated && cssNickname !== 'panthers',
                                     'text-black': isPlaying && cssNickname === 'panthers',
                                     'bg-transparent text-black': !isPlaying
