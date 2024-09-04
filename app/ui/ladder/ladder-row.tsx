@@ -65,10 +65,10 @@ function getNextFixture(nextTeam: string, nextMatchUrl: string) {
     switch (nextTeam) {
         case 'BYE':
             return 'BYE';
-        case nextTeam:
-            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} />;
-        default:
+        case '':
             return null;
+        default:
+            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} />;
     }
 }
 
