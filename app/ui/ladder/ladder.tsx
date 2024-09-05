@@ -136,11 +136,19 @@ function getLadderRow(
         let nextTeam = '';
         let nextMatchUrl = '';
 
-        if (team.stats.played + team.stats.byes === drawInfo.selectedRoundId && nextRoundInfo) {
-            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                return team.teamNickname === fixture.homeTeam.nickName ||
-                    team.teamNickname === fixture.awayTeam.nickName;
-            });
+        if (team.stats.played + team.stats.byes === drawInfo.selectedRoundId) {
+            if (nextRoundInfo) {
+                filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                    return team.teamNickname === fixture.homeTeam.nickName ||
+                        team.teamNickname === fixture.awayTeam.nickName;
+                });
+            }
+            else if (drawInfo.selectedRoundId < NUMS.ROUNDS) {
+                filteredFixture = drawInfo.fixtures.filter((fixture: Match) => {
+                    return team.teamNickname === fixture.homeTeam.nickName ||
+                        team.teamNickname === fixture.awayTeam.nickName;
+                });
+            }
         }
         else {
             filteredFixture = drawInfo.fixtures.filter((fixture: Match) => {
@@ -149,17 +157,44 @@ function getLadderRow(
             });
         }
 
-        if (filteredFixture.length) {
+        const ladderPos = teamList.indexOf(team) + indexAdd;
+
+        if (filteredFixture && filteredFixture.length) {
             nextTeam = team.teamNickname === filteredFixture[0].homeTeam.nickName ?
                 filteredFixture[0].awayTeam.theme.key :
                 filteredFixture[0].homeTeam.theme.key;
             nextMatchUrl = `https://nrl.com${filteredFixture[0].matchCentreUrl}`
         }
-        else if (drawInfo.selectedRoundId !== NUMS.ROUNDS) {
+        else if (drawInfo.selectedRoundId < NUMS.ROUNDS) {
             nextTeam = 'BYE';
         }
+        else if (ladderPos <= NUMS.FINALS_TEAMS) {
+            let finalsOppLadderPos = ladderPos;
 
-        const ladderPos = teamList.indexOf(team) + indexAdd;
+            // Finals Week 1: 1v4, 2v3, 5v8, 6v7
+            switch (ladderPos) {
+                case 1:
+                case 5:
+                    finalsOppLadderPos += 3;
+                    break;
+                case 4:
+                case 8:
+                    finalsOppLadderPos -= 3;
+                    break;
+                case 2:
+                case 6:
+                    finalsOppLadderPos += 1;
+                    break;
+                case 3:
+                case 7:
+                    finalsOppLadderPos -= 1;
+                    break;
+                default:
+                    break;
+            }
+            
+            nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+        }
 
         return <LadderRow
             key={team.theme.key}
