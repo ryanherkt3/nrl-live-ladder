@@ -32,8 +32,10 @@ export default function RoundFixture(
     const homeTeamPos = getNumberSuffix(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getNumberSuffix(ladder.indexOf(awayTeamObj[0]) + 1);
     
+    const gameLink = `https://nrl.com${data.matchCentreUrl}`;
+
     return (
-        <div className="flex flex-col">
+        <a className="flex flex-col" href={gameLink} target="_blank">
             <span 
                 className={
                     clsx(
@@ -41,7 +43,7 @@ export default function RoundFixture(
                         {
                             'bg-green-400': isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
-                            'bg-gray-400': !isLiveMatch && !isFullTime,
+                            'bg-blue-400': !isLiveMatch && !isFullTime,
                         }
                     )
                 }
@@ -57,7 +59,7 @@ export default function RoundFixture(
                 }   
                 <TeamSection teamName={data.awayTeam.nickName} imgKey={data.awayTeam.theme.key} position={awayTeamPos} />
             </div>
-        </div>
+        </a>
     );
 }
 
