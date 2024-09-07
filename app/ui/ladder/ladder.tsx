@@ -20,9 +20,9 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     const currentRoundNo = currentRoundInfo[0].selectedRoundId;
 
     const updateAllTeams = (showByes: boolean) => {
-        setAllTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+        allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(showByes, a, b)
-        }));
+        });
     }
 
     let nextRoundInfo;
@@ -49,12 +49,10 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
 
     const [byePoints, setByePoints] = useState(true);
     
-    const [allTeams, setAllTeams] = useState(
-        constructTeamStats(nrlInfo, currentRoundNo, teamList)
-            .sort((a: TeamData, b: TeamData) => {
-                return teamSortFunction(byePoints, a, b)
-            })
-    );
+    let allTeams = constructTeamStats(nrlInfo, currentRoundNo, teamList)
+        .sort((a: TeamData, b: TeamData) => {
+            return teamSortFunction(byePoints, a, b)
+        });
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -67,17 +65,17 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
             }
             <div>
                 <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
-                    <div className="w-[10%] md:w-[5%]">#</div>
+                    <div className="w-[10%] md:w-[5%]" title="Position">#</div>
                     <div className="hidden sm:block w-[15%] sm:w-[8%]">Team</div>
                     <div className="w-[25%] sm:w-[15%]"></div>
-                    <div className="w-[15%] sm:w-[6%]">P</div>
-                    <div className="hidden sm:block sm:w-[6%]">W</div>
-                    <div className="hidden sm:block sm:w-[6%]">D</div>
-                    <div className="hidden sm:block sm:w-[6%]">L</div>
-                    <div className="hidden sm:block sm:w-[6%]">B</div>
-                    <div className="hidden md:block w-[6%]">PF</div>
-                    <div className="hidden md:block w-[6%]">PA</div>
-                    <div className="hidden xs:block w-[15%] sm:w-[6%]">PD</div>
+                    <div className="w-[15%] sm:w-[6%]" title="Played">P</div>
+                    <div className="hidden sm:block sm:w-[6%]" title="Won">W</div>
+                    <div className="hidden sm:block sm:w-[6%]" title="Drawn">D</div>
+                    <div className="hidden sm:block sm:w-[6%]" title="Lost">L</div>
+                    <div className="hidden sm:block sm:w-[6%]" title="Byes">B</div>
+                    <div className="hidden md:block w-[6%]" title="Points For">PF</div>
+                    <div className="hidden md:block w-[6%]" title="Points Against">PA</div>
+                    <div className="hidden xs:block w-[15%] sm:w-[6%]" title="Points Difference">PD</div>
                     <div className="w-[25%] sm:w-[15%] md:w-[8%]">Next</div>
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
