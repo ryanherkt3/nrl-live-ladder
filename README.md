@@ -32,14 +32,14 @@ And browse to http://localhost:3000.
 ### Website Features
 
 * Live ladder & fixtures - automatic updates of the ladder and fixtures as they happen, so you don't have to refresh the page.
-* "No Byes" ladder - use the toggles at the top of the page to view the ladder as if bye points counted for nothing.
-* "Max points" page - see how high (or low) your team can finish on the ladder with a visual chart showing where each team stands in the race for Finals Football.
+* "No Byes" ladder - use the toggles at the top of the live ladder page to view the ladder as if bye points counted for nothing.
+* Live "max points" page - see how high (or low) your team can finish on the ladder with a visual chart (or table if on mobile) showing where each team stands in the race for Finals Football.
 
 ### Future improvements
 
 * Make SWR requests on the main page once a minute instead of infrequently.
 * Have the game clock for live fixtures update every second.
-* Make a "live" version of the "Max points" page.
+* Ladder predictor page
 
 ### Bug reports, Feature requests
 
