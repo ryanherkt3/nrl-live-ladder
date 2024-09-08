@@ -63,6 +63,14 @@ export default function Fixtures(
     );
 }
 
+/**
+ * Get the byes section for display in the Fixtures component, which shows
+ * the team(s) currently on a bye
+ *
+ * @param {DrawInfo} drawInfo information about the current round
+ * @param {boolean} inFinalsFootball if finals football is being played 
+ * @returns HTML object / null if inFinalsFootball is true
+ */
 function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
     // No teams on byes in finals football
     if (inFinalsFootball) {

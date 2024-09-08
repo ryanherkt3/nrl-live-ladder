@@ -1,37 +1,48 @@
 import { TeamData } from "./definitions";
 import { NUMS } from "./utils";
 
+/**
+ * Construct the data for a team (statistics, team name, theme key)
+ *
+ * @param {any} teams (TODO fix type)
+ * @returns {Array<TeamData>} the list of teams
+ */
 export const constructTeamData = (teams: any) => {
     const teamList: Array<TeamData> = [];
 
     for (const team of teams) {
-        teamList.push(
-            {
-                stats: 
-                {
-                    played: 0,
-                    wins: 0,
-                    drawn: 0,
-                    lost: 0,
-                    byes: 0,
-                    'points for': 0,
-                    'points against': 0,
-                    'points difference': 0,
-                    points: 0,
-                    noByePoints: 0,
-                    maxPoints: 0,
-                },
-                teamNickname: team.name,
-                theme: {
-                    key: team.theme.key
-                },
-            }
-        )
+        teamList.push({
+            stats: {
+                played: 0,
+                wins: 0,
+                drawn: 0,
+                lost: 0,
+                byes: 0,
+                'points for': 0,
+                'points against': 0,
+                'points difference': 0,
+                points: 0,
+                noByePoints: 0,
+                maxPoints: 0,
+            },
+            teamNickname: team.name,
+            theme: {
+                key: team.theme.key
+            },
+        })
     }
 
     return teamList;
 }
 
+/**
+ * Construct a team's statistics (wins, points etc)
+ *
+ * @param {any} seasonDraw the fixtures list (TODO fix type)
+ * @param {number} currentRoundNo 
+ * @param {any} teams (TODO fix type)
+ * @returns {Array<TeamData>} the list of teams
+ */
 export const constructTeamStats = (seasonDraw: any, currentRoundNo: number, teams: any) => {
     const getMaxPoints = (losses: number, draws: number) => {
         const byes = NUMS.BYES;
@@ -96,6 +107,18 @@ export const constructTeamStats = (seasonDraw: any, currentRoundNo: number, team
     return teams;
 }
 
+/**
+ * Function to sort the list of teams to construct a ladder in descending order by:
+ * 1. Points
+ * 2. Points differential
+ *
+ * TODO include other sorting modes
+ *
+ * @param {boolean} showByes if the bye toggle (if it exists) is turned on
+ * @param {teamData} a team one 
+ * @param {teamData} b team two
+ * @returns {boolean} which team (if any) should be ranked higher
+ */
 export const teamSortFunction = (showByes: boolean, a: TeamData, b: TeamData) => {
     if (showByes) {
         if (b.stats.points !== a.stats.points) {

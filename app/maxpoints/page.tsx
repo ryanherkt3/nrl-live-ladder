@@ -1,6 +1,6 @@
 'use client';
 
-import { getNumberSuffix, getShortCode, NUMS } from "../lib/utils";
+import { getOrdinalNumber, getShortCode, NUMS } from "../lib/utils";
 import { DrawInfo, Match, TeamData } from "../lib/definitions";
 import clsx from "clsx";
 import useSWR from "swr";
@@ -91,12 +91,24 @@ export default function MaxPointsPage() {
     );
 }
 
+/**
+ * Get the rows for display on the page, split between the top 8 and bottom teams
+ *
+ * @param {Array<TeamData>} allTeams an object with all the teams
+ * @param {Array<TeamData>} teamList an object with a subset of all the teams (e.g. the top 8 teams) 
+ * @param {number} firstPlaceMaxPts the max points the first placed team can get
+ * @param {number} lastPlacePts the max points the last placed team can get
+ * @param {any} minPointsForSpots an object with the points required to attain a certain status 
+ * (e.g top 2; TODO fix type) 
+ * @param {Array<Match>} liveMatch a list of the ongoing match(es) 
+ * @returns 
+ */
 function getTableRows(
     allTeams: Array<TeamData>,
     teamList: Array<TeamData>,
     firstPlaceMaxPts: number,
     lastPlacePts: number,
-    minPointsForSpots: any, // TODO fix type
+    minPointsForSpots: any,
     liveMatch: Array<Match>
 ) {
     return teamList.map((team: TeamData) => {
@@ -195,7 +207,16 @@ function getTableRows(
     });
 }
 
-// TODO fix pointValues type
+/**
+ * Get the individual point cells for display on the desktop page.
+ * Show the point value if a cell value is equal to either the team's current
+ * or max points values.
+ *
+ * @param {any} pointValues (TODO fix type) 
+ * @param {string} nickname
+ * @param {boolean} isEliminated
+ * @returns {Array<Object>} HTML objects representing the point cells
+ */
 function getPointCells(pointValues: any, nickname: string, isEliminated: boolean) {
     const pointCells = [];
     const commonClasses = 'flex-1 py-2 h-full';
@@ -206,7 +227,6 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
 
     for (let i = min; i <= max; i++) {
         if (i >= currentPts && i <= maxPoints) {
-
             const useGradientBg = !isEliminated && i === altBgMidPoint &&
                 (nickname === 'roosters' || nickname === 'broncos');
             const useAltBg = !isEliminated && i > altBgMidPoint &&
@@ -250,7 +270,15 @@ function getPointCells(pointValues: any, nickname: string, isEliminated: boolean
     return pointCells;
 }
 
-// TODO fix pointValues type
+/**
+ * Get the ladder status for a team to be displayed on mobile devices.
+ * Show the current & max points, and the lowest and highest ladder positions.
+ *
+ * @param {Array<TeamData>} teamList list of teams
+ * @param {any} pointValues (TODO fix type)
+ * @param {String} nickname the team's name (e.g. Panthers)
+ * @returns HTML object
+ */
 function getLadderStatus(teamList: Array<TeamData>, pointValues: any, nickname: String) {
     const {currentPts, maxPoints} = pointValues;
 
@@ -265,12 +293,19 @@ function getLadderStatus(teamList: Array<TeamData>, pointValues: any, nickname: 
         <div className="w-full md:hidden flex flex-row items-center">
             <div className="w-[25%] py-1">{currentPts}</div>
             <div className="w-[25%]">{maxPoints}</div>
-            <div className="w-[25%]">{getNumberSuffix(teamsCanFinishAbove + 1)}</div>
-            <div className="w-[25%]">{getNumberSuffix(teamsCanFinishBelow + 1)}</div>
+            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishAbove + 1)}</div>
+            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishBelow + 1)}</div>
         </div>
     );
 }
 
+/**
+ * Get the current live matches for display
+ *
+ * @param {Array<Match>} liveMatches
+ * @param {Array<TeamData>} teamList list of teams
+ * @returns HTML object or null if no live matches exist
+ */
 function getLiveFixtures(liveMatches: Array<Match>, teamList: Array<TeamData>) {
     if (liveMatches.length) {
         return (

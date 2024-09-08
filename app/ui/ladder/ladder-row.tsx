@@ -25,7 +25,9 @@ export default function LadderRow(
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
                 {
-                    getLadderPosition(isPlaying, position)
+                    isPlaying ?
+                        <div className="w-6 h-6 border rounded-full live-match border-red-600"></div> :
+                        <span>{position}</span>
                 }
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
@@ -61,6 +63,13 @@ export default function LadderRow(
     );
 }
 
+/**
+ * Get a team's next fixture (bye / nothing / image of logo of next opponent)
+ *
+ * @param {string} nextTeam 
+ * @param {string} nextMatchUrl 
+ * @returns {string | undefined | TeamImage}
+ */
 function getNextFixture(nextTeam: string, nextMatchUrl: string) {
     switch (nextTeam) {
         case 'BYE':
@@ -70,12 +79,4 @@ function getNextFixture(nextTeam: string, nextMatchUrl: string) {
         default:
             return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} />;
     }
-}
-
-function getLadderPosition(isPlaying: boolean, position: String) {
-    if (isPlaying) {
-        return <div className="w-6 h-6 border rounded-full live-match border-red-600"></div>;
-    }
-
-    return <span>{position}</span>;
 }

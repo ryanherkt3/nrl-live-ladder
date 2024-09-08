@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { Match, TeamData } from "../../lib/definitions";
 import moment from "moment";
-import { getNumberSuffix } from "../../lib/utils";
+import { getOrdinalNumber } from "../../lib/utils";
 import Score from "./score";
 import TeamSection from "./team-section";
 
@@ -29,8 +29,8 @@ export default function RoundFixture(
     const awayTeamObj = ladder.filter((team: TeamData) => {
         return team.teamNickname === data.awayTeam.nickName;
     });
-    const homeTeamPos = getNumberSuffix(ladder.indexOf(homeTeamObj[0]) + 1);
-    const awayTeamPos = getNumberSuffix(ladder.indexOf(awayTeamObj[0]) + 1);
+    const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
+    const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
     
     const gameLink = `https://nrl.com${data.matchCentreUrl}`;
 
@@ -63,6 +63,12 @@ export default function RoundFixture(
     );
 }
 
+/**
+ * Get the date for a fixture (e.g. Friday 6th September)
+ *
+ * @param {string} date the fixture's date (e.g. 2024-09-05T09:50:00Z)
+ * @returns {string}
+ */
 function getDateString(date: string) {
     let dateString = new Date(date).toLocaleString(
         'en-NZ', 
@@ -75,9 +81,19 @@ function getDateString(date: string) {
 
     const number = parseInt(dateString.split(', ')[1].split(' ')[0]);
 
-    return dateString.replace(',', '').replace(number.toString(), getNumberSuffix(number));
+    return dateString.replace(',', '').replace(number.toString(), getOrdinalNumber(number));
 }
 
+/**
+ * Get the match information to be displayed as part of a fixture.
+ *
+ * If the match has not kicked off, the kick off time is displayed. Otherwise,
+ * the team scores will be displayed
+ *
+ * @param {Match} matchData data related to the match
+ * @param {string} winningTeam the team (if any) that is winning
+ * @returns HTML object
+ */
 function getMatchState(matchData: Match, winningTeam: string) {
     let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
     
@@ -104,6 +120,12 @@ function getMatchState(matchData: Match, winningTeam: string) {
     )
 }
 
+/**
+ * Get the status of a match (e.g. 1st Half, Full Time)
+ *
+ * @param {Match} matchData data related to the match
+ * @returns HTML object
+ */
 function getMatchContext(matchData: Match) {
     if (matchData.matchState === 'FullTime') {
         return (

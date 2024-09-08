@@ -106,6 +106,17 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
     );
 }
 
+/**
+ * Get a row in the ladder
+ *
+ * @param {Array<TeamData>} teamList 
+ * @param {Array<Match> | undefined} liveMatch the ongoing match(es)
+ * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
+ * @param {boolean} byePoints 
+ * @param {DrawInfo} drawInfo information about the current round (?)
+ * @param {DrawInfo | undefined} nextRoundInfo information about the next round if it exists
+ * @returns {LadderRow} React object
+ */
 function getLadderRow(
     teamList: Array<TeamData>,
     liveMatch: Array<Match> | undefined,

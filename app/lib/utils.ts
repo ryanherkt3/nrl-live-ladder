@@ -1,3 +1,9 @@
+/**
+ * Get the three letter code for a club
+ *
+ * @param {string} name 
+ * @returns {String}
+ */
 export const getShortCode = (name: string) => {
     switch(name) {
         case 'Broncos':
@@ -39,20 +45,26 @@ export const getShortCode = (name: string) => {
     }
 }
 
-export const getNumberSuffix = (num: number) => {
-    if ([1, 21].includes(num)) {
-        return `${num}st`;
+/**
+ * Converts a cardinal to an ordinal one (e.g 2 -> 2nd)
+ *
+ * @param {number} cardinalNo 
+ * @returns {String} the ordinal number
+ */
+export const getOrdinalNumber = (cardinalNo: number) => {
+    if ([1, 21].includes(cardinalNo)) {
+        return `${cardinalNo}st`;
     }
 
-    if ([2, 22].includes(num)) {
-        return `${num}nd`;
+    if ([2, 22].includes(cardinalNo)) {
+        return `${cardinalNo}nd`;
     }
 
-    if ([3, 23].includes(num)) {
-        return `${num}rd`;
+    if ([3, 23].includes(cardinalNo)) {
+        return `${cardinalNo}rd`;
     }
 
-    return `${num}th`;
+    return `${cardinalNo}th`;
 }
 
 export const NUMS = Object.freeze({
