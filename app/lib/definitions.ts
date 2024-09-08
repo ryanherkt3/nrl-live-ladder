@@ -36,6 +36,7 @@ export type Match = {
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;
     clock: MatchTime;
+    isCurrentRound: boolean;
 };
 
 export type ByeTeam = {
