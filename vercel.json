@@ -2,5 +2,10 @@
     "routes": [{
         "src": "/api/(.*)",
         "dest": "api/routes.py"
-    }]
+    }],
+    "functions": {
+        "api/routes.py": {
+            "maxDuration": 30
+        }
+    }
 }

@@ -1,12 +1,3 @@
-export const getNRLInfo = async () => {
-    const apiUrl = `${process.env.FLASK_API_URL}/api/nrlinfo`;
-    
-    const nrlInfoReq = await fetch(apiUrl, {cache: "no-store"});
-    const nrlInfoReqJson = nrlInfoReq.json();
-
-    return nrlInfoReqJson;
-}
-
 export const getShortCode = (name: string) => {
     switch(name) {
         case 'Broncos':

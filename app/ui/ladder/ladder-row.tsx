@@ -1,9 +1,6 @@
 import { TeamData } from "../../lib/definitions";
-import { getShortCode, NUMS } from "../../lib/utils";
-import SkeletonByeCell from "../skeletons/skeleton-bye-cell";
+import { getShortCode } from "../../lib/utils";
 import TeamImage from "../team-image";
-import axios from "axios";
-import useSWRImmutable from "swr/immutable";
 
 export default function LadderRow(
     { 
@@ -11,21 +8,18 @@ export default function LadderRow(
         position,
         isPlaying,
         byePoints,
-        teamId
+        nextTeam,
+        nextMatchUrl
     }: { 
         teamData: TeamData;
         position: String;
         isPlaying: boolean;
         byePoints: boolean;
-        teamId: number;
+        nextTeam: string;
+        nextMatchUrl: string;
     }
 ) {
-    let statsData = teamData.liveStats || teamData.stats;
-    
-    const fetcher = (url: string) => axios.get(url).then(res => res.data)
-    const nextRound = useSWRImmutable(`/api/nextround?teamid=${teamId}`, fetcher);
-
-    const roundIndex = statsData.played + statsData.byes;
+    const statsData = teamData.stats;
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
@@ -35,7 +29,7 @@ export default function LadderRow(
                 }
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
-                <TeamImage imageLink='' teamKey={teamData.theme.key} />
+                <TeamImage matchLink='' teamKey={teamData.theme.key} />
             </div>
             <div className="w-[25%] sm:w-[15%] text-left">
                 <span className='hidden md:block'>{teamData.teamNickname}</span>
@@ -57,7 +51,7 @@ export default function LadderRow(
             <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
             <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
                 {
-                    getNextFixture(roundIndex, teamId, nextRound)
+                    getNextFixture(nextTeam, nextMatchUrl)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -67,31 +61,15 @@ export default function LadderRow(
     );
 }
 
-// TODO fix nextRound type
-function getNextFixture(roundIndex: number, teamId: number, nextRound: any) {
-    // Get the next fixture if nextRound exists
-    if (nextRound && nextRound.data) {
-        // Team is eliminated for the season (or the next fixture is not yet known)
-        if (roundIndex >= NUMS.ROUNDS) {
-            return null;
-        }
-
-        const data = nextRound.data;
-
-        const matchAfterBye = data.fixtures[roundIndex];
-
-        if (matchAfterBye.type === 'Bye') {
+function getNextFixture(nextTeam: string, nextMatchUrl: string) {
+    switch (nextTeam) {
+        case 'BYE':
             return 'BYE';
-        }
-
-        const opponent = matchAfterBye.homeTeam.teamId === teamId ? matchAfterBye.awayTeam : matchAfterBye.homeTeam;
-        const imageLink = `https://nrl.com${matchAfterBye.matchCentreUrl}`;
-
-        return <TeamImage imageLink={imageLink} teamKey={opponent.theme.key} />;
+        case '':
+            return null;
+        default:
+            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} />;
     }
-
-    // Otherwise return a skeleton placeholder
-    return <SkeletonByeCell />;
 }
 
 function getLadderPosition(isPlaying: boolean, position: String) {

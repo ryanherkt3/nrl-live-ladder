@@ -75,7 +75,7 @@ function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
             <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                 {
                     drawInfo.byes.map((team: ByeTeam) => {
-                        return <TeamImage key={team.theme.key} imageLink='' teamKey={team.theme.key} />;
+                        return <TeamImage key={team.theme.key} matchLink='' teamKey={team.theme.key} />;
                     })
                 }
             </div>

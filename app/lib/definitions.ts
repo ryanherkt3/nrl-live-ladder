@@ -1,12 +1,7 @@
 export type TeamData = {
-    clubProfileUrl: string;
-    movement: string;
-    next: NextTeam;
     stats: TeamStats;
-    liveStats: TeamStats;
     teamNickname: string;
     theme: TeamTheme;
-    designation: 'homeTeam' | 'awayTeam' | undefined;
 };
 
 export type NextTeam = {
@@ -59,23 +54,8 @@ export type FixtureTeam = {
     theme: TeamTheme;
 }
 
-export type APIInfo = {
-    draw: DrawInfo;
-    ladder: LadderInfo;
-}
-
-export type LadderInfo = {
-    positions: TeamData[];
-}
-
 export type DrawInfo = {
     fixtures: Match[];
     byes: ByeTeam[];
     selectedRoundId: number;
-    filterTeams: FilteredTeam[];
-}
-
-export type FilteredTeam = {
-    name: string;
-    value: number;
 }

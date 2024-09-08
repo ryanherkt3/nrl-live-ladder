@@ -11,22 +11,14 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
 }
 
-@app.route('/api/nrlinfo', methods=['GET'])
-def nrl_info():
-    nrlInfo = {
-        "draw": requests.get("https://www.nrl.com/draw/data", headers=headers).json(),
-        "ladder": requests.get("https://www.nrl.com/ladder/data", headers=headers).json()
-    }
+@app.route('/api/seasondraw', methods=['GET'])
+def season_draw():
+    rounds = {}
 
-    return nrlInfo
+    for i in range(1, 28, 1):
+        apiUrl = f"https://www.nrl.com/draw/data?competition=111&round={i}"
+        rounds.update(
+            {i: requests.get(apiUrl, headers=headers).json()}
+        )
 
-@app.route('/api/nextround', methods=['GET'])
-def next_round():
-    teamId = request.args.get('teamid')
-
-    apiUrl = f"https://www.nrl.com/draw/data?competition=111&team={teamId}"
-
-    return requests.get(apiUrl, headers=headers).json()
-
-if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    return rounds

@@ -6,8 +6,8 @@ import axios from 'axios';
 import SkeletonLadder from "./ui/skeletons/skeleton-ladder";
 
 export default function HomePage() {
-    const fetcher = (url: string) => axios.get(url).then(res => res.data)
-    const { data: nrlInfo, error, isLoading } = useSWR('/api/nrlinfo', fetcher);
+    const fetcher = (url: string) => axios.get(url).then(res => res.data);
+    const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
     
     if (error) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
@@ -16,5 +16,5 @@ export default function HomePage() {
         return <SkeletonLadder />;
     }
 
-    return <Ladder nrlInfo={nrlInfo} />;
+    return <Ladder nrlInfo={seasonDraw} />;
 }

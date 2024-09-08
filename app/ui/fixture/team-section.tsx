@@ -7,7 +7,7 @@ export default function TeamSection({teamName, position, imgKey} : {teamName: st
                 <div className="font-semibold">{teamName}</div>
                 <div>{position}</div>
             </div>
-            <TeamImage imageLink='' teamKey={imgKey} />
+            <TeamImage matchLink='' teamKey={imgKey} />
         </div>
     )
 }
