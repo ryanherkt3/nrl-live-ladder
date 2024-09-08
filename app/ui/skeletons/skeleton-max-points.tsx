@@ -2,6 +2,8 @@ import { NUMS } from "@/app/lib/utils";
 import SkeletonMaxPointsRow from "./skeleton-max-points-row";
 
 export default function SkeletonMaxPoints() {
+    const {FINALS_TEAMS, TEAMS} = NUMS;
+
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <div className="text-xl font-semibold text-center">
@@ -9,11 +11,11 @@ export default function SkeletonMaxPoints() {
             </div>
             <div className="flex flex-col">
                 {
-                    getMaxPointsRow(1, NUMS.FINALS_TEAMS)
+                    getMaxPointsRow(1, FINALS_TEAMS)
                 }
                 <div className="border-4 border-green-400"></div>
                 {
-                    getMaxPointsRow(NUMS.FINALS_TEAMS + 1, NUMS.TEAMS)
+                    getMaxPointsRow(FINALS_TEAMS + 1, TEAMS)
                 }
             </div>
         </div>

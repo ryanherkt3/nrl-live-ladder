@@ -44,13 +44,14 @@ export function constructTeamData(teams: Array<TeamData>) {
  * @returns {Array<TeamData>} the list of teams
  */
 export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: number, teams: Array<TeamData>) {
+    const {BYES: byes, WIN_POINTS, MATCHES} = NUMS;
+
     const getMaxPoints = (losses: number, draws: number) => {
-        const byes = NUMS.BYES;
-        const perfectSeasonPts = NUMS.WIN_POINTS * NUMS.MATCHES;
+        const perfectSeasonPts = WIN_POINTS * MATCHES;
     
-        const pointsLost = perfectSeasonPts - (NUMS.WIN_POINTS * losses) - draws;
+        const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
         
-        return pointsLost + (NUMS.WIN_POINTS * byes);
+        return pointsLost + (WIN_POINTS * byes);
     }
     
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
@@ -61,9 +62,9 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
         team.stats['points for'] += teamScore;
         team.stats['points against'] += oppScore;
         team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
-        team.stats.points = (NUMS.WIN_POINTS * team.stats.wins) + team.stats.drawn + 
-            (NUMS.WIN_POINTS * team.stats.byes);
-        team.stats.noByePoints = team.stats.points - (NUMS.WIN_POINTS * team.stats.byes);
+        team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn + 
+            (WIN_POINTS * team.stats.byes);
+        team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
         team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
     };
     
@@ -78,29 +79,31 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
             })[0];
 
             byeTeam.stats.byes += 1;
-            byeTeam.stats.points = (NUMS.WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn + 
-                (NUMS.WIN_POINTS * byeTeam.stats.byes);
-            byeTeam.stats.noByePoints = byeTeam.stats.points - (NUMS.WIN_POINTS * byeTeam.stats.byes);
+            byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn + 
+                (WIN_POINTS * byeTeam.stats.byes);
+            byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
         }
         
         for (const fixture of round.fixtures) {
-            if (fixture.matchMode === 'Pre') {
+            const {matchMode, homeTeam, awayTeam} = fixture;
+            
+            if (matchMode === 'Pre') {
                 break;
             }
             
-            const homeTeam = teams.filter((team: TeamData) => {
-                return fixture.homeTeam.nickName === team.name;
+            const homeFixtureTeam = teams.filter((team: TeamData) => {
+                return homeTeam.nickName === team.name;
             })[0];
 
-            const awayTeam = teams.filter((team: TeamData) => {
-                return fixture.awayTeam.nickName === team.name;
+            const awayFixtureTeam = teams.filter((team: TeamData) => {
+                return awayTeam.nickName === team.name;
             })[0];
 
-            const homeScore = fixture.homeTeam.score;
-            const awayScore = fixture.awayTeam.score;
+            const {score: homeScore} = homeTeam;
+            const {score: awayScore} = awayTeam;
 
-            updateStats(homeTeam, homeScore, awayScore);
-            updateStats(awayTeam, awayScore, homeScore);
+            updateStats(homeFixtureTeam, homeScore, awayScore);
+            updateStats(awayFixtureTeam, awayScore, homeScore);
         }
     }
 
@@ -118,15 +121,20 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
  * @returns {boolean} which team (if any) should be ranked higher
  */
 export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
+    const {stats: bStats} = b;
+    const {points: bPoints, noByePoints: bNoByePoints} = bStats;
+    const {stats: aStats} = a;
+    const {points: aPoints, noByePoints: aNoByePoints} = aStats;
+    
     if (showByes) {
-        if (b.stats.points !== a.stats.points) {
-            return b.stats.points - a.stats.points;
+        if (bPoints !== aPoints) {
+            return bPoints - aPoints;
         }
-        return b.stats['points difference'] - a.stats['points difference'];
+        return bStats['points difference'] - aStats['points difference'];
     }
 
-    if (b.stats.noByePoints !== a.stats.noByePoints) {
-        return b.stats.noByePoints - a.stats.noByePoints;
+    if (bNoByePoints !== aNoByePoints) {
+        return bNoByePoints - aNoByePoints;
     }
-    return b.stats['points difference'] - a.stats['points difference'];
+    return bStats['points difference'] - aStats['points difference'];
 }

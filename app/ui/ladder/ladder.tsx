@@ -18,6 +18,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     });
 
     const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
+    const {ROUNDS, FINALS_TEAMS} = NUMS;
 
     const updateAllTeams = (showByes: boolean) => {
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
@@ -26,7 +27,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     }
 
     let nextRoundInfo;
-    if (currentRoundNo < NUMS.ROUNDS) {
+    if (currentRoundNo < ROUNDS) {
         nextRoundInfo = seasonDraw[currentRoundNo];
     }
 
@@ -56,7 +57,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
             {
                 // Do not show bye toggle if in first or last round
-                [1, NUMS.ROUNDS].includes(currentRoundNo) ? 
+                [1, ROUNDS].includes(currentRoundNo) ? 
                     null : 
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
@@ -78,7 +79,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 </div>
                 {
                     getLadderRow(
-                        allTeams.slice(0, NUMS.FINALS_TEAMS),
+                        allTeams.slice(0, FINALS_TEAMS),
                         liveMatch,
                         1,
                         byePoints,
@@ -90,9 +91,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 <div className="border-2 border-green-400"></div>
                 {
                     getLadderRow(
-                        allTeams.slice(NUMS.FINALS_TEAMS), 
+                        allTeams.slice(FINALS_TEAMS), 
                         liveMatch, 
-                        NUMS.FINALS_TEAMS + 1, 
+                        FINALS_TEAMS + 1, 
                         byePoints,
                         currentRoundNo,
                         fixtures,
@@ -130,10 +131,13 @@ function getLadderRow(
         // Check if team is currently playing
         let isPlaying = false;
 
+        const {name, stats, theme} = team;
+        const {ROUNDS, FINALS_TEAMS} = NUMS;
+
         if (liveMatch) {
             for (const match of liveMatch) {
-                isPlaying = match.awayTeam.nickName === team.name ||
-                    match.homeTeam.nickName === team.name;
+                isPlaying = match.awayTeam.nickName === name ||
+                    match.homeTeam.nickName === name;
 
                 if (isPlaying) {
                     break;
@@ -146,39 +150,41 @@ function getLadderRow(
         let nextTeam = '';
         let nextMatchUrl = '';
 
-        if (team.stats.played + team.stats.byes === currentRoundNo) {
+        if (stats.played + stats.byes === currentRoundNo) {
             if (nextRoundInfo) {
                 filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                    return team.name === fixture.homeTeam.nickName ||
-                        team.name === fixture.awayTeam.nickName;
+                    return name === fixture.homeTeam.nickName ||
+                        name === fixture.awayTeam.nickName;
                 });
             }
-            else if (currentRoundNo < NUMS.ROUNDS) {
+            else if (currentRoundNo < ROUNDS) {
                 filteredFixture = fixtures.filter((fixture: Match) => {
-                    return team.name === fixture.homeTeam.nickName ||
-                        team.name === fixture.awayTeam.nickName;
+                    return name === fixture.homeTeam.nickName ||
+                        name === fixture.awayTeam.nickName;
                 });
             }
         }
         else {
             filteredFixture = fixtures.filter((fixture: Match) => {
-                return team.name === fixture.homeTeam.nickName ||
-                    team.name === fixture.awayTeam.nickName;
+                return name === fixture.homeTeam.nickName ||
+                    name === fixture.awayTeam.nickName;
             });
         }
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
         if (filteredFixture && filteredFixture.length) {
-            nextTeam = team.name === filteredFixture[0].homeTeam.nickName ?
-                filteredFixture[0].awayTeam.theme.key :
-                filteredFixture[0].homeTeam.theme.key;
-            nextMatchUrl = `https://nrl.com${filteredFixture[0].matchCentreUrl}`
+            const {homeTeam, awayTeam, matchCentreUrl} = filteredFixture[0];
+            
+            nextTeam = name === homeTeam.nickName ?
+                awayTeam.theme.key :
+                homeTeam.theme.key;
+            nextMatchUrl = `https://nrl.com${matchCentreUrl}`
         }
-        else if (currentRoundNo < NUMS.ROUNDS) {
+        else if (currentRoundNo < ROUNDS) {
             nextTeam = 'BYE';
         }
-        else if (ladderPos <= NUMS.FINALS_TEAMS) {
+        else if (ladderPos <= FINALS_TEAMS) {
             let finalsOppLadderPos = ladderPos;
 
             // Finals Week 1: 1v4, 2v3, 5v8, 6v7
@@ -207,7 +213,7 @@ function getLadderRow(
         }
 
         return <LadderRow
-            key={team.theme.key}
+            key={theme.key}
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}

@@ -3,6 +3,8 @@ import SkeletonFixtures from "./skeleton-fixtures";
 import SkeletonLadderRow from "./skeleton-ladder-row";
 
 export default function SkeletonLadder() {
+    const {TEAMS, FINALS_TEAMS} = NUMS;
+
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <div className="flex flex-row self-end shimmer w-[200px] h-[72px] xs:h-7"></div>
@@ -23,11 +25,11 @@ export default function SkeletonLadder() {
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(1, NUMS.FINALS_TEAMS)
+                    getLadderRow(1, FINALS_TEAMS)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    getLadderRow(NUMS.FINALS_TEAMS + 1, NUMS.TEAMS)
+                    getLadderRow(FINALS_TEAMS + 1, TEAMS)
                 }
             </div>
             <SkeletonFixtures />

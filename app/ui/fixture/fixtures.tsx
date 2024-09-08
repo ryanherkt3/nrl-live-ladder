@@ -17,8 +17,8 @@ export default function Fixtures(
         ladder: Array<TeamData>
     }
 ) {
-    const lastRoundNum = NUMS.ROUNDS;
-    const grandFinalRoundNum = lastRoundNum + NUMS.FINALS_WEEKS;
+    const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
+    const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
 
@@ -64,7 +64,8 @@ export default function Fixtures(
                         <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                             {
                                 byes.map((team: ByeTeam) => {
-                                    return <TeamImage key={team.theme.key} matchLink='' teamKey={team.theme.key} />;
+                                    const {key} = team.theme;
+                                    return <TeamImage key={key} matchLink='' teamKey={key} />;
                                 })
                             }
                         </div>

@@ -19,7 +19,8 @@ export default function LadderRow(
         nextMatchUrl: string;
     }
 ) {
-    const statsData = teamData.stats;
+    const {stats: statsData, theme, name} = teamData;    
+    const {played, wins, drawn, lost, points, noByePoints, byes} = statsData;    
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
@@ -31,22 +32,22 @@ export default function LadderRow(
                 }
             </div>
             <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
-                <TeamImage matchLink='' teamKey={teamData.theme.key} />
+                <TeamImage matchLink='' teamKey={theme.key} />
             </div>
             <div className="w-[25%] sm:w-[15%] text-left">
-                <span className='hidden md:block'>{teamData.name}</span>
+                <span className='hidden md:block'>{name}</span>
                 <span className='block md:hidden'>
                     {
-                        getShortCode(teamData.name)
+                        getShortCode(name)
                     }
                 </span>
             </div>
-            <div className="w-[15%] sm:w-[6%]">{statsData.played}</div>
-            <div className="hidden sm:block sm:w-[6%]">{statsData.wins}</div>
-            <div className="hidden sm:block sm:w-[6%]">{statsData.drawn}</div>
-            <div className="hidden sm:block sm:w-[6%]">{statsData.lost}</div>
+            <div className="w-[15%] sm:w-[6%]">{played}</div>
+            <div className="hidden sm:block sm:w-[6%]">{wins}</div>
+            <div className="hidden sm:block sm:w-[6%]">{drawn}</div>
+            <div className="hidden sm:block sm:w-[6%]">{lost}</div>
             <div className="hidden sm:block sm:w-[6%]">
-                {byePoints ? statsData.byes : 0}
+                {byePoints ? byes : 0}
             </div>
             <div className="hidden md:block w-[6%]">{statsData['points for']}</div>
             <div className="hidden md:block w-[6%]">{statsData['points against']}</div>
@@ -57,7 +58,7 @@ export default function LadderRow(
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
-                {byePoints ? teamData.stats.points : teamData.stats.noByePoints}
+                {byePoints ? points : noByePoints}
             </div>
         </div>
     );

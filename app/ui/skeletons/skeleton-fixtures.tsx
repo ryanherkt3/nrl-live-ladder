@@ -1,3 +1,4 @@
+import { NUMS } from "@/app/lib/utils";
 import SkeletonRoundFixture from "./skeleton-round-fixture";
 
 export default function SkeletonFixtures() {
@@ -6,14 +7,9 @@ export default function SkeletonFixtures() {
             <div className="text-2xl font-semibold text-center">Fixtures</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
 
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
-            <SkeletonRoundFixture />
+            {
+                getFixtures()
+            }
 
             <div className="flex flex-col">
                 <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
@@ -22,3 +18,14 @@ export default function SkeletonFixtures() {
         </div>
     );
 }
+
+function getFixtures() {
+    const fixtures = [];
+
+    for (let i = 2; i <= NUMS.TEAMS; i += 2) {
+        fixtures.push(<SkeletonRoundFixture key={i} />)
+    }
+    
+    return fixtures;
+}
+

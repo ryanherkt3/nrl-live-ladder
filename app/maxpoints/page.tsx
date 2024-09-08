@@ -109,10 +109,8 @@ function getTableRows(
     liveMatch: Array<Match>
 ) {
     return teamList.map((team: TeamData) => {
-        const currentPoints = team.stats.points;
-        const maxPoints = team.stats.maxPoints;
-        
-        const nickname = team.name;
+        const {stats, name: nickname} = team;
+        const {points: currentPoints, maxPoints} = stats;
 
         const bgClassName = nickname.toLowerCase().replace(' ', '') +  
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
@@ -144,8 +142,8 @@ function getTableRows(
 
         if (liveMatch) {
             for (const match of liveMatch) {
-                isPlaying = match.awayTeam.nickName === team.name ||
-                    match.homeTeam.nickName === team.name;
+                isPlaying = match.awayTeam.nickName === nickname ||
+                    match.homeTeam.nickName === nickname;
                     
                 if (isPlaying) {
                     break;
