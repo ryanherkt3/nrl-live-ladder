@@ -1,24 +1,24 @@
-import { Match, ByeTeam, TeamData, DrawInfo } from "../../lib/definitions";
+import { Match, ByeTeam, TeamData } from "../../lib/definitions";
 import RoundFixture from "./round-fixture";
 import TeamImage from "../team-image";
 import { NUMS } from "@/app/lib/utils";
 
 export default function Fixtures(
-    { 
-        drawInfo,
+    {
+        roundNum,
+        byes,
         fixtures,
         ladder
     }:
-    { 
-        drawInfo: DrawInfo,
+    {
+        roundNum: number,
+        byes: Array<ByeTeam>,
         fixtures: Array<Match>,
         ladder: Array<TeamData>
     }
 ) {
-    const roundNum = drawInfo.selectedRoundId;
-
-    const lastRoundNum = NUMS.ROUNDS;
-    const grandFinalRoundNum = lastRoundNum + NUMS.FINALS_WEEKS;
+    const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
+    const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
 
@@ -32,22 +32,22 @@ export default function Fixtures(
 
     // No fixtures to display in off-season
     if (roundNum > grandFinalRoundNum) {
-        return null; 
+        return null;
     }
-    
+
     return (
         <div className="flex flex-col gap-4">
             <div className="text-2xl font-semibold text-center">{roundHeading}</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
+                // TODO this is duplicated elsewhere so fix it
                 fixtures.map((fixture: Match) => {
                     const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
                     const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
-
-                    let winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
+                    const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
 
                     return (
-                        <RoundFixture 
+                        <RoundFixture
                             key={fixtures.indexOf(fixture)}
                             data={fixture}
                             winningTeam={winningTeam}
@@ -57,28 +57,20 @@ export default function Fixtures(
                 })
             }
             {
-                getByesSection(drawInfo, inFinalsFootball)
+                inFinalsFootball ?
+                    null :
+                    <div className="flex flex-col">
+                        <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+                        <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
+                            {
+                                byes.map((team: ByeTeam) => {
+                                    const {key} = team.theme;
+                                    return <TeamImage key={key} matchLink='' teamKey={key} />;
+                                })
+                            }
+                        </div>
+                    </div>
             }
-        </div>
-    );
-}
-
-function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
-    // No teams on byes in finals football
-    if (inFinalsFootball) {
-        return null;
-    }
-    
-    return (
-        <div className="flex flex-col">
-            <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
-            <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
-                {
-                    drawInfo.byes.map((team: ByeTeam) => {
-                        return <TeamImage key={team.theme.key} matchLink='' teamKey={team.theme.key} />;
-                    })
-                }
-            </div>
         </div>
     );
 }

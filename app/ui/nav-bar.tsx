@@ -12,8 +12,12 @@ export default function NavBar() {
     const navLinkText = isLadderPage ? 'Max Points' : 'Ladder';
     const navLink = isLadderPage ? '/maxpoints' : '/';
 
+    const colourClasses = 'text-black border-gray-400 bg-white';
+    const textClasses = 'text-2xl md:text-4xl font-semibold';
+    const navClasses = 'flex justify-between items-center sticky top-0 h-20 px-6 py-4 border-b z-20';
+
     return (
-        <div className="text-2xl md:text-4xl flex justify-between items-center font-semibold text-black sticky top-0 h-20 px-6 py-4 border-b border-gray-400 bg-white z-20">
+        <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
             <span>{isLadderPage ? 'NRL Live Ladder' : (isMaxPtsPage ? 'NRL Max Points' : '404 Page')}</span>
             <Link href={navLink} className='text-lg md:text-xl hover:text-green-400'>{navLinkText}</Link>
         </div>
