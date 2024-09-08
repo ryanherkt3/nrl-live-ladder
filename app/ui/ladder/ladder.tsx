@@ -101,7 +101,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     )
                 }
             </div>
-            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} ladder={allTeams} />
+            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} teamList={allTeams} />
         </div>
     );
 }
