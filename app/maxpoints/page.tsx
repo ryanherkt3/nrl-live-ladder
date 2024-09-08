@@ -14,9 +14,9 @@ import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
 // }
 
 export default function MaxPointsPage() {
-    const fetcher = (url: string) => axios.get(url).then(res => res.data)
+    const fetcher = (url: string) => axios.get(url).then(res => res.data);
     const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
-    
+
     if (error) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
     }
@@ -24,14 +24,14 @@ export default function MaxPointsPage() {
         return <SkeletonMaxPoints />;
     }
 
-    let nrlDraw: Array<DrawInfo> = Object.values(seasonDraw);
+    const nrlDraw: Array<DrawInfo> = Object.values(seasonDraw);
 
     // Construct list of teams manually
     const teamList: Array<TeamData> = constructTeamData(nrlDraw[0].filterTeams);
 
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = nrlDraw.filter((round: any) => {
-        return round.byes[0].isCurrentRound
+        return round.byes[0].isCurrentRound;
     });
 
     const {selectedRoundId: currentRoundNo, fixtures} = currentRoundInfo[0];
@@ -39,11 +39,11 @@ export default function MaxPointsPage() {
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
     });
-    
+
     const allTeams = constructTeamStats(nrlDraw, currentRoundNo, teamList)
         .sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(true, a, b)
-        });    
+            return teamSortFunction(true, a, b);
+        });
 
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
@@ -63,8 +63,8 @@ export default function MaxPointsPage() {
 
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
-            { 
-                getLiveFixtures(liveMatch, allTeams) 
+            {
+                getLiveFixtures(liveMatch, allTeams)
             }
             <div className="text-xl font-semibold text-center">
                 See where your team stands in the race for Finals Football
@@ -93,12 +93,12 @@ export default function MaxPointsPage() {
  * Get the rows for display on the page, split between the top 8 and bottom teams
  *
  * @param {Array<TeamData>} allTeams an object with all the teams
- * @param {Array<TeamData>} teamList an object with a subset of all the teams (e.g. the top 8 teams) 
+ * @param {Array<TeamData>} teamList an object with a subset of all the teams (e.g. the top 8 teams)
  * @param {number} firstPlaceMaxPts the max points the first placed team can get
  * @param {number} lastPlacePts the max points the last placed team can get
  * @param {TeamStatuses} minPointsForSpots an object with the points required to attain a certain status (e.g top 2)
- * @param {Array<Match>} liveMatch a list of the ongoing match(es) 
- * @returns 
+ * @param {Array<Match>} liveMatch a list of the ongoing match(es)
+ * @returns
  */
 function getTableRows(
     allTeams: Array<TeamData>,
@@ -113,7 +113,7 @@ function getTableRows(
         const {points: currentPoints, maxPoints} = stats;
         const {eliminated, topTwo, topFour, topEight} = minPointsForSpots;
 
-        const bgClassName = nickname.toLowerCase().replace(' ', '') +  
+        const bgClassName = nickname.toLowerCase().replace(' ', '') +
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
@@ -135,9 +135,9 @@ function getTableRows(
         const pointValues: TeamPoints = {
             lowestCurrentPoints: lastPlacePts,
             highestMaxPoints: firstPlaceMaxPts,
-            currentPoints: currentPoints, 
+            currentPoints: currentPoints,
             maxPoints: maxPoints
-        }
+        };
 
         let isPlaying = false;
 
@@ -145,7 +145,7 @@ function getTableRows(
             for (const match of liveMatch) {
                 isPlaying = match.awayTeam.nickName === nickname ||
                     match.homeTeam.nickName === nickname;
-                    
+
                 if (isPlaying) {
                     break;
                 }
@@ -155,7 +155,7 @@ function getTableRows(
         return (
             <div key={nickname} className="flex flex-row text-md text-center">
                 <div className="text-left flex items-center font-semibold w-[15%] mr-4">
-                    <span 
+                    <span
                         className={
                             clsx(
                                 'hidden md:block',
@@ -173,7 +173,7 @@ function getTableRows(
                             nickname === 'Wests Tigers' ? 'Tigers' : nickname
                         } {qualificationStatus}
                     </span>
-                    <span 
+                    <span
                         className={
                             clsx(
                                 'block md:hidden',
@@ -208,7 +208,7 @@ function getTableRows(
  * Show the point value if a cell value is equal to either the team's current
  * or max points values.
  *
- * @param {TeamPoints} pointValues 
+ * @param {TeamPoints} pointValues
  * @param {string} nickname
  * @param {boolean} isEliminated
  * @returns {Array<Object>} HTML objects representing the point cells
@@ -236,7 +236,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
             const bgName = `bg-${nickname}${useGradientBg ? '-gradient' : useAltBg ? '-alt' : ''}`;
 
             pointCells.push(
-                <div 
+                <div
                     className={
                         clsx(
                             `${commonClasses} relative font-semibold`,
@@ -246,23 +246,23 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
                                 'text-black': blackTextBg,
                                 'text-white': !blackTextBg,
                             }
-                        )        
+                        )
                     }
                 >
-                    {i === currentPoints || i === maxPoints 
+                    {i === currentPoints || i === maxPoints
                         ? <span>{i}</span>
                         : null
                     }
                 </div>
-            )
+            );
         }
         else {
             pointCells.push(
                 <div className={commonClasses}></div>
-            )
+            );
         }
     }
-    
+
     return pointCells;
 }
 
@@ -279,10 +279,10 @@ function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nic
     const {currentPoints, maxPoints} = pointValues;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
-        return team.stats.points > maxPoints
+        return team.stats.points > maxPoints;
     }).length;
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
-        return team.name !== nickname && team.stats.maxPoints >= currentPoints
+        return team.name !== nickname && team.stats.maxPoints >= currentPoints;
     }).length;
 
     return (
@@ -307,15 +307,14 @@ function getLiveFixtures(liveMatches: Array<Match>, teamList: Array<TeamData>) {
         return (
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
-                { 
+                {
                     liveMatches.map((match: Match) => {
                         const homeTeamWon = match.homeTeam.score > match.awayTeam.score;
                         const awayTeamWon = match.homeTeam.score < match.awayTeam.score;
-                    
-                        let winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
-                    
+                        const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
+
                         return (
-                            <RoundFixture 
+                            <RoundFixture
                                 key={liveMatches.indexOf(match)}
                                 data={match}
                                 winningTeam={winningTeam}

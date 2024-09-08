@@ -9,13 +9,24 @@ export default function ByeToggleSection({setByeValue, byeValueCb}: {setByeValue
     );
 }
 
-function ByeToggle({setByeValue, byeValue, byeValueCb}: {setByeValue: boolean, byeValue: boolean, byeValueCb: Function}) {
+function ByeToggle(
+    {
+        setByeValue,
+        byeValue,
+        byeValueCb
+    }:
+    {
+        setByeValue: boolean,
+        byeValue: boolean,
+        byeValueCb: Function
+    }
+) {
     return (
-        <div 
+        <div
             className="flex flex-row gap-3 font-semibold text-xl cursor-pointer"
-            onClick={() => byeValueCb(byeValue)}    
+            onClick={() => byeValueCb(byeValue)}
         >
-            <div 
+            <div
                 className={
                     clsx(
                         "border border-green-400 w-7 rounded-full",
@@ -27,5 +38,5 @@ function ByeToggle({setByeValue, byeValue, byeValueCb}: {setByeValue: boolean, b
             ></div>
             <div>{byeValue ? 'Byes' : 'No Byes'}</div>
         </div>
-    )
+    );
 }

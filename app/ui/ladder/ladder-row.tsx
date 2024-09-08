@@ -3,14 +3,14 @@ import { getShortCode } from "../../lib/utils";
 import TeamImage from "../team-image";
 
 export default function LadderRow(
-    { 
-        teamData, 
+    {
+        teamData,
         position,
         isPlaying,
         byePoints,
         nextTeam,
         nextMatchUrl
-    }: { 
+    }: {
         teamData: TeamData;
         position: String;
         isPlaying: boolean;
@@ -19,8 +19,8 @@ export default function LadderRow(
         nextMatchUrl: string;
     }
 ) {
-    const {stats: statsData, theme, name} = teamData;    
-    const {played, wins, drawn, lost, points, noByePoints, byes} = statsData;    
+    const {stats: statsData, theme, name} = teamData;
+    const {played, wins, drawn, lost, points, noByePoints, byes} = statsData;
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
@@ -67,8 +67,8 @@ export default function LadderRow(
 /**
  * Get a team's next fixture (bye / nothing / image of logo of next opponent)
  *
- * @param {string} nextTeam 
- * @param {string} nextMatchUrl 
+ * @param {string} nextTeam
+ * @param {string} nextMatchUrl
  * @returns {string | undefined | TeamImage}
  */
 function getNextFixture(nextTeam: string, nextMatchUrl: string) {

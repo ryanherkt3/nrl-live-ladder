@@ -1,16 +1,16 @@
-import { Match, ByeTeam, TeamData, DrawInfo } from "../../lib/definitions";
+import { Match, ByeTeam, TeamData } from "../../lib/definitions";
 import RoundFixture from "./round-fixture";
 import TeamImage from "../team-image";
 import { NUMS } from "@/app/lib/utils";
 
 export default function Fixtures(
-    { 
+    {
         roundNum,
         byes,
         fixtures,
         ladder
     }:
-    { 
+    {
         roundNum: number,
         byes: Array<ByeTeam>,
         fixtures: Array<Match>,
@@ -32,22 +32,22 @@ export default function Fixtures(
 
     // No fixtures to display in off-season
     if (roundNum > grandFinalRoundNum) {
-        return null; 
+        return null;
     }
-    
+
     return (
         <div className="flex flex-col gap-4">
             <div className="text-2xl font-semibold text-center">{roundHeading}</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
+                // TODO this is duplicated elsewhere so fix it
                 fixtures.map((fixture: Match) => {
                     const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
                     const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
-
-                    let winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
+                    const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
 
                     return (
-                        <RoundFixture 
+                        <RoundFixture
                             key={fixtures.indexOf(fixture)}
                             data={fixture}
                             winningTeam={winningTeam}

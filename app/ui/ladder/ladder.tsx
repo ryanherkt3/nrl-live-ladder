@@ -11,10 +11,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     // Construct list of teams manually
     const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
-    
+
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
-        return round.byes[0].isCurrentRound
+        return round.byes[0].isCurrentRound;
     });
 
     const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
@@ -22,9 +22,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     const updateAllTeams = (showByes: boolean) => {
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(showByes, a, b)
+            return teamSortFunction(showByes, a, b);
         });
-    }
+    };
 
     let nextRoundInfo;
     if (currentRoundNo < ROUNDS) {
@@ -38,18 +38,18 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const updateByePoints = (newValue: boolean) => {
         // Do not set if the value is the same
         if (newValue === byePoints) {
-            return; 
+            return;
         }
-        
+
         setByePoints(newValue);
         updateAllTeams(newValue);
-    }
+    };
 
     const [byePoints, setByePoints] = useState(true);
-    
+
     let allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList)
         .sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(byePoints, a, b)
+            return teamSortFunction(byePoints, a, b);
         });
 
     return (
@@ -57,8 +57,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
             {
                 // Do not show bye toggle if in first or last round
-                [1, ROUNDS].includes(currentRoundNo) ? 
-                    null : 
+                [1, ROUNDS].includes(currentRoundNo) ?
+                    null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
             <div>
@@ -91,9 +91,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 <div className="border-2 border-green-400"></div>
                 {
                     getLadderRow(
-                        allTeams.slice(FINALS_TEAMS), 
-                        liveMatch, 
-                        FINALS_TEAMS + 1, 
+                        allTeams.slice(FINALS_TEAMS),
+                        liveMatch,
+                        FINALS_TEAMS + 1,
                         byePoints,
                         currentRoundNo,
                         fixtures,
@@ -109,10 +109,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 /**
  * Get a row in the ladder
  *
- * @param {Array<TeamData>} teamList 
+ * @param {Array<TeamData>} teamList
  * @param {Array<Match> | undefined} liveMatch the ongoing match(es)
  * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
- * @param {boolean} byePoints 
+ * @param {boolean} byePoints
  * @param {number} currentRoundNo
  * @param {Array<Match>} fixtures the fixture list for the current round
  * @param {DrawInfo | undefined} nextRoundInfo information about the next round if it exists
@@ -144,7 +144,7 @@ function getLadderRow(
                 }
             }
         }
-        
+
         // Get team's next fixture if there is one
         let filteredFixture = null;
         let nextTeam = '';
@@ -175,11 +175,11 @@ function getLadderRow(
 
         if (filteredFixture && filteredFixture.length) {
             const {homeTeam, awayTeam, matchCentreUrl} = filteredFixture[0];
-            
+
             nextTeam = name === homeTeam.nickName ?
                 awayTeam.theme.key :
                 homeTeam.theme.key;
-            nextMatchUrl = `https://nrl.com${matchCentreUrl}`
+            nextMatchUrl = `https://nrl.com${matchCentreUrl}`;
         }
         else if (currentRoundNo < ROUNDS) {
             nextTeam = 'BYE';
@@ -208,7 +208,7 @@ function getLadderRow(
                 default:
                     break;
             }
-            
+
             nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
         }
 
@@ -221,5 +221,5 @@ function getLadderRow(
             nextTeam={nextTeam}
             nextMatchUrl={nextMatchUrl}
         />;
-    })
+    });
 }

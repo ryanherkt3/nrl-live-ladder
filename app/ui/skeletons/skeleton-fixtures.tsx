@@ -23,9 +23,9 @@ function getFixtures() {
     const fixtures = [];
 
     for (let i = 2; i <= NUMS.TEAMS; i += 2) {
-        fixtures.push(<SkeletonRoundFixture key={i} />)
+        fixtures.push(<SkeletonRoundFixture key={i} />);
     }
-    
+
     return fixtures;
 }
 

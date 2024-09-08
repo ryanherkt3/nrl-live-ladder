@@ -46,8 +46,8 @@ function getLadderRow(startPos: number, endPos: number) {
                 key={i}
                 position={i.toString()}
             />
-        )
+        );
     }
-    
+
     return rows;
 }

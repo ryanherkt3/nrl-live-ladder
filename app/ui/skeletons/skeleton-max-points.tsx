@@ -26,9 +26,9 @@ function getMaxPointsRow(startPos: number, endPos: number) {
     const rows = [];
 
     for (let i = startPos; i <= endPos; i++) {
-        rows.push(<SkeletonMaxPointsRow />)
+        rows.push(<SkeletonMaxPointsRow />);
     }
-    
+
     return rows;
 }
 

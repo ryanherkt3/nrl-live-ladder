@@ -1,11 +1,11 @@
 /**
  * Get the three letter code for a club
  *
- * @param {string} name 
+ * @param {string} name
  * @returns {String}
  */
 export function getShortCode(name: string) {
-    switch(name) {
+    switch (name) {
         case 'Broncos':
             return 'BRI';
         case 'Raiders':
@@ -48,7 +48,7 @@ export function getShortCode(name: string) {
 /**
  * Converts a cardinal to an ordinal one (e.g 2 -> 2nd)
  *
- * @param {number} cardinalNo 
+ * @param {number} cardinalNo
  * @returns {String} the ordinal number
  */
 export function getOrdinalNumber(cardinalNo: number) {

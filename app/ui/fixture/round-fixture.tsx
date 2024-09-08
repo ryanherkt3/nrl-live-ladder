@@ -8,14 +8,14 @@ import Score from "./score";
 import TeamSection from "./team-section";
 
 export default function RoundFixture(
-    { 
+    {
         data,
         winningTeam,
-        ladder 
-    }: 
-    { 
+        ladder
+    }:
+    {
         data: Match,
-        winningTeam: string,  
+        winningTeam: string,
         ladder: Array<TeamData>
     }
 ) {
@@ -35,12 +35,12 @@ export default function RoundFixture(
     });
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
-    
+
     const gameLink = `https://nrl.com${matchCentreUrl}`;
 
     return (
         <a className="flex flex-col" href={gameLink} target="_blank">
-            <span 
+            <span
                 className={
                     clsx(
                         'text-center text-lg text-white font-semibold',
@@ -60,7 +60,7 @@ export default function RoundFixture(
                 <TeamSection teamName={homeTeamName} imgKey={homeTeamTheme.key} position={homeTeamPos} />
                 {
                     getMatchState(data, winningTeam)
-                }   
+                }
                 <TeamSection teamName={awayTeamName} imgKey={awayTeamTheme.key} position={awayTeamPos} />
             </div>
         </a>
@@ -74,8 +74,8 @@ export default function RoundFixture(
  * @returns {string}
  */
 function getDateString(date: string) {
-    let dateString = new Date(date).toLocaleString(
-        'en-NZ', 
+    const dateString = new Date(date).toLocaleString(
+        'en-NZ',
         {
             weekday:'long',
             day: 'numeric',
@@ -122,7 +122,7 @@ function getMatchState(matchData: Match, winningTeam: string) {
         <div className={commonClasses}>
             <div>{kickoffTime}</div>
         </div>
-    )
+    );
 }
 
 /**
@@ -143,7 +143,7 @@ function getMatchContext(matchData: Match) {
     }
 
     let matchPeriod = '';
-    switch(matchState) {
+    switch (matchState) {
         case 'FirstHalf':
             matchPeriod = '1ST HALF';
             break;
@@ -170,7 +170,7 @@ function getMatchContext(matchData: Match) {
                 {/* TODO modify to tick every second */}
                 <div>{clock.gameTime}</div>
             </div>
-        )
+        );
     }
 
     return null;
