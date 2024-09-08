@@ -43,7 +43,7 @@ export default function Fixtures(
             <div className="flex flex-row gap-2 justify-center">
                 {
                     roundNum === 1 ?
-                        null :
+                        <div className="w-8"></div> :
                         <ChevronLeftIcon
                             className="w-8 h-8 cursor-pointer"
                             onClick={() => {
@@ -54,7 +54,7 @@ export default function Fixtures(
                 <div className="text-2xl font-semibold">{roundHeading}</div>
                 {
                     roundNum === (inFinalsFootball ? grandFinalRoundNum : lastRoundNum) ?
-                        null :
+                        <div className="w-8"></div> :
                         <ChevronRightIcon
                             className="w-8 h-8 cursor-pointer"
                             onClick={() => {
