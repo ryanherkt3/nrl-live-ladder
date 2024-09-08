@@ -1,4 +1,5 @@
-import { DrawInfo, TeamData } from "./definitions";
+import RoundFixture from "../ui/fixture/round-fixture";
+import { DrawInfo, Match, TeamData } from "./definitions";
 import { NUMS } from "./utils";
 
 /**
@@ -137,4 +138,25 @@ export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
         return bNoByePoints - aNoByePoints;
     }
     return bStats['points difference'] - aStats['points difference'];
+}
+
+export function getLiveFixtures(fixtures: Array<Match>, ladder: Array<TeamData>) {
+    const liveFixtures = [];
+
+    for (const fixture of fixtures) {
+        const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
+        const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
+        const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
+
+        liveFixtures.push(
+            <RoundFixture
+                key={fixtures.indexOf(fixture)}
+                data={fixture}
+                winningTeam={winningTeam}
+                ladder={ladder}
+            />
+        );
+    }
+
+    return liveFixtures;
 }

@@ -1,20 +1,20 @@
 import { Match, ByeTeam, TeamData } from "../../lib/definitions";
-import RoundFixture from "./round-fixture";
 import TeamImage from "../team-image";
 import { NUMS } from "@/app/lib/utils";
+import { getLiveFixtures } from "@/app/lib/nrl-draw-utils";
 
 export default function Fixtures(
     {
         roundNum,
         byes,
         fixtures,
-        ladder
+        teamList
     }:
     {
         roundNum: number,
         byes: Array<ByeTeam>,
         fixtures: Array<Match>,
-        ladder: Array<TeamData>
+        teamList: Array<TeamData>
     }
 ) {
     const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
@@ -40,21 +40,7 @@ export default function Fixtures(
             <div className="text-2xl font-semibold text-center">{roundHeading}</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                // TODO this is duplicated elsewhere so fix it
-                fixtures.map((fixture: Match) => {
-                    const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
-                    const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
-                    const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
-
-                    return (
-                        <RoundFixture
-                            key={fixtures.indexOf(fixture)}
-                            data={fixture}
-                            winningTeam={winningTeam}
-                            ladder={ladder}
-                        />
-                    );
-                })
+                getLiveFixtures(fixtures, teamList)
             }
             {
                 inFinalsFootball ?

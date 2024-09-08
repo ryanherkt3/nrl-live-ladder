@@ -5,8 +5,7 @@ import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from "../lib/defi
 import clsx from "clsx";
 import useSWR from "swr";
 import axios from "axios";
-import { constructTeamData, constructTeamStats, teamSortFunction } from "../lib/nrl-draw-utils";
-import RoundFixture from "../ui/fixture/round-fixture";
+import { constructTeamData, constructTeamStats, getLiveFixtures, teamSortFunction } from "../lib/nrl-draw-utils";
 import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
 
 // export const metadata: Metadata = {
@@ -64,7 +63,7 @@ export default function MaxPointsPage() {
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
             {
-                getLiveFixtures(liveMatch, allTeams)
+                getLiveFixturesSection(liveMatch, allTeams)
             }
             <div className="text-xl font-semibold text-center">
                 See where your team stands in the race for Finals Football
@@ -302,26 +301,13 @@ function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nic
  * @param {Array<TeamData>} teamList list of teams
  * @returns HTML object or null if no live matches exist
  */
-function getLiveFixtures(liveMatches: Array<Match>, teamList: Array<TeamData>) {
+function getLiveFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
     if (liveMatches.length) {
         return (
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
                 {
-                    liveMatches.map((match: Match) => {
-                        const homeTeamWon = match.homeTeam.score > match.awayTeam.score;
-                        const awayTeamWon = match.homeTeam.score < match.awayTeam.score;
-                        const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
-
-                        return (
-                            <RoundFixture
-                                key={liveMatches.indexOf(match)}
-                                data={match}
-                                winningTeam={winningTeam}
-                                ladder={teamList}
-                            />
-                        );
-                    })
+                    getLiveFixtures(liveMatches, teamList)
                 }
             </div>
         );
