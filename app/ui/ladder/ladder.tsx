@@ -47,6 +47,27 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     const [byePoints, setByePoints] = useState(true);
 
+    const updateFixturesToShow = (showPreviousRound: boolean) => {
+        const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
+
+        const shownRound = seasonDraw.filter((round: DrawInfo) => {
+            return round.selectedRoundId === newRoundIndex;
+        })[0];
+
+        // Fixtures don't exist so return early
+        if (!shownRound) {
+            return false;
+        }
+
+        setRoundIndex(newRoundIndex);
+        setFixturesToShow(shownRound.fixtures);
+        setByeTeams(shownRound.byes);
+    };
+
+    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
+    const [roundIndex, setRoundIndex] = useState(currentRoundNo);
+    const [byeTeams, setByeTeams] = useState(byes);
+
     let allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList)
         .sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(byePoints, a, b);
@@ -101,7 +122,13 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     )
                 }
             </div>
-            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} teamList={allTeams} />
+            <Fixtures
+                roundNum={roundIndex}
+                byes={byeTeams}
+                fixtures={fixturesToShow}
+                teamList={allTeams}
+                updateCallback={updateFixturesToShow}
+            />
         </div>
     );
 }
