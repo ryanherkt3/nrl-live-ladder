@@ -15,7 +15,8 @@ headers = {
 def season_draw():
     rounds = {}
 
-    for i in range(1, 28, 1):
+    # 32 = 27 rounds plus 4 weeks of finals 
+    for i in range(1, 32, 1):
         apiUrl = f"https://www.nrl.com/draw/data?competition=111&round={i}"
         rounds.update(
             {i: requests.get(apiUrl, headers=headers).json()}

@@ -14,11 +14,15 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
-        return round.byes[0].isCurrentRound;
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
     });
 
     const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
-    const {ROUNDS, FINALS_TEAMS} = NUMS;
+    const {ROUNDS, FINALS_TEAMS, FINALS_WEEKS} = NUMS;
 
     const updateAllTeams = (showByes: boolean) => {
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
@@ -27,7 +31,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     };
 
     let nextRoundInfo;
-    if (currentRoundNo < ROUNDS) {
+    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
         nextRoundInfo = seasonDraw[currentRoundNo];
     }
 
@@ -177,7 +181,8 @@ function getLadderRow(
         let nextTeam = '';
         let nextMatchUrl = '';
 
-        if (stats.played + stats.byes === currentRoundNo) {
+        const playedAndByes = stats.played + stats.byes;
+        if (playedAndByes === currentRoundNo || playedAndByes === ROUNDS) {
             if (nextRoundInfo) {
                 filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
                     return name === fixture.homeTeam.nickName ||

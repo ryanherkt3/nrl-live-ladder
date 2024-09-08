@@ -45,7 +45,7 @@ export function constructTeamData(teams: Array<TeamData>) {
  * @returns {Array<TeamData>} the list of teams
  */
 export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: number, teams: Array<TeamData>) {
-    const {BYES: byes, WIN_POINTS, MATCHES} = NUMS;
+    const {BYES: byes, WIN_POINTS, MATCHES, ROUNDS} = NUMS;
 
     const getMaxPoints = (losses: number, draws: number) => {
         const perfectSeasonPts = WIN_POINTS * MATCHES;
@@ -70,7 +70,8 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
     };
 
     for (const round of seasonDraw) {
-        if (round.selectedRoundId > currentRoundNo) {
+        // Do not count stats for games not started or finals games. TODO check
+        if (round.selectedRoundId > currentRoundNo || round.selectedRoundId > ROUNDS) {
             break;
         }
 
