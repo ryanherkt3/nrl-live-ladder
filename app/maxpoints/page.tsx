@@ -110,10 +110,9 @@ function getTableRows(
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        let isEliminated = false;
-        if (maxPoints < minPointsForSpots.elim) {
+        const isEliminated = maxPoints < minPointsForSpots.elim;
+        if (isEliminated) {
             qualificationStatus = '(E)';
-            isEliminated = true;
         }
         else if (currentPoints > minPointsForSpots.t2) {
             qualificationStatus = '(T2)';
