@@ -16,5 +16,5 @@ export default function HomePage() {
         return <SkeletonLadder />;
     }
 
-    return <Ladder nrlInfo={seasonDraw} />;
+    return <Ladder seasonDraw={seasonDraw} />;
 }

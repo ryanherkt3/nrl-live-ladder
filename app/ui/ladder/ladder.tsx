@@ -6,18 +6,19 @@ import { useState } from "react";
 import { NUMS } from "@/app/lib/utils";
 import { constructTeamData, constructTeamStats, teamSortFunction } from "@/app/lib/nrl-draw-utils";
 
-export default function Ladder({nrlInfo}: {nrlInfo: any}) {
-    nrlInfo = Object.values(nrlInfo);
+// TODO fix type
+export default function Ladder({seasonDraw}: {seasonDraw: any}) {
+    seasonDraw = Object.values(seasonDraw);
 
     // Construct list of teams manually
-    const teamList: Array<TeamData> = constructTeamData(nrlInfo[0].filterTeams);
+    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
     
-    // Get current round number
-    const currentRoundInfo: Array<DrawInfo> = nrlInfo.filter((round: any) => {
+    // Get current round number (TODO fix type)
+    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: any) => {
         return round.byes[0].isCurrentRound
     });
 
-    const currentRoundNo = currentRoundInfo[0].selectedRoundId;
+    const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
 
     const updateAllTeams = (showByes: boolean) => {
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
@@ -27,11 +28,8 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
 
     let nextRoundInfo;
     if (currentRoundNo < NUMS.ROUNDS) {
-        nextRoundInfo = nrlInfo[currentRoundNo];
+        nextRoundInfo = seasonDraw[currentRoundNo];
     }
-    
-    const drawInfo = currentRoundInfo[0];
-    const fixtures = drawInfo.fixtures;
 
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
@@ -49,7 +47,7 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
 
     const [byePoints, setByePoints] = useState(true);
     
-    let allTeams = constructTeamStats(nrlInfo, currentRoundNo, teamList)
+    let allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList)
         .sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(byePoints, a, b)
         });
@@ -85,7 +83,8 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                         liveMatch,
                         1,
                         byePoints,
-                        drawInfo,
+                        currentRoundNo,
+                        fixtures,
                         nextRoundInfo
                     )
                 }
@@ -96,12 +95,13 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
                         liveMatch, 
                         NUMS.FINALS_TEAMS + 1, 
                         byePoints,
-                        drawInfo,
+                        currentRoundNo,
+                        fixtures,
                         nextRoundInfo
                     )
                 }
             </div>
-            <Fixtures drawInfo={drawInfo} fixtures={fixtures} ladder={allTeams} />
+            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} ladder={allTeams} />
         </div>
     );
 }
@@ -113,7 +113,8 @@ export default function Ladder({nrlInfo}: {nrlInfo: any}) {
  * @param {Array<Match> | undefined} liveMatch the ongoing match(es)
  * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
  * @param {boolean} byePoints 
- * @param {DrawInfo} drawInfo information about the current round (?)
+ * @param {number} currentRoundNo
+ * @param {Array<Match>} fixtures the fixture list for the current round
  * @param {DrawInfo | undefined} nextRoundInfo information about the next round if it exists
  * @returns {LadderRow} React object
  */
@@ -122,7 +123,8 @@ function getLadderRow(
     liveMatch: Array<Match> | undefined,
     indexAdd: number,
     byePoints: boolean,
-    drawInfo: DrawInfo,
+    currentRoundNo: number,
+    fixtures: Array<Match>,
     nextRoundInfo: DrawInfo | undefined,
 ) {
     return teamList.map((team: TeamData) => {
@@ -145,22 +147,22 @@ function getLadderRow(
         let nextTeam = '';
         let nextMatchUrl = '';
 
-        if (team.stats.played + team.stats.byes === drawInfo.selectedRoundId) {
+        if (team.stats.played + team.stats.byes === currentRoundNo) {
             if (nextRoundInfo) {
                 filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
                     return team.teamNickname === fixture.homeTeam.nickName ||
                         team.teamNickname === fixture.awayTeam.nickName;
                 });
             }
-            else if (drawInfo.selectedRoundId < NUMS.ROUNDS) {
-                filteredFixture = drawInfo.fixtures.filter((fixture: Match) => {
+            else if (currentRoundNo < NUMS.ROUNDS) {
+                filteredFixture = fixtures.filter((fixture: Match) => {
                     return team.teamNickname === fixture.homeTeam.nickName ||
                         team.teamNickname === fixture.awayTeam.nickName;
                 });
             }
         }
         else {
-            filteredFixture = drawInfo.fixtures.filter((fixture: Match) => {
+            filteredFixture = fixtures.filter((fixture: Match) => {
                 return team.teamNickname === fixture.homeTeam.nickName ||
                     team.teamNickname === fixture.awayTeam.nickName;
             });
@@ -174,7 +176,7 @@ function getLadderRow(
                 filteredFixture[0].homeTeam.theme.key;
             nextMatchUrl = `https://nrl.com${filteredFixture[0].matchCentreUrl}`
         }
-        else if (drawInfo.selectedRoundId < NUMS.ROUNDS) {
+        else if (currentRoundNo < NUMS.ROUNDS) {
             nextTeam = 'BYE';
         }
         else if (ladderPos <= NUMS.FINALS_TEAMS) {

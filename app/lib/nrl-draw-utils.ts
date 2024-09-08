@@ -1,4 +1,4 @@
-import { TeamData } from "./definitions";
+import { DrawInfo, TeamData } from "./definitions";
 import { NUMS } from "./utils";
 
 /**
@@ -7,7 +7,7 @@ import { NUMS } from "./utils";
  * @param {any} teams (TODO fix type)
  * @returns {Array<TeamData>} the list of teams
  */
-export const constructTeamData = (teams: any) => {
+export function constructTeamData(teams: any) {
     const teamList: Array<TeamData> = [];
 
     for (const team of teams) {
@@ -38,12 +38,12 @@ export const constructTeamData = (teams: any) => {
 /**
  * Construct a team's statistics (wins, points etc)
  *
- * @param {any} seasonDraw the fixtures list (TODO fix type)
+ * @param {Array<DrawInfo>} seasonDraw the information for each round
  * @param {number} currentRoundNo 
- * @param {any} teams (TODO fix type)
+ * @param {Array<TeamData>} teams
  * @returns {Array<TeamData>} the list of teams
  */
-export const constructTeamStats = (seasonDraw: any, currentRoundNo: number, teams: any) => {
+export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: number, teams: Array<TeamData>) {
     const getMaxPoints = (losses: number, draws: number) => {
         const byes = NUMS.BYES;
         const perfectSeasonPts = NUMS.WIN_POINTS * NUMS.MATCHES;
@@ -112,14 +112,12 @@ export const constructTeamStats = (seasonDraw: any, currentRoundNo: number, team
  * 1. Points
  * 2. Points differential
  *
- * TODO include other sorting modes
- *
  * @param {boolean} showByes if the bye toggle (if it exists) is turned on
  * @param {teamData} a team one 
  * @param {teamData} b team two
  * @returns {boolean} which team (if any) should be ranked higher
  */
-export const teamSortFunction = (showByes: boolean, a: TeamData, b: TeamData) => {
+export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
     if (showByes) {
         if (b.stats.points !== a.stats.points) {
             return b.stats.points - a.stats.points;

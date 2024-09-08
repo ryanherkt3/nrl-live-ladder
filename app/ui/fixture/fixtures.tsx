@@ -5,18 +5,18 @@ import { NUMS } from "@/app/lib/utils";
 
 export default function Fixtures(
     { 
-        drawInfo,
+        roundNum,
+        byes,
         fixtures,
         ladder
     }:
     { 
-        drawInfo: DrawInfo,
+        roundNum: number,
+        byes: Array<ByeTeam>,
         fixtures: Array<Match>,
         ladder: Array<TeamData>
     }
 ) {
-    const roundNum = drawInfo.selectedRoundId;
-
     const lastRoundNum = NUMS.ROUNDS;
     const grandFinalRoundNum = lastRoundNum + NUMS.FINALS_WEEKS;
 
@@ -57,36 +57,19 @@ export default function Fixtures(
                 })
             }
             {
-                getByesSection(drawInfo, inFinalsFootball)
+                inFinalsFootball ?
+                    null :
+                    <div className="flex flex-col">
+                        <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+                        <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
+                            {
+                                byes.map((team: ByeTeam) => {
+                                    return <TeamImage key={team.theme.key} matchLink='' teamKey={team.theme.key} />;
+                                })
+                            }
+                        </div>
+                    </div>
             }
-        </div>
-    );
-}
-
-/**
- * Get the byes section for display in the Fixtures component, which shows
- * the team(s) currently on a bye
- *
- * @param {DrawInfo} drawInfo information about the current round
- * @param {boolean} inFinalsFootball if finals football is being played 
- * @returns HTML object / null if inFinalsFootball is true
- */
-function getByesSection(drawInfo: DrawInfo, inFinalsFootball: boolean) {
-    // No teams on byes in finals football
-    if (inFinalsFootball) {
-        return null;
-    }
-    
-    return (
-        <div className="flex flex-col">
-            <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
-            <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
-                {
-                    drawInfo.byes.map((team: ByeTeam) => {
-                        return <TeamImage key={team.theme.key} matchLink='' teamKey={team.theme.key} />;
-                    })
-                }
-            </div>
         </div>
     );
 }

@@ -24,7 +24,7 @@ export default function MaxPointsPage() {
         return <SkeletonMaxPoints />;
     }
 
-    let nrlDraw: any = Object.values(seasonDraw);
+    let nrlDraw: any = Object.values(seasonDraw); // TODO fix type
 
     // Construct list of teams manually
     const teamList: Array<TeamData> = constructTeamData(nrlDraw[0].filterTeams);

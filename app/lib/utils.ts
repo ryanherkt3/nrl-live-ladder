@@ -4,7 +4,7 @@
  * @param {string} name 
  * @returns {String}
  */
-export const getShortCode = (name: string) => {
+export function getShortCode(name: string) {
     switch(name) {
         case 'Broncos':
             return 'BRI';
@@ -51,7 +51,7 @@ export const getShortCode = (name: string) => {
  * @param {number} cardinalNo 
  * @returns {String} the ordinal number
  */
-export const getOrdinalNumber = (cardinalNo: number) => {
+export function getOrdinalNumber(cardinalNo: number) {
     if ([1, 21].includes(cardinalNo)) {
         return `${cardinalNo}st`;
     }
