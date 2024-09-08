@@ -111,23 +111,24 @@ function getTableRows(
     return teamList.map((team: TeamData) => {
         const {stats, name: nickname} = team;
         const {points: currentPoints, maxPoints} = stats;
+        const {eliminated, topTwo, topFour, topEight} = minPointsForSpots;
 
         const bgClassName = nickname.toLowerCase().replace(' ', '') +  
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        const isEliminated = maxPoints < minPointsForSpots.eliminated;
+        const isEliminated = maxPoints < eliminated;
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
-        else if (currentPoints > minPointsForSpots.topTwo) {
+        else if (currentPoints > topTwo) {
             qualificationStatus = '(T2)';
         }
-        else if (currentPoints > minPointsForSpots.topFour) {
+        else if (currentPoints > topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > minPointsForSpots.topEight) {
+        else if (currentPoints > topEight) {
             qualificationStatus = '(Q)';
         }
 

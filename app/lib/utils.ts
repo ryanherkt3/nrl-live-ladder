@@ -52,19 +52,19 @@ export function getShortCode(name: string) {
  * @returns {String} the ordinal number
  */
 export function getOrdinalNumber(cardinalNo: number) {
-    if ([1, 21].includes(cardinalNo)) {
-        return `${cardinalNo}st`;
+    switch (cardinalNo) {
+        case 1:
+        case 21:
+            return `${cardinalNo}st`;
+        case 2:
+        case 22:
+            return `${cardinalNo}nd`;
+        case 3:
+        case 23:
+            return `${cardinalNo}rd`;
+        default:
+            return `${cardinalNo}th`;
     }
-
-    if ([2, 22].includes(cardinalNo)) {
-        return `${cardinalNo}nd`;
-    }
-
-    if ([3, 23].includes(cardinalNo)) {
-        return `${cardinalNo}rd`;
-    }
-
-    return `${cardinalNo}th`;
 }
 
 export const NUMS = Object.freeze({
