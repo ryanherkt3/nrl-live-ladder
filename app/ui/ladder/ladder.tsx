@@ -6,15 +6,14 @@ import { useState } from "react";
 import { NUMS } from "@/app/lib/utils";
 import { constructTeamData, constructTeamStats, teamSortFunction } from "@/app/lib/nrl-draw-utils";
 
-// TODO fix type
-export default function Ladder({seasonDraw}: {seasonDraw: any}) {
+export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     seasonDraw = Object.values(seasonDraw);
 
     // Construct list of teams manually
     const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
     
-    // Get current round number (TODO fix type)
-    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: any) => {
+    // Get current round number
+    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
         return round.byes[0].isCurrentRound
     });
 
@@ -133,8 +132,8 @@ function getLadderRow(
 
         if (liveMatch) {
             for (const match of liveMatch) {
-                isPlaying = match.awayTeam.nickName === team.teamNickname ||
-                    match.homeTeam.nickName === team.teamNickname;
+                isPlaying = match.awayTeam.nickName === team.name ||
+                    match.homeTeam.nickName === team.name;
 
                 if (isPlaying) {
                     break;
@@ -150,28 +149,28 @@ function getLadderRow(
         if (team.stats.played + team.stats.byes === currentRoundNo) {
             if (nextRoundInfo) {
                 filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                    return team.teamNickname === fixture.homeTeam.nickName ||
-                        team.teamNickname === fixture.awayTeam.nickName;
+                    return team.name === fixture.homeTeam.nickName ||
+                        team.name === fixture.awayTeam.nickName;
                 });
             }
             else if (currentRoundNo < NUMS.ROUNDS) {
                 filteredFixture = fixtures.filter((fixture: Match) => {
-                    return team.teamNickname === fixture.homeTeam.nickName ||
-                        team.teamNickname === fixture.awayTeam.nickName;
+                    return team.name === fixture.homeTeam.nickName ||
+                        team.name === fixture.awayTeam.nickName;
                 });
             }
         }
         else {
             filteredFixture = fixtures.filter((fixture: Match) => {
-                return team.teamNickname === fixture.homeTeam.nickName ||
-                    team.teamNickname === fixture.awayTeam.nickName;
+                return team.name === fixture.homeTeam.nickName ||
+                    team.name === fixture.awayTeam.nickName;
             });
         }
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
         if (filteredFixture && filteredFixture.length) {
-            nextTeam = team.teamNickname === filteredFixture[0].homeTeam.nickName ?
+            nextTeam = team.name === filteredFixture[0].homeTeam.nickName ?
                 filteredFixture[0].awayTeam.theme.key :
                 filteredFixture[0].homeTeam.theme.key;
             nextMatchUrl = `https://nrl.com${filteredFixture[0].matchCentreUrl}`

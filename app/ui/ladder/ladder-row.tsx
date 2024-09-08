@@ -34,10 +34,10 @@ export default function LadderRow(
                 <TeamImage matchLink='' teamKey={teamData.theme.key} />
             </div>
             <div className="w-[25%] sm:w-[15%] text-left">
-                <span className='hidden md:block'>{teamData.teamNickname}</span>
+                <span className='hidden md:block'>{teamData.name}</span>
                 <span className='block md:hidden'>
                     {
-                        getShortCode(teamData.teamNickname)
+                        getShortCode(teamData.name)
                     }
                 </span>
             </div>

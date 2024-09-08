@@ -4,10 +4,10 @@ import { NUMS } from "./utils";
 /**
  * Construct the data for a team (statistics, team name, theme key)
  *
- * @param {any} teams (TODO fix type)
+ * @param {Array<TeamData>} teams
  * @returns {Array<TeamData>} the list of teams
  */
-export function constructTeamData(teams: any) {
+export function constructTeamData(teams: Array<TeamData>) {
     const teamList: Array<TeamData> = [];
 
     for (const team of teams) {
@@ -25,7 +25,7 @@ export function constructTeamData(teams: any) {
                 noByePoints: 0,
                 maxPoints: 0,
             },
-            teamNickname: team.name,
+            name: team.name,
             theme: {
                 key: team.theme.key
             },
@@ -74,7 +74,7 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
 
         for (const bye of round.byes) {
             const byeTeam = teams.filter((team: TeamData) => {
-                return bye.teamNickName === team.teamNickname;
+                return bye.teamNickName === team.name;
             })[0];
 
             byeTeam.stats.byes += 1;
@@ -89,11 +89,11 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
             }
             
             const homeTeam = teams.filter((team: TeamData) => {
-                return fixture.homeTeam.nickName === team.teamNickname;
+                return fixture.homeTeam.nickName === team.name;
             })[0];
 
             const awayTeam = teams.filter((team: TeamData) => {
-                return fixture.awayTeam.nickName === team.teamNickname;
+                return fixture.awayTeam.nickName === team.name;
             })[0];
 
             const homeScore = fixture.homeTeam.score;

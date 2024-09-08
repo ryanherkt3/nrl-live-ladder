@@ -24,10 +24,10 @@ export default function RoundFixture(
 
     // Get ladder position of teams
     const homeTeamObj = ladder.filter((team: TeamData) => {
-        return team.teamNickname === data.homeTeam.nickName;
+        return team.name === data.homeTeam.nickName;
     });
     const awayTeamObj = ladder.filter((team: TeamData) => {
-        return team.teamNickname === data.awayTeam.nickName;
+        return team.name === data.awayTeam.nickName;
     });
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
