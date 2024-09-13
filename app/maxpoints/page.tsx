@@ -7,7 +7,6 @@ import useSWR from "swr";
 import axios from "axios";
 import { constructTeamData, constructTeamStats, getLiveFixtures, teamSortFunction } from "../lib/nrl-draw-utils";
 import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
-import NavBar from "../ui/nav-bar";
 
 // export const metadata: Metadata = {
 //     title: 'NRL Max Points',
