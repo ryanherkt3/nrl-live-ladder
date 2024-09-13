@@ -7,6 +7,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { constructTeamData, constructTeamStats, getLiveFixtures, teamSortFunction } from "../lib/nrl-draw-utils";
 import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
+import NavBar from "../ui/nav-bar";
 
 // export const metadata: Metadata = {
 //     title: 'NRL Max Points',
@@ -30,7 +31,11 @@ export default function MaxPointsPage() {
 
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = nrlDraw.filter((round: any) => {
-        return round.byes[0].isCurrentRound;
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
     });
 
     const {selectedRoundId: currentRoundNo, fixtures} = currentRoundInfo[0];
