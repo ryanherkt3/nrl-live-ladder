@@ -132,6 +132,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 fixtures={fixturesToShow}
                 teamList={allTeams}
                 updateCallback={updateFixturesToShow}
+                lastRoundNo={currentRoundNo}
             />
         </div>
     );

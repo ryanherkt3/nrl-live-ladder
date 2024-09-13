@@ -10,7 +10,8 @@ export default function Fixtures(
         byes,
         fixtures,
         teamList,
-        updateCallback
+        updateCallback,
+        lastRoundNo
     }:
     {
         roundNum: number,
@@ -18,6 +19,7 @@ export default function Fixtures(
         fixtures: Array<Match>,
         teamList: Array<TeamData>,
         updateCallback: Function
+        lastRoundNo: number,
     }
 ) {
     const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
@@ -38,6 +40,8 @@ export default function Fixtures(
         return null;
     }
 
+    console.log(roundNum, lastRoundNo);
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-2 justify-center">
@@ -53,7 +57,7 @@ export default function Fixtures(
                 }
                 <div className="text-2xl font-semibold">{roundHeading}</div>
                 {
-                    roundNum === (inFinalsFootball ? grandFinalRoundNum : lastRoundNum) ?
+                    roundNum === lastRoundNo ?
                         <div className="w-8"></div> :
                         <ChevronRightIcon
                             className="w-8 h-8 cursor-pointer"
