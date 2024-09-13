@@ -30,7 +30,11 @@ export default function MaxPointsPage() {
 
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = nrlDraw.filter((round: any) => {
-        return round.byes[0].isCurrentRound;
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
     });
 
     const {selectedRoundId: currentRoundNo, fixtures} = currentRoundInfo[0];
