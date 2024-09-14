@@ -70,7 +70,7 @@ export function constructTeamStats(seasonDraw: Array<DrawInfo>, currentRoundNo: 
     };
 
     for (const round of seasonDraw) {
-        // Do not count stats for games not started or finals games. TODO check
+        // Do not count stats for games not started or finals games
         if (round.selectedRoundId > currentRoundNo || round.selectedRoundId > ROUNDS) {
             break;
         }

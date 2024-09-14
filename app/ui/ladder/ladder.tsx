@@ -22,7 +22,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     });
 
     const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
-    const {ROUNDS, FINALS_TEAMS, FINALS_WEEKS} = NUMS;
+    const {ROUNDS, FINALS_TEAMS} = NUMS;
 
     const updateAllTeams = (showByes: boolean) => {
         allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
@@ -30,10 +30,11 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         });
     };
 
-    let nextRoundInfo;
-    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
-        nextRoundInfo = seasonDraw[currentRoundNo];
-    }
+    // Last round for the toggle. Is last round of regular season if not finals football,
+    // otherwise it is set to the current finals football week
+    const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
+
+    const nextRoundInfo = seasonDraw[currentRoundNo <= ROUNDS ? currentRoundNo : ROUNDS];
 
     const liveMatch = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
@@ -132,7 +133,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 fixtures={fixturesToShow}
                 teamList={allTeams}
                 updateCallback={updateFixturesToShow}
-                lastRoundNo={currentRoundNo}
+                lastRoundNo={lastFixtureRound}
             />
         </div>
     );
