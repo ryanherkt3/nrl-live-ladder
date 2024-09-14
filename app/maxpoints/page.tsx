@@ -119,19 +119,45 @@ function getTableRows(
         const bgClassName = nickname.toLowerCase().replace(' ', '') +
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
 
+        const teamsCanFinishAbove = allTeams.filter((team: TeamData) => {
+            const sameGames = team.stats.played === stats.played;
+            const teamHasFinished = stats.played === NUMS.MATCHES;
+            const samePoints = team.stats.points === maxPoints;
+            const diffCheck = team.stats['points difference'] > stats['points difference'];
+
+            return (team.stats.points > maxPoints) || (sameGames && teamHasFinished && samePoints && diffCheck);
+        }).length;
+
+        const teamsCanFinishBelow = allTeams.filter((team: TeamData) => {
+            if (team.name === nickname) {
+                return false;
+            }
+
+            const sameGames = team.stats.played === stats.played;
+            const teamHasFinished = stats.played === NUMS.MATCHES;
+            const samePoints = team.stats.points === maxPoints;
+            const diffCheck = team.stats['points difference'] < stats['points difference'];
+
+            if (sameGames && teamHasFinished && samePoints && diffCheck) {
+                return false;
+            }
+
+            return team.stats.maxPoints >= currentPoints;
+        }).length;
+
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        const isEliminated = maxPoints < eliminated;
+        const isEliminated = maxPoints < eliminated || teamsCanFinishAbove >= NUMS.FINALS_TEAMS;
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
-        else if (currentPoints > topTwo) {
+        else if (currentPoints > topTwo || teamsCanFinishBelow <= 1) {
             qualificationStatus = '(T2)';
         }
-        else if (currentPoints > topFour) {
+        else if (currentPoints > topFour || teamsCanFinishBelow <= 3) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > topEight) {
+        else if (currentPoints > topEight || teamsCanFinishBelow <= 7) {
             qualificationStatus = '(Q)';
         }
 
@@ -199,7 +225,7 @@ function getTableRows(
                     }
                 </div>
                 {
-                    getLadderStatus(allTeams, pointValues, nickname)
+                    getLadderStatus(pointValues, teamsCanFinishAbove, teamsCanFinishBelow)
                 }
             </div>
         );
@@ -273,20 +299,13 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
  * Get the ladder status for a team to be displayed on mobile devices.
  * Show the current & max points, and the lowest and highest ladder positions.
  *
- * @param {Array<TeamData>} teamList list of teams
  * @param {TeamPoints} pointValues
- * @param {String} nickname the team's name (e.g. Panthers)
+ * @param {number} teamsCanFinishAbove number of teams that can finish above the selected team
+ * @param {number} teamsCanFinishBelow number of teams that can finish below the selected team
  * @returns HTML object
  */
-function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nickname: String) {
+function getLadderStatus(pointValues: TeamPoints, teamsCanFinishAbove: number, teamsCanFinishBelow: number) {
     const {currentPoints, maxPoints} = pointValues;
-
-    const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
-        return team.stats.points > maxPoints;
-    }).length;
-    const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
-        return team.name !== nickname && team.stats.maxPoints >= currentPoints;
-    }).length;
 
     return (
         <div className="w-full md:hidden flex flex-row items-center">

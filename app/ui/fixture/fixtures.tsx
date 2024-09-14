@@ -40,8 +40,6 @@ export default function Fixtures(
         return null;
     }
 
-    console.log(roundNum, lastRoundNo);
-
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-2 justify-center">

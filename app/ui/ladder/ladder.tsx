@@ -82,8 +82,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         <div className="px-8 py-6 flex flex-col gap-6">
             <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
             {
-                // Do not show bye toggle if in first or last round
-                [1, ROUNDS].includes(currentRoundNo) ?
+                // Do not show bye toggle if in first round or last round and beyond
+                currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
