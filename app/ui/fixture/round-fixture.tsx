@@ -167,7 +167,6 @@ function getMatchContext(matchData: Match) {
                 <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
                     {matchPeriod}
                 </div>
-                {/* TODO modify to tick every second */}
                 <div>{clock.gameTime}</div>
             </div>
         );
