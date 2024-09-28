@@ -189,7 +189,7 @@ function getLadderRow(
         else if (currentRoundNo < ROUNDS) {
             nextTeam = 'BYE';
         }
-        else if (ladderPos <= FINALS_TEAMS) {
+        else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
             let finalsOppLadderPos = ladderPos;
 
             // Finals Week 1: 1v4, 2v3, 5v8, 6v7
