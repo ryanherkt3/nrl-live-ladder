@@ -40,7 +40,7 @@ export default function Fixtures(
             <div className="text-2xl font-semibold text-center">{roundHeading}</div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getLiveFixtures(fixtures, teamList)
+                getLiveFixtures(fixtures, teamList, inFinalsFootball)
             }
             {
                 inFinalsFootball ?

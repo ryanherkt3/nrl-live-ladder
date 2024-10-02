@@ -11,12 +11,14 @@ export default function RoundFixture(
     {
         data,
         winningTeam,
-        ladder
+        ladder,
+        isFinalsFootball
     }:
     {
         data: Match,
         winningTeam: string,
         ladder: Array<TeamData>
+        isFinalsFootball: boolean,
     }
 ) {
     const {matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock} = data;
@@ -47,7 +49,8 @@ export default function RoundFixture(
                         {
                             'bg-green-400': isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
-                            'bg-blue-400': !isLiveMatch && !isFullTime,
+                            'bg-yellow-600': !isLiveMatch && !isFullTime && isFinalsFootball,
+                            'bg-blue-400': !isLiveMatch && !isFullTime && !isFinalsFootball,
                         }
                     )
                 }

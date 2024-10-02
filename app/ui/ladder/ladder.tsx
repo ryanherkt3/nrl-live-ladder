@@ -60,8 +60,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         <div className="px-8 py-6 flex flex-col gap-6">
             <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
             {
-                // Do not show bye toggle if in first or last round
-                [1, ROUNDS].includes(currentRoundNo) ?
+                // Do not show bye toggle if in first round or last round and beyond
+                currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
@@ -150,24 +150,17 @@ function getLadderRow(
         }
 
         // Get team's next fixture if there is one
+        // If team has played get fixture from next round, otherwise get one from current round
         let filteredFixture = null;
         let nextTeam = '';
         let nextMatchUrl = '';
 
         const playedAndByes = stats.played + stats.byes;
-        if (playedAndByes === currentRoundNo || playedAndByes === ROUNDS) {
-            if (nextRoundInfo) {
-                filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                    return name === fixture.homeTeam.nickName ||
-                        name === fixture.awayTeam.nickName;
-                });
-            }
-            else if (currentRoundNo < ROUNDS) {
-                filteredFixture = fixtures.filter((fixture: Match) => {
-                    return name === fixture.homeTeam.nickName ||
-                        name === fixture.awayTeam.nickName;
-                });
-            }
+        if ((playedAndByes === currentRoundNo || playedAndByes === ROUNDS) && nextRoundInfo) {
+            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                return name === fixture.homeTeam.nickName ||
+                    name === fixture.awayTeam.nickName;
+            });
         }
         else {
             filteredFixture = fixtures.filter((fixture: Match) => {
