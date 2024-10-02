@@ -141,7 +141,7 @@ export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
     return bStats['points difference'] - aStats['points difference'];
 }
 
-export function getLiveFixtures(fixtures: Array<Match>, ladder: Array<TeamData>) {
+export function getLiveFixtures(fixtures: Array<Match>, ladder: Array<TeamData>, isFinalsFootball: boolean) {
     const liveFixtures = [];
 
     for (const fixture of fixtures) {
@@ -155,6 +155,7 @@ export function getLiveFixtures(fixtures: Array<Match>, ladder: Array<TeamData>)
                 data={fixture}
                 winningTeam={winningTeam}
                 ladder={ladder}
+                isFinalsFootball={isFinalsFootball}
             />
         );
     }

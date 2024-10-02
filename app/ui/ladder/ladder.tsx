@@ -179,24 +179,17 @@ function getLadderRow(
         }
 
         // Get team's next fixture if there is one
+        // If team has played get fixture from next round, otherwise get one from current round
         let filteredFixture = null;
         let nextTeam = '';
         let nextMatchUrl = '';
 
         const playedAndByes = stats.played + stats.byes;
-        if (playedAndByes === currentRoundNo || playedAndByes === ROUNDS) {
-            if (nextRoundInfo) {
-                filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                    return name === fixture.homeTeam.nickName ||
-                        name === fixture.awayTeam.nickName;
-                });
-            }
-            else if (currentRoundNo < ROUNDS) {
-                filteredFixture = fixtures.filter((fixture: Match) => {
-                    return name === fixture.homeTeam.nickName ||
-                        name === fixture.awayTeam.nickName;
-                });
-            }
+        if ((playedAndByes === currentRoundNo || playedAndByes === ROUNDS) && nextRoundInfo) {
+            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                return name === fixture.homeTeam.nickName ||
+                    name === fixture.awayTeam.nickName;
+            });
         }
         else {
             filteredFixture = fixtures.filter((fixture: Match) => {
@@ -218,7 +211,7 @@ function getLadderRow(
         else if (currentRoundNo < ROUNDS) {
             nextTeam = 'BYE';
         }
-        else if (ladderPos <= FINALS_TEAMS) {
+        else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
             let finalsOppLadderPos = ladderPos;
 
             // Finals Week 1: 1v4, 2v3, 5v8, 6v7

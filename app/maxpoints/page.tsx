@@ -330,7 +330,7 @@ function getLiveFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamD
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
                 {
-                    getLiveFixtures(liveMatches, teamList)
+                    getLiveFixtures(liveMatches, teamList, false)
                 }
             </div>
         );
