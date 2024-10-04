@@ -28,10 +28,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     const updateFixturesToShow = (showPreviousRound: boolean) => {
         const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
-
-        const shownRound = seasonDraw.filter((round: DrawInfo) => {
-            return round.selectedRoundId === newRoundIndex;
-        })[0];
+        const shownRound = seasonDraw[newRoundIndex];
 
         // Fixtures don't exist so return early
         if (!shownRound) {
@@ -42,10 +39,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         setFixturesToShow(shownRound.fixtures);
         setByeTeams(shownRound.byes);
     };
-
-    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [roundIndex, setRoundIndex] = useState(currentRoundNo);
+    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
+
     const {ROUNDS, FINALS_TEAMS} = NUMS;
     let teams = allTeams;
 

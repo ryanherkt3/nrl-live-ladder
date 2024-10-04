@@ -183,9 +183,12 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>) {
     });
 
     const { byes, fixtures, selectedRoundId: currentRoundNo } = currentRoundInfo[0];
-    const { ROUNDS } = NUMS;
+    const { ROUNDS, FINALS_WEEKS } = NUMS;
 
-    const nextRoundInfo = seasonDraw[currentRoundNo <= ROUNDS ? currentRoundNo : ROUNDS];
+    let nextRoundInfo;
+    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
+        nextRoundInfo = seasonDraw[currentRoundNo];
+    }
     const liveMatches = fixtures.filter((fixture: Match) => {
         return fixture.matchMode === 'Live';
     });
