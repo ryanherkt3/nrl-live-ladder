@@ -76,3 +76,13 @@ export type TeamPoints = {
     currentPoints: number,
     maxPoints: number,
 }
+
+export type PageVariables = {
+    currentRoundInfo: DrawInfo[],
+    byes: ByeTeam[]
+    fixtures: Match[],
+    currentRoundNo: number,
+    nextRoundInfo: DrawInfo | undefined,
+    liveMatches: Match[],
+    allTeams: TeamData[]
+}
