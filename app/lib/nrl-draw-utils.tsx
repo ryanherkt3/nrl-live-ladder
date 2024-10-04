@@ -162,3 +162,43 @@ export function getLiveFixtures(fixtures: Array<Match>, ladder: Array<TeamData>,
 
     return liveFixtures;
 }
+
+/**
+ * Get all the page variables
+ *
+ * @param {Array<DrawInfo>} seasonDraw
+ * @returns {PageVariables}
+ */
+export function getPageVariables(seasonDraw: Array<DrawInfo>) {
+    // Construct list of teams manually
+    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
+
+    // Get current round number
+    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
+    });
+
+    const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
+    const {ROUNDS, FINALS_WEEKS} = NUMS;
+
+    let nextRoundInfo;
+    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
+        nextRoundInfo = seasonDraw[currentRoundNo];
+    }
+    const liveMatches = fixtures.filter((fixture: Match) => {
+        return fixture.matchMode === 'Live';
+    });
+
+    const allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList)
+        .sort((a: TeamData, b: TeamData) => {
+            return teamSortFunction(true, a, b);
+        });
+
+    return {
+        currentRoundInfo, byes, fixtures, currentRoundNo, nextRoundInfo, liveMatches, allTeams
+    };
+}

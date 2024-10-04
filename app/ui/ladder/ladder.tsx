@@ -1,44 +1,13 @@
 import LadderRow from "./ladder-row";
-import { TeamData, Match, DrawInfo } from "../../lib/definitions";
+import { TeamData, Match, DrawInfo, PageVariables } from "../../lib/definitions";
 import Fixtures from "../fixture/fixtures";
 import ByeToggleSection from "../bye-toggle";
 import { useState } from "react";
 import { NUMS } from "@/app/lib/utils";
-import { constructTeamData, constructTeamStats, teamSortFunction } from "@/app/lib/nrl-draw-utils";
+import { getPageVariables, teamSortFunction } from "@/app/lib/nrl-draw-utils";
+import PageDescription from "../page-desc";
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
-    seasonDraw = Object.values(seasonDraw);
-
-    // Construct list of teams manually
-    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
-
-    // Get current round number
-    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
-        if (round.byes) {
-            return round.byes[0].isCurrentRound;
-        }
-
-        return round.fixtures[0].isCurrentRound;
-    });
-
-    const {byes, fixtures, selectedRoundId: currentRoundNo} = currentRoundInfo[0];
-    const {ROUNDS, FINALS_TEAMS, FINALS_WEEKS} = NUMS;
-
-    const updateAllTeams = (showByes: boolean) => {
-        allTeams = allTeams.sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(showByes, a, b);
-        });
-    };
-
-    let nextRoundInfo;
-    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
-        nextRoundInfo = seasonDraw[currentRoundNo];
-    }
-
-    const liveMatch = fixtures.filter((fixture: Match) => {
-        return fixture.matchMode === 'Live';
-    });
-
     const updateByePoints = (newValue: boolean) => {
         // Do not set if the value is the same
         if (newValue === byePoints) {
@@ -46,19 +15,25 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         }
 
         setByePoints(newValue);
-        updateAllTeams(newValue);
-    };
 
+        // Update teams object
+        teams = teams.sort((a: TeamData, b: TeamData) => {
+            return teamSortFunction(newValue, a, b);
+        });
+    };
     const [byePoints, setByePoints] = useState(true);
 
-    let allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList)
-        .sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(byePoints, a, b);
-        });
+    const pageVariables = getPageVariables(Object.values(seasonDraw));
+    const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
+    const { ROUNDS, FINALS_TEAMS } = NUMS;
+    let teams = allTeams;
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
-            <div className="text-center text-xl">Ladder auto-updates every few seconds</div>
+            <PageDescription
+                cssClasses={"text-xl text-center"}
+                description={"Ladder auto-updates every few seconds"}
+            />
             {
                 // Do not show bye toggle if in first round or last round and beyond
                 currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
@@ -82,30 +57,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     <div className="w-[15%] sm:w-[6%]">Pts</div>
                 </div>
                 {
-                    getLadderRow(
-                        allTeams.slice(0, FINALS_TEAMS),
-                        liveMatch,
-                        1,
-                        byePoints,
-                        currentRoundNo,
-                        fixtures,
-                        nextRoundInfo
-                    )
+                    getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)
                 }
                 <div className="border-2 border-green-400"></div>
                 {
-                    getLadderRow(
-                        allTeams.slice(FINALS_TEAMS),
-                        liveMatch,
-                        FINALS_TEAMS + 1,
-                        byePoints,
-                        currentRoundNo,
-                        fixtures,
-                        nextRoundInfo
-                    )
+                    getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)
                 }
             </div>
-            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} teamList={allTeams} />
+            <Fixtures roundNum={currentRoundNo} byes={byes} fixtures={fixtures} teamList={teams} />
         </div>
     );
 }
@@ -114,32 +73,27 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
  * Get a row in the ladder
  *
  * @param {Array<TeamData>} teamList
- * @param {Array<Match> | undefined} liveMatch the ongoing match(es)
  * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
  * @param {boolean} byePoints
- * @param {number} currentRoundNo
- * @param {Array<Match>} fixtures the fixture list for the current round
- * @param {DrawInfo | undefined} nextRoundInfo information about the next round if it exists
+ * @param {PageVariables} pageVariables
  * @returns {LadderRow} React object
  */
 function getLadderRow(
     teamList: Array<TeamData>,
-    liveMatch: Array<Match> | undefined,
     indexAdd: number,
     byePoints: boolean,
-    currentRoundNo: number,
-    fixtures: Array<Match>,
-    nextRoundInfo: DrawInfo | undefined,
+    pageVariables: PageVariables,
 ) {
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
         let isPlaying = false;
 
+        const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const {name, stats, theme} = team;
         const {ROUNDS, FINALS_TEAMS} = NUMS;
 
-        if (liveMatch) {
-            for (const match of liveMatch) {
+        if (liveMatches) {
+            for (const match of liveMatches) {
                 isPlaying = match.awayTeam.nickName === name ||
                     match.homeTeam.nickName === name;
 
