@@ -6,6 +6,7 @@ import axios from 'axios';
 import SkeletonLadder from "./ui/skeletons/skeleton-ladder";
 
 export default function HomePage() {
+    // TODO move duplicate fetcher code for these three pages to own function
     const fetcher = (url: string) => axios.get(url).then(res => res.data);
     const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
 

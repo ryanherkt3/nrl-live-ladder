@@ -6,6 +6,7 @@ import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
 import MaxPoints from "../ui/max-points";
 
 export default function MaxPointsPage() {
+    // TODO move duplicate fetcher code for these three pages to own function
     const fetcher = (url: string) => axios.get(url).then(res => res.data);
     const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
 

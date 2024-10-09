@@ -6,9 +6,10 @@ import { useState } from "react";
 import { NUMS } from "@/app/lib/utils";
 import { getPageVariables, teamSortFunction } from "@/app/lib/nrl-draw-utils";
 import PageDescription from "../page-desc";
+import Standings from "./../ladder/standings";
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
-    const pageVariables = getPageVariables(Object.values(seasonDraw));
+    const pageVariables = getPageVariables(Object.values(seasonDraw), false);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
     const updateByePoints = (newValue: boolean) => {
@@ -26,18 +27,20 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     };
     const [byePoints, setByePoints] = useState(true);
 
+    // TODO move to util
     const updateFixturesToShow = (showPreviousRound: boolean) => {
         const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
-        const shownRound = seasonDraw[newRoundIndex];
 
         // Fixtures don't exist so return early
-        if (!shownRound) {
+        if (!seasonDraw[newRoundIndex]) {
             return false;
         }
 
+        const { fixtures, byes } = seasonDraw[newRoundIndex];
+
         setRoundIndex(newRoundIndex);
-        setFixturesToShow(shownRound.fixtures);
-        setByeTeams(shownRound.byes);
+        setFixturesToShow(fixtures);
+        setByeTeams(byes);
     };
     const [roundIndex, setRoundIndex] = useState(currentRoundNo);
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
@@ -62,30 +65,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
-            <div>
-                <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
-                    <div className="w-[10%] md:w-[5%]" title="Position">#</div>
-                    <div className="hidden sm:block w-[15%] sm:w-[8%]">Team</div>
-                    <div className="w-[25%] sm:w-[15%]"></div>
-                    <div className="w-[15%] sm:w-[6%]" title="Played">P</div>
-                    <div className="hidden sm:block sm:w-[6%]" title="Won">W</div>
-                    <div className="hidden sm:block sm:w-[6%]" title="Drawn">D</div>
-                    <div className="hidden sm:block sm:w-[6%]" title="Lost">L</div>
-                    <div className="hidden sm:block sm:w-[6%]" title="Byes">B</div>
-                    <div className="hidden md:block w-[6%]" title="Points For">PF</div>
-                    <div className="hidden md:block w-[6%]" title="Points Against">PA</div>
-                    <div className="hidden xs:block w-[15%] sm:w-[6%]" title="Points Difference">PD</div>
-                    <div className="w-[25%] sm:w-[15%] md:w-[8%]">Next</div>
-                    <div className="w-[15%] sm:w-[6%]">Pts</div>
-                </div>
-                {
-                    getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)
-                }
-                <div className="border-2 border-green-400"></div>
-                {
-                    getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)
-                }
-            </div>
+            <Standings
+                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
+                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+            />
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
@@ -93,6 +76,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 teamList={allTeams}
                 updateCallback={updateFixturesToShow}
                 lastRoundNo={lastFixtureRound}
+                modifiable={false}
+                modifiedFixtureCb={undefined}
             />
         </div>
     );

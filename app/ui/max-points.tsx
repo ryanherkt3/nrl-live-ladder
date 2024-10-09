@@ -1,11 +1,11 @@
 import { getOrdinalNumber, getShortCode, NUMS } from "../lib/utils";
 import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from "../lib/definitions";
 import clsx from "clsx";
-import { getLiveFixtures, getPageVariables } from "../lib/nrl-draw-utils";
+import { getRoundFixtures, getPageVariables } from "../lib/nrl-draw-utils";
 import PageDescription from "./page-desc";
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw));
+    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false);
 
     const firstPlaceMaxPts = allTeams[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
@@ -23,7 +23,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
             {
-                getLiveFixturesSection(liveMatches, allTeams)
+                getRoundFixturesSection(liveMatches, allTeams)
             }
             <PageDescription
                 cssClasses={"text-xl font-semibold text-center"}
@@ -260,19 +260,19 @@ function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nic
 }
 
 /**
- * Get the current live matches for display
+ * Get the matches for display
  *
  * @param {Array<Match>} liveMatches
  * @param {Array<TeamData>} teamList list of teams
  * @returns HTML object or null if no live matches exist
  */
-function getLiveFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
+function getRoundFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
     if (liveMatches.length) {
         return (
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
                 {
-                    getLiveFixtures(liveMatches, teamList, false)
+                    getRoundFixtures(liveMatches, teamList, false, false, undefined)
                 }
             </div>
         );

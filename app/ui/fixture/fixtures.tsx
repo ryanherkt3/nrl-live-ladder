@@ -1,7 +1,7 @@
 import { Match, ByeTeam, TeamData } from "../../lib/definitions";
 import TeamImage from "../team-image";
 import { NUMS } from "@/app/lib/utils";
-import { getLiveFixtures } from "@/app/lib/nrl-draw-utils";
+import { getRoundFixtures } from "@/app/lib/nrl-draw-utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 export default function Fixtures(
@@ -11,7 +11,9 @@ export default function Fixtures(
         fixtures,
         teamList,
         updateCallback,
-        lastRoundNo
+        lastRoundNo,
+        modifiable,
+        modifiedFixtureCb,
     }:
     {
         roundNum: number,
@@ -20,6 +22,8 @@ export default function Fixtures(
         teamList: Array<TeamData>,
         updateCallback: Function
         lastRoundNo: number,
+        modifiable: boolean,
+        modifiedFixtureCb: any // TODO fix type
     }
 ) {
     const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
@@ -67,7 +71,7 @@ export default function Fixtures(
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getLiveFixtures(fixtures, teamList, inFinalsFootball)
+                getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
             }
             {
                 inFinalsFootball ?

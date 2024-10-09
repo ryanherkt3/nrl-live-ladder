@@ -33,6 +33,7 @@ export type Match = {
     matchMode: 'Pre' | 'Post' | 'Live';
     matchState: 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'FullTime' | 'ExtraTime';
     matchCentreUrl: string;
+    roundTitle: string;
     homeTeam: FixtureTeam;
     awayTeam: FixtureTeam;
     clock: MatchTime;

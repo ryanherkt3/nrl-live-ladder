@@ -20,6 +20,17 @@
     100% { background-color: #dc2626; }
 }
 
+/* Number inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 /* Navigation */
 .absolute-nav {
     position: absolute;
