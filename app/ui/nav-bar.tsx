@@ -107,12 +107,12 @@ export default function NavBar() {
     );
 }
 
-function getNavIcon(isMobileScreen: boolean, mobileNavOpen: boolean, toggleMobileNavOpen: any) {
+function getNavIcon(isMobileScreen: boolean, mobileNavOpen: boolean, toggleMobileNavOpen: Function) {
     if (isMobileScreen) {
         if (mobileNavOpen) {
-            return <XMarkIcon className="cursor-pointer w-8" onClick={toggleMobileNavOpen} />;
+            return <XMarkIcon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} />;
         }
-        return <Bars3Icon className="cursor-pointer w-8" onClick={toggleMobileNavOpen} />;
+        return <Bars3Icon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} />;
     }
 
     return null;

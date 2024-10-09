@@ -8,7 +8,7 @@ export default function InputScore(
         team
     }:
     {
-        modifiedFixtureCb: any,
+        modifiedFixtureCb: Function | undefined,
         matchSlug: string,
         team: string
     }
@@ -28,7 +28,9 @@ export default function InputScore(
     }
 
     const updatePrediction = useDebouncedCallback(() => {
-        modifiedFixtureCb(slug, teamsArray, round, team, score);
+        if (typeof modifiedFixtureCb === 'function') {
+            modifiedFixtureCb(slug, teamsArray, round, team, score);
+        }
     }, 500);
 
     const [score, setScore] = useState(predictedTeamScore ?? '');

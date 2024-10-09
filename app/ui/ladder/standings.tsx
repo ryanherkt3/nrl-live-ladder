@@ -1,4 +1,15 @@
-export default function Standings({topHalf, bottomHalf}: {topHalf: any, bottomHalf: any}) {
+import { ReactElement } from 'react';
+
+export default function Standings(
+    {
+        topHalf,
+        bottomHalf
+    }:
+    {
+        topHalf: Array<ReactElement>,
+        bottomHalf: Array<ReactElement>
+    }
+) {
     return (
         <div>
             <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">

@@ -27,7 +27,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         });
 
         if (!fixtureToUpdate) {
-            console.log('fixture does not exist');
             return;
         }
 
