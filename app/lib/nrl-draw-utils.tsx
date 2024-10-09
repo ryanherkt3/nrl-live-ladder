@@ -1,6 +1,6 @@
-import RoundFixture from "../ui/fixture/round-fixture";
-import { DrawInfo, Match, TeamData } from "./definitions";
-import { NUMS } from "./utils";
+import RoundFixture from '../ui/fixture/round-fixture';
+import { DrawInfo, Match, TeamData } from './definitions';
+import { NUMS } from './utils';
 
 /**
  * Construct the data for a team (statistics, team name, theme key)

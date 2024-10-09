@@ -1,12 +1,12 @@
 'use client';
 
-import clsx from "clsx";
-import { FixtureTeam, Match, TeamData } from "../../lib/definitions";
-import moment from "moment";
-import { getOrdinalNumber } from "../../lib/utils";
-import Score from "./score";
-import TeamSection from "./team-section";
-import InputScore from "./input-score";
+import clsx from 'clsx';
+import { FixtureTeam, Match, TeamData } from '../../lib/definitions';
+import moment from 'moment';
+import { getOrdinalNumber } from '../../lib/utils';
+import Score from './score';
+import TeamSection from './team-section';
+import InputScore from './input-score';
 
 export default function RoundFixture(
     {
@@ -30,8 +30,8 @@ export default function RoundFixture(
     const {nickName: homeTeamName, theme: homeTeamTheme} = homeTeam;
     const {nickName: awayTeamName, theme: awayTeamTheme} = awayTeam;
 
-    const isLiveMatch = matchMode === "Live";
-    const isFullTime = matchState === "FullTime";
+    const isLiveMatch = matchMode === 'Live';
+    const isFullTime = matchState === 'FullTime';
 
     // Get ladder position of teams
     const homeTeamObj = ladder.filter((team: TeamData) => {

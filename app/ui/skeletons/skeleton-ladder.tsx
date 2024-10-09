@@ -1,7 +1,7 @@
-import { NUMS } from "@/app/lib/utils";
-import SkeletonFixtures from "./skeleton-fixtures";
-import SkeletonLadderRow from "./skeleton-ladder-row";
-import Standings from "./../ladder/standings";
+import { NUMS } from '@/app/lib/utils';
+import SkeletonFixtures from './skeleton-fixtures';
+import SkeletonLadderRow from './skeleton-ladder-row';
+import Standings from './../ladder/standings';
 
 export default function SkeletonLadder() {
     const {TEAMS, FINALS_TEAMS} = NUMS;

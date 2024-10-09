@@ -1,12 +1,12 @@
-import LadderRow from "./ladder-row";
-import { TeamData, Match, DrawInfo, PageVariables } from "../../lib/definitions";
-import Fixtures from "../fixture/fixtures";
-import ByeToggleSection from "../bye-toggle";
-import { useState } from "react";
-import { NUMS } from "@/app/lib/utils";
-import { getPageVariables, teamSortFunction } from "@/app/lib/nrl-draw-utils";
-import PageDescription from "../page-desc";
-import Standings from "./../ladder/standings";
+import LadderRow from './ladder-row';
+import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
+import Fixtures from '../fixture/fixtures';
+import ByeToggleSection from '../bye-toggle';
+import { useState } from 'react';
+import { NUMS } from '@/app/lib/utils';
+import { getPageVariables, teamSortFunction } from '@/app/lib/nrl-draw-utils';
+import PageDescription from '../page-desc';
+import Standings from './../ladder/standings';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const pageVariables = getPageVariables(Object.values(seasonDraw), false);
@@ -56,8 +56,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <PageDescription
-                cssClasses={"text-xl text-center"}
-                description={"Ladder auto-updates every few seconds"}
+                cssClasses={'text-xl text-center'}
+                description={'Ladder auto-updates every few seconds'}
             />
             {
                 // Do not show bye toggle if in first round or last round and beyond

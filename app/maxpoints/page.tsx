@@ -1,9 +1,9 @@
 'use client';
 
-import useSWR from "swr";
-import axios from "axios";
-import SkeletonMaxPoints from "../ui/skeletons/skeleton-max-points";
-import MaxPoints from "../ui/max-points";
+import useSWR from 'swr';
+import axios from 'axios';
+import SkeletonMaxPoints from '../ui/skeletons/skeleton-max-points';
+import MaxPoints from '../ui/max-points';
 
 export default function MaxPointsPage() {
     // TODO move duplicate fetcher code for these three pages to own function

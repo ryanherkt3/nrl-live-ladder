@@ -1,11 +1,11 @@
-import LadderRow from "./ladder/ladder-row";
-import { TeamData, DrawInfo } from "../lib/definitions";
-import { NUMS } from "@/app/lib/utils";
-import { getPageVariables } from "@/app/lib/nrl-draw-utils";
-import Fixtures from "./fixture/fixtures";
-import { useState } from "react";
-import PageDescription from "./page-desc";
-import Standings from "./ladder/standings";
+import LadderRow from './ladder/ladder-row';
+import { TeamData, DrawInfo } from '../lib/definitions';
+import { NUMS } from '@/app/lib/utils';
+import { getPageVariables } from '@/app/lib/nrl-draw-utils';
+import Fixtures from './fixture/fixtures';
+import { useState } from 'react';
+import PageDescription from './page-desc';
+import Standings from './ladder/standings';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const seasonDrawInfo = Object.values(seasonDraw);
@@ -92,8 +92,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <PageDescription
-                cssClasses={"text-xl text-center"}
-                description={"Predict the outcome of every match and see how the ladder looks!"}
+                cssClasses={'text-xl text-center'}
+                description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
                 topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1)}

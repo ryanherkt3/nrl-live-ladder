@@ -1,9 +1,9 @@
 'use client';
 
-import Ladder from "./ui/ladder/ladder";
+import Ladder from './ui/ladder/ladder';
 import useSWR from 'swr';
 import axios from 'axios';
-import SkeletonLadder from "./ui/skeletons/skeleton-ladder";
+import SkeletonLadder from './ui/skeletons/skeleton-ladder';
 
 export default function HomePage() {
     // TODO move duplicate fetcher code for these three pages to own function

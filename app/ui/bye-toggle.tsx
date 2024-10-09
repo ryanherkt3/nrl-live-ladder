@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import clsx from 'clsx';
 
 export default function ByeToggleSection({setByeValue, byeValueCb}: {setByeValue: boolean, byeValueCb: Function}) {
     return (
@@ -29,9 +29,9 @@ function ByeToggle(
             <div
                 className={
                     clsx(
-                        "border border-green-400 w-7 rounded-full",
+                        'border border-green-400 w-7 rounded-full',
                         {
-                            "bg-green-400": byeValue === setByeValue
+                            'bg-green-400': byeValue === setByeValue
                         }
                     )
                 }

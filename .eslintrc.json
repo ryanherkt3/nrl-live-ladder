@@ -37,6 +37,7 @@
         "no-unused-vars": [2, {"vars": "local", "args": "after-used"}],
         "prefer-const": [2, {"destructuring": "all"}],
         "prefer-destructuring": [1, {"object": true, "array": false}],
+        "quotes": [2, "single", { "avoidEscape": true }],
         "semi": [2, "always"],
         "indent": ["error", 4, { "SwitchCase": 1 }]
     }

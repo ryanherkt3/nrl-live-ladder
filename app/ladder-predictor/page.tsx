@@ -1,9 +1,9 @@
 'use client';
 
-import SkeletonLadder from "../ui/skeletons/skeleton-ladder";
-import axios from "axios";
-import useSWRImmutable from "swr/immutable";
-import LadderPredictor from "../ui/ladder-predictor";
+import SkeletonLadder from '../ui/skeletons/skeleton-ladder';
+import axios from 'axios';
+import useSWRImmutable from 'swr/immutable';
+import LadderPredictor from '../ui/ladder-predictor';
 
 export default function LadderPredictorPage() {
     // TODO move duplicate fetcher code for these three pages to own function

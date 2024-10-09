@@ -1,8 +1,8 @@
-import { Match, ByeTeam, TeamData } from "../../lib/definitions";
-import TeamImage from "../team-image";
-import { NUMS } from "@/app/lib/utils";
-import { getRoundFixtures } from "@/app/lib/nrl-draw-utils";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { Match, ByeTeam, TeamData } from '../../lib/definitions';
+import TeamImage from '../team-image';
+import { NUMS } from '@/app/lib/utils';
+import { getRoundFixtures } from '@/app/lib/nrl-draw-utils';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 export default function Fixtures(
     {

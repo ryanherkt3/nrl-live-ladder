@@ -1,8 +1,8 @@
-import { getOrdinalNumber, getShortCode, NUMS } from "../lib/utils";
-import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from "../lib/definitions";
-import clsx from "clsx";
-import { getRoundFixtures, getPageVariables } from "../lib/nrl-draw-utils";
-import PageDescription from "./page-desc";
+import { getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
+import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from '../lib/definitions';
+import clsx from 'clsx';
+import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
+import PageDescription from './page-desc';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false);
@@ -26,8 +26,8 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 getRoundFixturesSection(liveMatches, allTeams)
             }
             <PageDescription
-                cssClasses={"text-xl font-semibold text-center"}
-                description={"See where your team stands in the race for Finals Football"}
+                cssClasses={'text-xl font-semibold text-center'}
+                description={'See where your team stands in the race for Finals Football'}
             />
             <div className="flex flex-col">
                 <div className="w-full md:hidden flex flex-row items-center text-center py-1 font-semibold">

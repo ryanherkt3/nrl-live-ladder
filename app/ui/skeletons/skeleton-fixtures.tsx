@@ -1,6 +1,6 @@
-import { NUMS } from "@/app/lib/utils";
-import SkeletonRoundFixture from "./skeleton-round-fixture";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { NUMS } from '@/app/lib/utils';
+import SkeletonRoundFixture from './skeleton-round-fixture';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 export default function SkeletonFixtures() {
     return (
