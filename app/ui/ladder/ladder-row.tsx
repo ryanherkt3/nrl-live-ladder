@@ -19,8 +19,8 @@ export default function LadderRow(
         nextMatchUrl: string;
     }
 ) {
-    const {stats: statsData, theme, name} = teamData;
-    const {played, wins, drawn, lost, points, noByePoints, byes} = statsData;
+    const { stats: statsData, theme, name } = teamData;
+    const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
 
     return (
         <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">

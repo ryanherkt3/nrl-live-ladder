@@ -51,7 +51,7 @@ export function constructTeamStats(
     teams: Array<TeamData>,
     modifiable: boolean,
 ) {
-    const {BYES: byes, WIN_POINTS, MATCHES, ROUNDS} = NUMS;
+    const { BYES: byes, WIN_POINTS, MATCHES, ROUNDS } = NUMS;
 
     const getMaxPoints = (losses: number, draws: number) => {
         const perfectSeasonPts = WIN_POINTS * MATCHES;
@@ -121,8 +121,8 @@ export function constructTeamStats(
                 }
             }
 
-            const {score: homeScore} = homeTeam;
-            const {score: awayScore} = awayTeam;
+            const { score: homeScore } = homeTeam;
+            const { score: awayScore } = awayTeam;
 
             // Only update team stats if both scores are numeric
             if (isNaN(homeScore) && !isNaN(awayScore)) {
@@ -146,10 +146,10 @@ export function constructTeamStats(
  * @returns {boolean} which team (if any) should be ranked higher
  */
 export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
-    const {stats: bStats} = b;
-    const {points: bPoints, noByePoints: bNoByePoints} = bStats;
-    const {stats: aStats} = a;
-    const {points: aPoints, noByePoints: aNoByePoints} = aStats;
+    const { stats: bStats } = b;
+    const { points: bPoints, noByePoints: bNoByePoints } = bStats;
+    const { stats: aStats } = a;
+    const { points: aPoints, noByePoints: aNoByePoints } = aStats;
 
     if (showByes) {
         if (bPoints !== aPoints) {

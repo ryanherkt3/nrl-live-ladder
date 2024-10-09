@@ -26,7 +26,7 @@ export default function Fixtures(
         modifiedFixtureCb: any // TODO fix type
     }
 ) {
-    const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
+    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS;
     const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
@@ -81,7 +81,7 @@ export default function Fixtures(
                         <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                             {
                                 byes.map((team: ByeTeam) => {
-                                    const {key} = team.theme;
+                                    const { key } = team.theme;
                                     return <TeamImage key={key} matchLink='' teamKey={key} />;
                                 })
                             }

@@ -46,7 +46,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
-    const {ROUNDS, FINALS_TEAMS} = NUMS;
+    const { ROUNDS, FINALS_TEAMS } = NUMS;
     let teams = allTeams;
 
     // Last round for the toggle. Is last round of regular season if not finals football,
@@ -103,8 +103,8 @@ function getLadderRow(
         let isPlaying = false;
 
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
-        const {name, stats, theme} = team;
-        const {ROUNDS, FINALS_TEAMS} = NUMS;
+        const { name, stats, theme } = team;
+        const { ROUNDS, FINALS_TEAMS } = NUMS;
 
         if (liveMatches) {
             for (const match of liveMatches) {
@@ -140,7 +140,7 @@ function getLadderRow(
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
         if (filteredFixture && filteredFixture.length) {
-            const {homeTeam, awayTeam, matchCentreUrl} = filteredFixture[0];
+            const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0];
 
             nextTeam = name === homeTeam.nickName ?
                 awayTeam.theme.key :

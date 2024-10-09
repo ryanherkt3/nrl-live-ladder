@@ -85,7 +85,7 @@ export default function NavBar() {
             }>
                 {
                     links.map((link) => {
-                        const {title, url} = link;
+                        const { title, url } = link;
 
                         return (
                             <Link

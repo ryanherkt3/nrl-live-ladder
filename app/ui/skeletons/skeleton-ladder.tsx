@@ -4,7 +4,7 @@ import SkeletonLadderRow from './skeleton-ladder-row';
 import Standings from './../ladder/standings';
 
 export default function SkeletonLadder() {
-    const {TEAMS, FINALS_TEAMS} = NUMS;
+    const { TEAMS, FINALS_TEAMS } = NUMS;
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">

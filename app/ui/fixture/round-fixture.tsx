@@ -26,9 +26,9 @@ export default function RoundFixture(
         modifiedFixtureCb: any // TODO fix type
     }
 ) {
-    const {matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock} = data;
-    const {nickName: homeTeamName, theme: homeTeamTheme} = homeTeam;
-    const {nickName: awayTeamName, theme: awayTeamTheme} = awayTeam;
+    const { matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock } = data;
+    const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
+    const { nickName: awayTeamName, theme: awayTeamTheme } = awayTeam;
 
     const isLiveMatch = matchMode === 'Live';
     const isFullTime = matchState === 'FullTime';

@@ -73,9 +73,9 @@ function getTableRows(
     const teamList = topHalf ? topTeams : bottomTeams;
 
     return teamList.map((team: TeamData) => {
-        const {stats, name: nickname} = team;
-        const {points: currentPoints, maxPoints} = stats;
-        const {eliminated, topTwo, topFour, topEight} = minPointsForSpots;
+        const { stats, name: nickname } = team;
+        const { points: currentPoints, maxPoints } = stats;
+        const { eliminated, topTwo, topFour, topEight } = minPointsForSpots;
 
         const bgClassName = nickname.toLowerCase().replace(' ', '') +
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
@@ -181,7 +181,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
     const pointCells = [];
     const commonClasses = 'flex-1 py-2 h-full';
 
-    const {lowestCurrentPoints, highestMaxPoints, currentPoints, maxPoints} = pointValues;
+    const { lowestCurrentPoints, highestMaxPoints, currentPoints, maxPoints } = pointValues;
 
     const altBgMidPoint = maxPoints === currentPoints ? 0 : (maxPoints + currentPoints) / 2;
 
@@ -240,7 +240,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
  * @returns HTML object
  */
 function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nickname: String) {
-    const {currentPoints, maxPoints} = pointValues;
+    const { currentPoints, maxPoints } = pointValues;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         return team.stats.points > maxPoints;
