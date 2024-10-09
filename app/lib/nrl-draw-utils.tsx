@@ -125,7 +125,7 @@ export function constructTeamStats(
             const { score: awayScore } = awayTeam;
 
             // Only update team stats if both scores are numeric
-            if (isNaN(homeScore) && !isNaN(awayScore)) {
+            if (!isNaN(homeScore) && !isNaN(awayScore)) {
                 updateStats(homeFixtureTeam, homeScore, awayScore);
                 updateStats(awayFixtureTeam, awayScore, homeScore);
             }
@@ -171,7 +171,7 @@ export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
  * @param {Array<TeamData>} ladder ladder data
  * @param {boolean} isFinalsFootball if we are in finals football or not
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {any} modifiedFixtureCb
+ * @param {Function | undefined} modifiedFixtureCb
  * @returns {Array<RoundFixture>}
  */
 export function getRoundFixtures(
@@ -179,7 +179,7 @@ export function getRoundFixtures(
     ladder: Array<TeamData>,
     isFinalsFootball: boolean,
     modifiable: boolean,
-    modifiedFixtureCb: any // TODO fix type (can be Function or undefined)
+    modifiedFixtureCb: Function | undefined
 ) {
     const liveFixtures = [];
 
@@ -243,4 +243,36 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolea
     return {
         currentRoundInfo, byes, fixtures, currentRoundNo, nextRoundInfo, liveMatches, allTeams
     };
+}
+
+/**
+ * Function to update which round is shown for the Fixtures component
+ *
+ * @param showPreviousRound whether the user chose to view the previous week's fixtures or the next
+ * @param roundIndex the current round of fixtures being shown (e.g. 10)
+ * @param seasonDraw
+ * @param setRoundIndex the state update function
+ * @param setFixturesToShow the state update function
+ * @param setByeTeams the state update function
+ */
+export function updateFixturesToShow(
+    showPreviousRound: boolean,
+    roundIndex: number,
+    seasonDraw: Array<DrawInfo>,
+    setRoundIndex: Function,
+    setFixturesToShow: Function,
+    setByeTeams: Function,
+) {
+    const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
+
+    // Fixtures don't exist so return early
+    if (!seasonDraw[newRoundIndex]) {
+        return false;
+    }
+
+    const { fixtures, byes } = seasonDraw[newRoundIndex];
+
+    setRoundIndex(newRoundIndex);
+    setFixturesToShow(fixtures);
+    setByeTeams(byes);
 }

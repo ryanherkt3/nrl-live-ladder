@@ -23,7 +23,7 @@ export default function Fixtures(
         updateCallback: Function
         lastRoundNo: number,
         modifiable: boolean,
-        modifiedFixtureCb: any // TODO fix type
+        modifiedFixtureCb: Function | undefined
     }
 ) {
     const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS;

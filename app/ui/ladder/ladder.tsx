@@ -4,7 +4,7 @@ import Fixtures from '../fixture/fixtures';
 import ByeToggleSection from '../bye-toggle';
 import { useState } from 'react';
 import { NUMS } from '@/app/lib/utils';
-import { getPageVariables, teamSortFunction } from '@/app/lib/nrl-draw-utils';
+import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
 
@@ -27,20 +27,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     };
     const [byePoints, setByePoints] = useState(true);
 
-    // TODO move to util
-    const updateFixturesToShow = (showPreviousRound: boolean) => {
-        const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
-
-        // Fixtures don't exist so return early
-        if (!seasonDraw[newRoundIndex]) {
-            return false;
-        }
-
-        const { fixtures, byes } = seasonDraw[newRoundIndex];
-
-        setRoundIndex(newRoundIndex);
-        setFixturesToShow(fixtures);
-        setByeTeams(byes);
+    const updateFixturesCb = (showPreviousRound: boolean) => {
+        updateFixturesToShow(
+            showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
+        );
     };
     const [roundIndex, setRoundIndex] = useState(currentRoundNo);
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
@@ -74,7 +64,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 byes={byeTeams}
                 fixtures={fixturesToShow}
                 teamList={allTeams}
-                updateCallback={updateFixturesToShow}
+                updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
                 modifiable={false}
                 modifiedFixtureCb={undefined}

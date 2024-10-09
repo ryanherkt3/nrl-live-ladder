@@ -23,7 +23,7 @@ export default function RoundFixture(
         ladder: Array<TeamData>
         isFinalsFootball: boolean,
         modifiable: boolean,
-        modifiedFixtureCb: any // TODO fix type
+        modifiedFixtureCb: Function | undefined
     }
 ) {
     const { matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock } = data;
@@ -107,7 +107,7 @@ function getDateString(date: string) {
  * @param {Match} matchData data related to the match
  * @param {string} winningTeam the team (if any) that is winning
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {any} modifiedFixtureCb TODO fix type
+ * @param {Function | undefined} modifiedFixtureCb
  * @param {string} matchSlug e.g. panthers-v-storm
  * @returns HTML object
  */
@@ -115,7 +115,7 @@ function getMatchState(
     matchData: Match,
     winningTeam: string,
     modifiable: boolean,
-    modifiedFixtureCb: any,
+    modifiedFixtureCb: Function | undefined,
     matchSlug: string
 ) {
     let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
@@ -170,7 +170,7 @@ function getMatchState(
  * @param {String} team
  * @param {String} winCondition e.g. home team is winning
  * @param {String} modifiable if the score can be modified by the user
- * @param {any} modifiedFixtureCb TODO fix type
+ * @param {Function | undefined} modifiedFixtureCb
  * @param {String} matchSlug e.g. panthers-v-storm
  * @returns React component
  */
@@ -179,7 +179,7 @@ function getScoreSegment(
     team: FixtureTeam,
     winCondition: boolean,
     modifiable: boolean,
-    modifiedFixtureCb: any,
+    modifiedFixtureCb: Function | undefined,
     matchSlug: string
 ) {
     const { matchState, matchMode } = matchData;
