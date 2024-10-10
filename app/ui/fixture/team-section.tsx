@@ -1,4 +1,4 @@
-import TeamImage from "../team-image";
+import TeamImage from '../team-image';
 
 export default function TeamSection(
     {

@@ -1,23 +1,32 @@
-import { Match, ByeTeam, TeamData } from "../../lib/definitions";
-import TeamImage from "../team-image";
-import { NUMS } from "@/app/lib/utils";
-import { getLiveFixtures } from "@/app/lib/nrl-draw-utils";
+import { Match, ByeTeam, TeamData } from '../../lib/definitions';
+import TeamImage from '../team-image';
+import { NUMS } from '@/app/lib/utils';
+import { getRoundFixtures } from '@/app/lib/nrl-draw-utils';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
 export default function Fixtures(
     {
         roundNum,
         byes,
         fixtures,
-        teamList
+        teamList,
+        updateCallback,
+        lastRoundNo,
+        modifiable,
+        modifiedFixtureCb,
     }:
     {
         roundNum: number,
         byes: Array<ByeTeam>,
         fixtures: Array<Match>,
-        teamList: Array<TeamData>
+        teamList: Array<TeamData>,
+        updateCallback: Function
+        lastRoundNo: number,
+        modifiable: boolean,
+        modifiedFixtureCb: Function | undefined
     }
 ) {
-    const {ROUNDS: lastRoundNum, FINALS_WEEKS} = NUMS;
+    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS;
     const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
@@ -37,10 +46,32 @@ export default function Fixtures(
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="text-2xl font-semibold text-center">{roundHeading}</div>
+            <div className="flex flex-row gap-2 justify-center">
+                {
+                    roundNum === 1 ?
+                        <div className="w-8"></div> :
+                        <ChevronLeftIcon
+                            className="w-8 h-8 cursor-pointer"
+                            onClick={() => {
+                                updateCallback(true);
+                            }}
+                        />
+                }
+                <div className="text-2xl font-semibold">{roundHeading}</div>
+                {
+                    roundNum === lastRoundNo ?
+                        <div className="w-8"></div> :
+                        <ChevronRightIcon
+                            className="w-8 h-8 cursor-pointer"
+                            onClick={() => {
+                                updateCallback(false);
+                            }}
+                        />
+                }
+            </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getLiveFixtures(fixtures, teamList, inFinalsFootball)
+                getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
             }
             {
                 inFinalsFootball ?
@@ -50,7 +81,7 @@ export default function Fixtures(
                         <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                             {
                                 byes.map((team: ByeTeam) => {
-                                    const {key} = team.theme;
+                                    const { key } = team.theme;
                                     return <TeamImage key={key} matchLink='' teamKey={key} />;
                                 })
                             }

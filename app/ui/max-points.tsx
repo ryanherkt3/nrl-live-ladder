@@ -1,11 +1,11 @@
-import { getOrdinalNumber, getShortCode, NUMS } from "../lib/utils";
-import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from "../lib/definitions";
-import clsx from "clsx";
-import { getLiveFixtures, getPageVariables } from "../lib/nrl-draw-utils";
-import PageDescription from "./page-desc";
+import { getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
+import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from '../lib/definitions';
+import clsx from 'clsx';
+import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
+import PageDescription from './page-desc';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw));
+    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false);
 
     const firstPlaceMaxPts = allTeams[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
@@ -23,11 +23,11 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
             {
-                getLiveFixturesSection(liveMatches, allTeams)
+                getRoundFixturesSection(liveMatches, allTeams)
             }
             <PageDescription
-                cssClasses={"text-xl font-semibold text-center"}
-                description={"See where your team stands in the race for Finals Football"}
+                cssClasses={'text-xl font-semibold text-center'}
+                description={'See where your team stands in the race for Finals Football'}
             />
             <div className="flex flex-col">
                 <div className="w-full md:hidden flex flex-row items-center text-center py-1 font-semibold">
@@ -72,17 +72,29 @@ function getTableRows(
     const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
     const teamList = topHalf ? topTeams : bottomTeams;
 
+    const lastFinalist = topTeams[topTeams.length - 1];
+    const { stats: lfStats } = lastFinalist;
+    const firstEliminated = bottomTeams[0];
+    const { stats: feStats } = firstEliminated;
+
     return teamList.map((team: TeamData) => {
-        const {stats, name: nickname} = team;
-        const {points: currentPoints, maxPoints} = stats;
-        const {eliminated, topTwo, topFour, topEight} = minPointsForSpots;
+        const { stats, name: nickname } = team;
+        const { points: currentPoints, maxPoints } = stats;
+        const { eliminated, topTwo, topFour, topEight } = minPointsForSpots;
 
         const bgClassName = nickname.toLowerCase().replace(' ', '') +
             (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        const isEliminated = maxPoints < eliminated;
+        const isEliminated = maxPoints < eliminated ||
+            (
+                // Is also eliminated if last placed finals team has better points differential
+                // when tied on points at end of season
+                stats.played === NUMS.MATCHES &&
+                lfStats.points >= currentPoints &&
+                lfStats['points difference'] > stats['points difference']
+            );
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
@@ -92,7 +104,15 @@ function getTableRows(
         else if (currentPoints > topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > topEight) {
+        else if (currentPoints > topEight  ||
+            (
+                // Is also qualified if top placed bottom team has worse points differential
+                // when tied on points at end of season
+                feStats.played === NUMS.MATCHES &&
+                feStats.points <= currentPoints &&
+                feStats['points difference'] < stats['points difference']
+            )
+        ) {
             qualificationStatus = '(Q)';
         }
 
@@ -160,7 +180,7 @@ function getTableRows(
                     }
                 </div>
                 {
-                    getLadderStatus(allTeams, pointValues, nickname)
+                    getLadderStatus(allTeams, pointValues, nickname, team)
                 }
             </div>
         );
@@ -181,7 +201,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
     const pointCells = [];
     const commonClasses = 'flex-1 py-2 h-full';
 
-    const {lowestCurrentPoints, highestMaxPoints, currentPoints, maxPoints} = pointValues;
+    const { lowestCurrentPoints, highestMaxPoints, currentPoints, maxPoints } = pointValues;
 
     const altBgMidPoint = maxPoints === currentPoints ? 0 : (maxPoints + currentPoints) / 2;
 
@@ -237,16 +257,40 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
  * @param {Array<TeamData>} teamList list of teams
  * @param {TeamPoints} pointValues
  * @param {String} nickname the team's name (e.g. Panthers)
+ * @param {TeamData} teamInfo info about the team whose ladder status is being updated here
  * @returns HTML object
  */
-function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nickname: String) {
-    const {currentPoints, maxPoints} = pointValues;
+function getLadderStatus(
+    teamList: Array<TeamData>,
+    pointValues: TeamPoints,
+    nickname: String,
+    teamInfo: TeamData,
+) {
+    const { currentPoints, maxPoints } = pointValues;
+    const isFinished = currentPoints === maxPoints;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
-        return team.stats.points > maxPoints;
+        const filteredTeamStats = team.stats;
+
+        return filteredTeamStats.points > maxPoints ||
+            (isFinished && team.name !== nickname &&
+                filteredTeamStats.played === NUMS.MATCHES &&
+                filteredTeamStats.points >= maxPoints &&
+                filteredTeamStats['points difference'] > teamInfo.stats['points difference']
+            );
     }).length;
+
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
-        return team.name !== nickname && team.stats.maxPoints >= currentPoints;
+        const filteredTeamStats = team.stats;
+
+        return team.name !== nickname && // not same team
+            (
+                (currentPoints < filteredTeamStats.maxPoints) ||
+                (
+                    filteredTeamStats.points === currentPoints &&
+                    filteredTeamStats['points difference'] > teamInfo.stats['points difference']
+                )
+            );
     }).length;
 
     return (
@@ -260,19 +304,19 @@ function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nic
 }
 
 /**
- * Get the current live matches for display
+ * Get the matches for display
  *
  * @param {Array<Match>} liveMatches
  * @param {Array<TeamData>} teamList list of teams
  * @returns HTML object or null if no live matches exist
  */
-function getLiveFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
+function getRoundFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
     if (liveMatches.length) {
         return (
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
                 {
-                    getLiveFixtures(liveMatches, teamList, false)
+                    getRoundFixtures(liveMatches, teamList, false, false, undefined)
                 }
             </div>
         );

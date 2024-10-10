@@ -1,13 +1,13 @@
-import { Metadata } from "next";
-import { Inter } from "next/font/google";
-import NavBar from "./ui/nav-bar";
-import "./globals.css";
+import { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import NavBar from './ui/nav-bar';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: "NRL Live Ladder",
-    description: "NRL Live Ladder App by Ryan H",
+    title: 'NRL Live Ladder',
+    description: 'NRL Live Ladder App by Ryan H',
 };
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {

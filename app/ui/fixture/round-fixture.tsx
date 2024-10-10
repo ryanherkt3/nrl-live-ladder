@@ -1,32 +1,37 @@
 'use client';
 
-import clsx from "clsx";
-import { Match, TeamData } from "../../lib/definitions";
-import moment from "moment";
-import { getOrdinalNumber } from "../../lib/utils";
-import Score from "./score";
-import TeamSection from "./team-section";
+import clsx from 'clsx';
+import { FixtureTeam, Match, TeamData } from '../../lib/definitions';
+import moment from 'moment';
+import { getOrdinalNumber } from '../../lib/utils';
+import Score from './score';
+import TeamSection from './team-section';
+import InputScore from './input-score';
 
 export default function RoundFixture(
     {
         data,
         winningTeam,
         ladder,
-        isFinalsFootball
+        isFinalsFootball,
+        modifiable,
+        modifiedFixtureCb
     }:
     {
         data: Match,
         winningTeam: string,
         ladder: Array<TeamData>
         isFinalsFootball: boolean,
+        modifiable: boolean,
+        modifiedFixtureCb: Function | undefined
     }
 ) {
-    const {matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock} = data;
-    const {nickName: homeTeamName, theme: homeTeamTheme} = homeTeam;
-    const {nickName: awayTeamName, theme: awayTeamTheme} = awayTeam;
+    const { matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock } = data;
+    const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
+    const { nickName: awayTeamName, theme: awayTeamTheme } = awayTeam;
 
-    const isLiveMatch = matchMode === "Live";
-    const isFullTime = matchState === "FullTime";
+    const isLiveMatch = matchMode === 'Live';
+    const isFullTime = matchState === 'FullTime';
 
     // Get ladder position of teams
     const homeTeamObj = ladder.filter((team: TeamData) => {
@@ -41,12 +46,14 @@ export default function RoundFixture(
     const gameLink = `https://nrl.com${matchCentreUrl}`;
 
     return (
-        <a className="flex flex-col" href={gameLink} target="_blank">
-            <span
+        <div className="flex flex-col">
+            <a
+                href={gameLink} target="_blank"
                 className={
                     clsx(
                         'text-center text-lg text-white font-semibold',
                         {
+                            'bg-orange-400': modifiable && !isFullTime,
                             'bg-green-400': isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': !isLiveMatch && !isFullTime && isFinalsFootball,
@@ -58,15 +65,15 @@ export default function RoundFixture(
                 {
                     getDateString(clock.kickOffTimeLong)
                 }
-            </span>
+            </a>
             <div className="flex flex-col md:flex-row text-lg items-center justify-between p-2">
                 <TeamSection teamName={homeTeamName} imgKey={homeTeamTheme.key} position={homeTeamPos} />
                 {
-                    getMatchState(data, winningTeam)
+                    getMatchState(data, winningTeam, modifiable, modifiedFixtureCb, matchCentreUrl)
                 }
                 <TeamSection teamName={awayTeamName} imgKey={awayTeamTheme.key} position={awayTeamPos} />
             </div>
-        </a>
+        </div>
     );
 }
 
@@ -99,22 +106,49 @@ function getDateString(date: string) {
  *
  * @param {Match} matchData data related to the match
  * @param {string} winningTeam the team (if any) that is winning
+ * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
+ * @param {Function | undefined} modifiedFixtureCb
+ * @param {string} matchSlug e.g. panthers-v-storm
  * @returns HTML object
  */
-function getMatchState(matchData: Match, winningTeam: string) {
+function getMatchState(
+    matchData: Match,
+    winningTeam: string,
+    modifiable: boolean,
+    modifiedFixtureCb: Function | undefined,
+    matchSlug: string
+) {
     let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
-    const {matchMode, matchState, homeTeam, awayTeam, clock} = matchData;
+    const { matchMode, matchState, homeTeam, awayTeam, clock } = matchData;
 
     if (matchState === 'FullTime' || matchMode === 'Live') {
         commonClasses += ' pt-2';
 
         return (
             <div className={commonClasses}>
-                <Score score={homeTeam.score} winCondition={winningTeam === 'homeTeam'} />
                 {
-                    getMatchContext(matchData)
+                    getScoreSegment(
+                        matchData,
+                        homeTeam,
+                        winningTeam === 'homeTeam',
+                        modifiable,
+                        modifiedFixtureCb,
+                        matchSlug
+                    )
                 }
-                <Score score={awayTeam.score} winCondition={winningTeam === 'awayTeam'} />
+                {
+                    getMatchContext(matchData, modifiable)
+                }
+                {
+                    getScoreSegment(
+                        matchData,
+                        awayTeam,
+                        winningTeam === 'awayTeam',
+                        modifiable,
+                        modifiedFixtureCb,
+                        matchSlug
+                    )
+                }
             </div>
         );
     }
@@ -129,13 +163,52 @@ function getMatchState(matchData: Match, winningTeam: string) {
 }
 
 /**
+ * Get the score segment for display (either the team score or an input field if on
+ * the ladder predictor page)
+ *
+ * @param {String} matchData data pertaining to the match (e.g. match state, match mode)
+ * @param {String} team
+ * @param {String} winCondition e.g. home team is winning
+ * @param {String} modifiable if the score can be modified by the user
+ * @param {Function | undefined} modifiedFixtureCb
+ * @param {String} matchSlug e.g. panthers-v-storm
+ * @returns React component
+ */
+function getScoreSegment(
+    matchData: Match,
+    team: FixtureTeam,
+    winCondition: boolean,
+    modifiable: boolean,
+    modifiedFixtureCb: Function | undefined,
+    matchSlug: string
+) {
+    const { matchState, matchMode } = matchData;
+    const teamSlug = team.nickName.toLowerCase().replace(' ', '-');
+
+    if (modifiable && matchState !== 'FullTime' && matchMode !== 'Live') {
+        return <InputScore modifiedFixtureCb={modifiedFixtureCb} matchSlug={matchSlug} team={teamSlug} />;
+    }
+
+    return <Score score={team.score} winCondition={winCondition} />;
+}
+
+/**
  * Get the status of a match (e.g. 1st Half, Full Time)
  *
  * @param {Match} matchData data related to the match
+ * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
  * @returns HTML object
  */
-function getMatchContext(matchData: Match) {
-    const {matchMode, matchState, clock} = matchData;
+function getMatchContext(matchData: Match, modifiable: boolean) {
+    const { matchMode, matchState, clock } = matchData;
+
+    if (modifiable && matchState !== 'FullTime') {
+        return (
+            <div className="border rounded-md px-2 py-1 w-fit border-orange-400 bg-orange-400 text-white">
+                PREDICTION
+            </div>
+        );
+    }
 
     if (matchState === 'FullTime') {
         return (
@@ -170,7 +243,6 @@ function getMatchContext(matchData: Match) {
                 <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
                     {matchPeriod}
                 </div>
-                {/* TODO modify to tick every second */}
                 <div>{clock.gameTime}</div>
             </div>
         );

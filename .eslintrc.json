@@ -18,7 +18,9 @@
         "brace-style": [2, "stroustrup"],
         "comma-style": [2, "last"],
         "curly": [2, "all"],
+        "eol-last": ["error", "always"],
         "func-call-spacing": [2, "never"],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
         "keyword-spacing": [2, {}],
         "max-len": [2, 120],
         "max-params": [2, 7],
@@ -37,7 +39,7 @@
         "no-unused-vars": [2, {"vars": "local", "args": "after-used"}],
         "prefer-const": [2, {"destructuring": "all"}],
         "prefer-destructuring": [1, {"object": true, "array": false}],
-        "semi": [2, "always"],
-        "indent": ["error", 4, { "SwitchCase": 1 }]
+        "quotes": [2, "single", { "avoidEscape": true }],
+        "semi": [2, "always"]
     }
 }
