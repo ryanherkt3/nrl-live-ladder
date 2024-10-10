@@ -72,6 +72,11 @@ function getTableRows(
     const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
     const teamList = topHalf ? topTeams : bottomTeams;
 
+    const lastFinalist = topTeams[topTeams.length - 1];
+    const { stats: lfStats } = lastFinalist;
+    const firstEliminated = bottomTeams[0];
+    const { stats: feStats } = firstEliminated;
+
     return teamList.map((team: TeamData) => {
         const { stats, name: nickname } = team;
         const { points: currentPoints, maxPoints } = stats;
@@ -82,7 +87,14 @@ function getTableRows(
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        const isEliminated = maxPoints < eliminated;
+        const isEliminated = maxPoints < eliminated ||
+            (
+                // Is also eliminated if last placed finals team has better points differential
+                // when tied on points at end of season
+                stats.played === NUMS.MATCHES &&
+                lfStats.points >= currentPoints &&
+                lfStats['points difference'] > stats['points difference']
+            );
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
@@ -92,7 +104,15 @@ function getTableRows(
         else if (currentPoints > topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > topEight) {
+        else if (currentPoints > topEight  ||
+            (
+                // Is also qualified if top placed bottom team has worse points differential
+                // when tied on points at end of season
+                feStats.played === NUMS.MATCHES &&
+                feStats.points <= currentPoints &&
+                feStats['points difference'] < stats['points difference']
+            )
+        ) {
             qualificationStatus = '(Q)';
         }
 
@@ -160,7 +180,7 @@ function getTableRows(
                     }
                 </div>
                 {
-                    getLadderStatus(allTeams, pointValues, nickname)
+                    getLadderStatus(allTeams, pointValues, nickname, team)
                 }
             </div>
         );
@@ -237,16 +257,40 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
  * @param {Array<TeamData>} teamList list of teams
  * @param {TeamPoints} pointValues
  * @param {String} nickname the team's name (e.g. Panthers)
+ * @param {TeamData} teamInfo info about the team whose ladder status is being updated here
  * @returns HTML object
  */
-function getLadderStatus(teamList: Array<TeamData>, pointValues: TeamPoints, nickname: String) {
+function getLadderStatus(
+    teamList: Array<TeamData>,
+    pointValues: TeamPoints,
+    nickname: String,
+    teamInfo: TeamData,
+) {
     const { currentPoints, maxPoints } = pointValues;
+    const isFinished = currentPoints === maxPoints;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
-        return team.stats.points > maxPoints;
+        const filteredTeamStats = team.stats;
+
+        return filteredTeamStats.points > maxPoints ||
+            (isFinished && team.name !== nickname &&
+                filteredTeamStats.played === NUMS.MATCHES &&
+                filteredTeamStats.points >= maxPoints &&
+                filteredTeamStats['points difference'] > teamInfo.stats['points difference']
+            );
     }).length;
+
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
-        return team.name !== nickname && team.stats.maxPoints >= currentPoints;
+        const filteredTeamStats = team.stats;
+
+        return team.name !== nickname && // not same team
+            (
+                (currentPoints < filteredTeamStats.maxPoints) ||
+                (
+                    filteredTeamStats.points === currentPoints &&
+                    filteredTeamStats['points difference'] > teamInfo.stats['points difference']
+                )
+            );
     }).length;
 
     return (

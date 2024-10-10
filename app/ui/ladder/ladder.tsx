@@ -122,8 +122,8 @@ function getLadderRow(
         }
         else {
             filteredFixture = fixtures.filter((fixture: Match) => {
-                return name === fixture.homeTeam.nickName ||
-                    name === fixture.awayTeam.nickName;
+                return (name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName) &&
+                    fixture.matchMode === 'Pre';
             });
         }
 
