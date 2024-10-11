@@ -53,11 +53,11 @@ export default function RoundFixture(
                     clsx(
                         'text-center text-lg text-white font-semibold',
                         {
-                            'bg-orange-400': modifiable && !isFullTime,
+                            'bg-orange-400': modifiable && matchMode === 'Pre',
                             'bg-green-400': isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
-                            'bg-yellow-600': !isLiveMatch && !isFullTime && isFinalsFootball,
-                            'bg-blue-400': !isLiveMatch && !isFullTime && !isFinalsFootball,
+                            'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
+                            'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
                         }
                     )
                 }
@@ -202,7 +202,7 @@ function getScoreSegment(
 function getMatchContext(matchData: Match, modifiable: boolean) {
     const { matchMode, matchState, clock } = matchData;
 
-    if (modifiable && matchState !== 'FullTime') {
+    if (modifiable && matchState !== 'FullTime' && matchMode !== 'Live') {
         return (
             <div className="border rounded-md px-2 py-1 w-fit border-orange-400 bg-orange-400 text-white">
                 PREDICTION

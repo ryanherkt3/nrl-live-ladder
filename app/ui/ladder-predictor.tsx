@@ -6,6 +6,7 @@ import Fixtures from './fixture/fixtures';
 import { useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
+import clsx from 'clsx';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const seasonDrawInfo = Object.values(seasonDraw);
@@ -57,14 +58,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete predictions[roundKey + 1][slug];
         }
 
-        // Update localStorage
-        localStorage.predictedMatches = JSON.stringify(predictions);
-
-        // Get updated data for each match
-        const pageVariables = getPageVariables(seasonDrawInfo, true);
-        const { allTeams } = pageVariables;
-
-        setTeams(allTeams);
+        updatePredictions(predictions);
     };
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
@@ -76,10 +70,44 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
+    // Update predictions stored in localStorage
+    const updatePredictions = (predictions: any) => {
+        if (predictions) {
+            localStorage.predictedMatches = JSON.stringify(predictions);
+        }
+        else {
+            delete localStorage.predictedMatches;
+        }
+
+        setDisabledClearBtn(!predictions);
+
+        // Get updated data for each match
+        const pageVariables = getPageVariables(seasonDrawInfo, true);
+        const { allTeams } = pageVariables;
+
+        setTeams(allTeams);
+    };
+
     const [teams, setTeams] = useState(allTeams);
+    const [disabledClearBtn, setDisabledClearBtn] = useState(!localStorage.predictedMatches);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <button
+                className={
+                    clsx(
+                        'rounded-lg border font-semibold text-lg w-fit h-fit p-2 self-end',
+                        {
+                            'border-gray-400 bg-gray-400 text-gray-100': disabledClearBtn,
+                            'border-green-400 hover:bg-green-400 hover:text-white': !disabledClearBtn,
+                        }
+                    )
+                }
+                onClick={() => updatePredictions(null)}
+                disabled={disabledClearBtn}
+            >
+                Clear Predictions
+            </button>
             <PageDescription
                 cssClasses={'text-xl text-center'}
                 description={'Predict the outcome of every match and see how the ladder looks!'}
