@@ -1,6 +1,6 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo } from '../lib/definitions';
-import { NUMS } from '@/app/lib/utils';
+import { getCurrentYear, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useState } from 'react';
@@ -14,6 +14,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const { currentRoundNo, allTeams } = pageVariables;
     const { ROUNDS, FINALS_TEAMS } = NUMS;
+
+    const currentYear = getCurrentYear();
 
     // Set current fixture round to last round if in finals football
     const currentFixtureRound = currentRoundNo <= ROUNDS ? currentRoundNo : ROUNDS;
@@ -44,7 +46,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
-        const predictions = localStorage.predictedMatches ? JSON.parse(localStorage.predictedMatches) : {};
+        const predictions = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
 
         // Set the predictions array to update, then update it
         predictions[roundKey + 1] = predictions[roundKey + 1] || {};
@@ -58,28 +62,60 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete predictions[roundKey + 1][slug];
         }
 
-        updatePredictions(predictions);
+        updatePredictions(predictions, roundIndex);
     };
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
             showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
         );
+
+        // Update the disabled clear round button
+        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
+        const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
+        if (predictedMatches) {
+            setDisabledClearRndBtn(!predictedMatches[index]);
+        }
+        setDisabledResetBtn(!Object.entries(predictedMatches).length);
     };
     const [roundIndex, setRoundIndex] = useState(currentFixtureRound);
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
     // Update predictions stored in localStorage
-    const updatePredictions = (predictions: any) => {
-        if (predictions) {
-            localStorage.predictedMatches = JSON.stringify(predictions);
+    const updatePredictions = (predictions: Object | String, roundNum: number) => {
+        let predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
+
+        const updatePredictions = typeof predictions === 'object';
+        const clearRound = typeof predictions === 'string' && predictions === 'clear-round';
+        let clearAll = typeof predictions === 'string' && predictions === 'clear-all';
+
+        if (updatePredictions) {
+            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
         }
-        else {
-            delete localStorage.predictedMatches;
+        else if (clearRound) {
+            delete predictedMatches[roundNum];
+
+            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictedMatches);
+
+            // Set clearAll to true if clearing the round predictions also clears all the predictions
+            if (!(Object.values(predictedMatches).filter((round: any) => Object.values(round).length).length)) {
+                clearAll = true;
+            }
         }
 
-        setDisabledClearBtn(!predictions);
+        if (clearAll) {
+            predictedMatches = {};
+            delete localStorage[`predictedMatches${currentYear}`];
+        }
+
+        // Update the button states
+        setDisabledClearRndBtn(clearRound || clearAll);
+        setDisabledResetBtn(clearAll);
 
         // Get updated data for each match
         const pageVariables = getPageVariables(seasonDrawInfo, true);
@@ -88,26 +124,50 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         setTeams(allTeams);
     };
 
+    const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+        JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+        {};
+
     const [teams, setTeams] = useState(allTeams);
-    const [disabledClearBtn, setDisabledClearBtn] = useState(!localStorage.predictedMatches);
+    const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
+        !predictedMatches ? true : !predictedMatches[roundIndex]
+    );
+    const [disabledResetBtn, setDisabledResetBtn] = useState(!Object.entries(predictedMatches).length);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
-            <button
-                className={
-                    clsx(
-                        'rounded-lg border font-semibold text-lg w-fit h-fit p-2 self-end',
-                        {
-                            'border-gray-400 bg-gray-400 text-gray-100': disabledClearBtn,
-                            'border-green-400 hover:bg-green-400 hover:text-white': !disabledClearBtn,
-                        }
-                    )
-                }
-                onClick={() => updatePredictions(null)}
-                disabled={disabledClearBtn}
-            >
-                Clear Predictions
-            </button>
+            <div className="flex flex-row gap-3 self-end">
+                <button
+                    className={
+                        clsx(
+                            'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
+                            {
+                                'border-gray-400 bg-gray-400 text-gray-100': disabledClearRndBtn,
+                                'border-green-400 hover:bg-green-400 hover:text-white': !disabledClearRndBtn,
+                            }
+                        )
+                    }
+                    onClick={() => updatePredictions('clear-round', roundIndex)}
+                    disabled={disabledClearRndBtn}
+                >
+                    Clear Round
+                </button>
+                <button
+                    className={
+                        clsx(
+                            'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
+                            {
+                                'border-gray-400 bg-gray-400 text-gray-100': disabledResetBtn,
+                                'border-red-600 hover:bg-red-600 hover:text-white': !disabledResetBtn,
+                            }
+                        )
+                    }
+                    onClick={() => updatePredictions('clear-all', 0)}
+                    disabled={disabledResetBtn}
+                >
+                    Reset All
+                </button>
+            </div>
             <PageDescription
                 cssClasses={'text-xl text-center'}
                 description={'Predict the outcome of every match and see how the ladder looks!'}

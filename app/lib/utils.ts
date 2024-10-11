@@ -67,6 +67,15 @@ export function getOrdinalNumber(cardinalNo: number) {
     }
 }
 
+/**
+ * Get the current year
+ *
+ * @returns {number} the current year (e.g. 2024)
+ */
+export function getCurrentYear() {
+    return new Date(Date.now()).getFullYear();
+}
+
 export const NUMS = Object.freeze({
     ROUNDS: 27,
     FINALS_WEEKS: 4,

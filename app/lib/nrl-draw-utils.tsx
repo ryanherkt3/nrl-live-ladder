@@ -1,6 +1,6 @@
 import RoundFixture from '../ui/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
-import { NUMS } from './utils';
+import { getCurrentYear, NUMS } from './utils';
 
 /**
  * Construct the data for a team (statistics, team name, theme key)
@@ -94,6 +94,7 @@ export function constructTeamStats(
 
         for (const fixture of round.fixtures) {
             const { matchMode, homeTeam, awayTeam, roundTitle, matchCentreUrl } = fixture;
+            const currentYear = getCurrentYear();
 
             // If match not started and on ladder page break away
             if (matchMode === 'Pre' && !modifiable) {
@@ -109,11 +110,11 @@ export function constructTeamStats(
             })[0];
 
             // Update score from localStorage (if possible) if on ladder predictor page
-            if (modifiable && localStorage.predictedMatches) {
+            if (modifiable && localStorage[`predictedMatches${currentYear}`]) {
                 const slug = matchCentreUrl.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
                 const round = parseInt(roundTitle.split(' ')[1]);
 
-                const predictions = JSON.parse(localStorage.predictedMatches);
+                const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
                 if (predictions[round] && predictions[round][slug]) {
                     const scores: string[] = Object.values(predictions[round][slug]);
                     homeTeam.score = parseInt(scores[0]);

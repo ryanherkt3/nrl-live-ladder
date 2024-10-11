@@ -1,3 +1,4 @@
+import { getCurrentYear } from '@/app/lib/utils';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -16,11 +17,12 @@ export default function InputScore(
     const slug = matchSlug.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
     const teamsArray = slug.split('-v-'); // [homeTeam, awayTeam]
     const round = parseInt(matchSlug.split('/').filter(i => i)[3].replace('round-', '')); // round-x
+    const currentYear = getCurrentYear();
 
     let predictions;
     let predictedTeamScore: number | undefined;
-    if (localStorage.predictedMatches) {
-        predictions = JSON.parse(localStorage.predictedMatches);
+    if (localStorage[`predictedMatches${currentYear}`]) {
+        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
         if (predictions[round] && predictions[round][slug]) {
             const score = predictions[round][slug][team];
             predictedTeamScore = score || '';
