@@ -125,8 +125,10 @@ export function constructTeamStats(
             const { score: homeScore } = homeTeam;
             const { score: awayScore } = awayTeam;
 
-            // Only update team stats if both scores are numeric
-            if (!isNaN(homeScore) && !isNaN(awayScore)) {
+            // Only update team stats if both scores are numeric and non-NaN
+            const isValidHomeScore = typeof homeScore === 'number' && !isNaN(homeScore);
+            const isValidAwayScore = typeof awayScore === 'number' && !isNaN(awayScore);
+            if (isValidHomeScore && isValidAwayScore) {
                 updateStats(homeFixtureTeam, homeScore, awayScore);
                 updateStats(awayFixtureTeam, awayScore, homeScore);
             }

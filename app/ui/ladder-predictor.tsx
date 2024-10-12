@@ -6,7 +6,7 @@ import Fixtures from './fixture/fixtures';
 import { useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
-import clsx from 'clsx';
+import LadderPredictorButton from './ladder-predictor-button';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const seasonDrawInfo = Object.values(seasonDraw);
@@ -86,7 +86,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Update predictions stored in localStorage
     const updatePredictions = (predictions: Object | String, roundNum: number) => {
-        let predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
             JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
             {};
 
@@ -98,6 +98,13 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
         }
         else if (clearRound) {
+            // Reset the scores for every fixture for the chosen round and
+            // delete the localStorage entry for that round
+            for (const fixture of seasonDrawInfo[roundNum - 1].fixtures) {
+                fixture.homeTeam.score = '';
+                fixture.awayTeam.score = '';
+            }
+
             delete predictedMatches[roundNum];
 
             localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictedMatches);
@@ -109,7 +116,17 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         }
 
         if (clearAll) {
-            predictedMatches = {};
+            // Reset the scores for every fixture and delete the localStorage entry
+            for (const round of seasonDrawInfo) {
+                if (round.selectedRoundId > NUMS.ROUNDS) {
+                    break;
+                }
+
+                for (const fixture of round.fixtures) {
+                    fixture.homeTeam.score = '';
+                    fixture.awayTeam.score = '';
+                }
+            }
             delete localStorage[`predictedMatches${currentYear}`];
         }
 
@@ -137,36 +154,20 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <div className="flex flex-row gap-3 self-end">
-                <button
-                    className={
-                        clsx(
-                            'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
-                            {
-                                'border-gray-400 bg-gray-400 text-gray-100': disabledClearRndBtn,
-                                'border-green-400 hover:bg-green-400 hover:text-white': !disabledClearRndBtn,
-                            }
-                        )
-                    }
-                    onClick={() => updatePredictions('clear-round', roundIndex)}
+                <LadderPredictorButton
+                    text={'Clear Round'}
+                    activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
+                    disabledClasses={'border-green-400 hover:bg-green-400 hover:text-white'}
                     disabled={disabledClearRndBtn}
-                >
-                    Clear Round
-                </button>
-                <button
-                    className={
-                        clsx(
-                            'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
-                            {
-                                'border-gray-400 bg-gray-400 text-gray-100': disabledResetBtn,
-                                'border-red-600 hover:bg-red-600 hover:text-white': !disabledResetBtn,
-                            }
-                        )
-                    }
-                    onClick={() => updatePredictions('clear-all', 0)}
+                    clickCallback={() => updatePredictions('clear-round', roundIndex)}
+                />
+                <LadderPredictorButton
+                    text={'Reset All'}
+                    activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
+                    disabledClasses={'border-red-400 hover:bg-red-400 hover:text-white'}
                     disabled={disabledResetBtn}
-                >
-                    Reset All
-                </button>
+                    clickCallback={() => updatePredictions('clear-all', 0)}
+                />
             </div>
             <PageDescription
                 cssClasses={'text-xl text-center'}
