@@ -1,11 +1,12 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo } from '../lib/definitions';
-import { NUMS } from '@/app/lib/utils';
+import { getCurrentYear, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
+import LadderPredictorButton from './ladder-predictor-button';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const seasonDrawInfo = Object.values(seasonDraw);
@@ -13,6 +14,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const { currentRoundNo, allTeams } = pageVariables;
     const { ROUNDS, FINALS_TEAMS } = NUMS;
+
+    const currentYear = getCurrentYear();
 
     // Set current fixture round to last round if in finals football
     const currentFixtureRound = currentRoundNo <= ROUNDS ? currentRoundNo : ROUNDS;
@@ -43,7 +46,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
-        const predictions = localStorage.predictedMatches ? JSON.parse(localStorage.predictedMatches) : {};
+        const predictions = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
 
         // Set the predictions array to update, then update it
         predictions[roundKey + 1] = predictions[roundKey + 1] || {};
@@ -57,8 +62,77 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete predictions[roundKey + 1][slug];
         }
 
-        // Update localStorage
-        localStorage.predictedMatches = JSON.stringify(predictions);
+        updatePredictions(predictions, roundIndex);
+    };
+
+    const updateFixturesCb = (showPreviousRound: boolean) => {
+        updateFixturesToShow(
+            showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
+        );
+
+        // Update the disabled clear round button
+        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
+        const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
+        if (predictedMatches) {
+            setDisabledClearRndBtn(!predictedMatches[index]);
+        }
+        setDisabledResetBtn(!Object.entries(predictedMatches).length);
+    };
+    const [roundIndex, setRoundIndex] = useState(currentFixtureRound);
+    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
+    const [byeTeams, setByeTeams] = useState(byes);
+
+    // Update predictions stored in localStorage
+    const updatePredictions = (predictions: Object | String, roundNum: number) => {
+        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+            {};
+
+        const updatePredictions = typeof predictions === 'object';
+        const clearRound = typeof predictions === 'string' && predictions === 'clear-round';
+        let clearAll = typeof predictions === 'string' && predictions === 'clear-all';
+
+        if (updatePredictions) {
+            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
+        }
+        else if (clearRound) {
+            // Reset the scores for every fixture for the chosen round and
+            // delete the localStorage entry for that round
+            for (const fixture of seasonDrawInfo[roundNum - 1].fixtures) {
+                fixture.homeTeam.score = '';
+                fixture.awayTeam.score = '';
+            }
+
+            delete predictedMatches[roundNum];
+
+            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictedMatches);
+
+            // Set clearAll to true if clearing the round predictions also clears all the predictions
+            if (!(Object.values(predictedMatches).filter((round: any) => Object.values(round).length).length)) {
+                clearAll = true;
+            }
+        }
+
+        if (clearAll) {
+            // Reset the scores for every fixture and delete the localStorage entry
+            for (const round of seasonDrawInfo) {
+                if (round.selectedRoundId > NUMS.ROUNDS) {
+                    break;
+                }
+
+                for (const fixture of round.fixtures) {
+                    fixture.homeTeam.score = '';
+                    fixture.awayTeam.score = '';
+                }
+            }
+            delete localStorage[`predictedMatches${currentYear}`];
+        }
+
+        // Update the button states
+        setDisabledClearRndBtn(clearRound || clearAll);
+        setDisabledResetBtn(clearAll);
 
         // Get updated data for each match
         const pageVariables = getPageVariables(seasonDrawInfo, true);
@@ -67,19 +141,34 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         setTeams(allTeams);
     };
 
-    const updateFixturesCb = (showPreviousRound: boolean) => {
-        updateFixturesToShow(
-            showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
-        );
-    };
-    const [roundIndex, setRoundIndex] = useState(currentFixtureRound);
-    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
-    const [byeTeams, setByeTeams] = useState(byes);
+    const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
+        JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+        {};
 
     const [teams, setTeams] = useState(allTeams);
+    const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
+        !predictedMatches ? true : !predictedMatches[roundIndex]
+    );
+    const [disabledResetBtn, setDisabledResetBtn] = useState(!Object.entries(predictedMatches).length);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <div className="flex flex-row gap-3 self-end">
+                <LadderPredictorButton
+                    text={'Clear Round'}
+                    activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
+                    disabledClasses={'border-green-400 hover:bg-green-400 hover:text-white'}
+                    disabled={disabledClearRndBtn}
+                    clickCallback={() => updatePredictions('clear-round', roundIndex)}
+                />
+                <LadderPredictorButton
+                    text={'Reset All'}
+                    activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
+                    disabledClasses={'border-red-400 hover:bg-red-400 hover:text-white'}
+                    disabled={disabledResetBtn}
+                    clickCallback={() => updatePredictions('clear-all', 0)}
+                />
+            </div>
             <PageDescription
                 cssClasses={'text-xl text-center'}
                 description={'Predict the outcome of every match and see how the ladder looks!'}

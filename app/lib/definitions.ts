@@ -53,7 +53,7 @@ export type MatchTime = {
 
 export type FixtureTeam = {
     nickName: string;
-    score: number;
+    score: number | string;
     theme: TeamTheme;
 }
 
