@@ -68,8 +68,10 @@ function getTableRows(
     minPointsForSpots: TeamStatuses,
     liveMatches: Array<Match>
 ) {
+    const { FINALS_TEAMS, MATCHES } = NUMS;
+
     const topTeams = [...allTeams];
-    const bottomTeams = topTeams.splice(NUMS.FINALS_TEAMS);
+    const bottomTeams = topTeams.splice(FINALS_TEAMS);
     const teamList = topHalf ? topTeams : bottomTeams;
 
     const lastFinalist = topTeams[topTeams.length - 1];
@@ -91,7 +93,7 @@ function getTableRows(
             (
                 // Is also eliminated if last placed finals team has better points differential
                 // when tied on points at end of season
-                stats.played === NUMS.MATCHES &&
+                stats.played === MATCHES &&
                 lfStats.points >= currentPoints &&
                 lfStats['points difference'] > stats['points difference']
             );
