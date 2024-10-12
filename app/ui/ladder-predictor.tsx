@@ -153,6 +153,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <PageDescription
+                cssClasses={'text-xl text-center'}
+                description={'Predict the outcome of every match and see how the ladder looks!'}
+            />
+            <Standings
+                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1)}
+                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1)}
+            />
             <div className="flex flex-row gap-3 self-end">
                 <LadderPredictorButton
                     text={'Clear Round'}
@@ -169,14 +177,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     clickCallback={() => updatePredictions('clear-all', 0)}
                 />
             </div>
-            <PageDescription
-                cssClasses={'text-xl text-center'}
-                description={'Predict the outcome of every match and see how the ladder looks!'}
-            />
-            <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1)}
-            />
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
