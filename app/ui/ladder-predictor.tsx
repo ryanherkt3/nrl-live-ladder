@@ -18,7 +18,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const currentYear = getCurrentYear();
 
     // Set current fixture round to last round if in finals football
-    const currentFixtureRound = currentRoundNo <= ROUNDS ? currentRoundNo : ROUNDS;
+    const inFinalsFootball = currentRoundNo > ROUNDS;
+    const currentFixtureRound = inFinalsFootball ? ROUNDS : currentRoundNo;
 
     const { fixtures, byes } = seasonDraw[currentFixtureRound];
 
@@ -147,9 +148,11 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const [teams, setTeams] = useState(allTeams);
     const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
-        !predictedMatches ? true : !predictedMatches[roundIndex]
+        inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]
     );
-    const [disabledResetBtn, setDisabledResetBtn] = useState(!Object.entries(predictedMatches).length);
+    const [disabledResetBtn, setDisabledResetBtn] = useState(
+        inFinalsFootball || !Object.entries(predictedMatches).length
+    );
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
