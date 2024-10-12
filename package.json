@@ -1,6 +1,6 @@
 {
   "name": "nrl-live-ladder",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "flask-dev": "python -m flask --app api/routes run -p 8080",
