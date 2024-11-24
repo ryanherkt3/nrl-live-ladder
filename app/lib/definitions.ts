@@ -61,6 +61,7 @@ export type DrawInfo = {
     fixtures: Match[];
     byes: ByeTeam[];
     selectedRoundId: number;
+    selectedSeasonId: number;
     filterTeams: TeamData[];
 }
 

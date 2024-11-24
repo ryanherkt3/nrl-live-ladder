@@ -1,6 +1,6 @@
 import RoundFixture from '../ui/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
-import { getCurrentYear, NUMS } from './utils';
+import { CURRENTYEAR, NUMS } from './utils';
 
 /**
  * Construct the data for a team (statistics, team name, theme key)
@@ -24,16 +24,33 @@ export function constructTeamData(teams: Array<TeamData>) {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: 0,
+                maxPoints: getMaxPoints(0, 0)
             },
             name: team.name,
             theme: {
                 key: team.theme.key
-            },
+            }
         });
     }
 
     return teamList;
+}
+
+/**
+ * Get a team's maximum points
+ *
+ * @param {number} losses
+ * @param {number} draws
+ * @returns {number}
+ */
+export function getMaxPoints(losses: number, draws: number) {
+    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS;
+
+    const perfectSeasonPts = WIN_POINTS * MATCHES;
+
+    const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
+
+    return pointsLost + (WIN_POINTS * byes);
 }
 
 /**
@@ -51,15 +68,7 @@ export function constructTeamStats(
     teams: Array<TeamData>,
     modifiable: boolean,
 ) {
-    const { BYES: byes, WIN_POINTS, MATCHES, ROUNDS } = NUMS;
-
-    const getMaxPoints = (losses: number, draws: number) => {
-        const perfectSeasonPts = WIN_POINTS * MATCHES;
-
-        const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
-
-        return pointsLost + (WIN_POINTS * byes);
-    };
+    const { WIN_POINTS } = NUMS;
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -77,7 +86,7 @@ export function constructTeamStats(
 
     for (const round of seasonDraw) {
         // Do not count stats for games not started or finals games
-        if ((!modifiable && round.selectedRoundId > currentRoundNo) || round.selectedRoundId > ROUNDS) {
+        if (round.selectedRoundId > currentRoundNo) {
             break;
         }
 
@@ -86,15 +95,23 @@ export function constructTeamStats(
                 return bye.teamNickName === team.name;
             })[0];
 
-            byeTeam.stats.byes += 1;
-            byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
-                (WIN_POINTS * byeTeam.stats.byes);
-            byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+            const playedRoundFixtures = round.fixtures.filter((fixture) => {
+                return fixture.matchMode !== 'Pre';
+            });
+
+            // If a fixture has been played (or is being played) for a particular round,
+            // give the bye team their points
+            if (playedRoundFixtures.length) {
+                byeTeam.stats.byes += 1;
+                byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
+                    (WIN_POINTS * byeTeam.stats.byes);
+                byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+            }
         }
 
         for (const fixture of round.fixtures) {
             const { matchMode, homeTeam, awayTeam, roundTitle, matchCentreUrl } = fixture;
-            const currentYear = getCurrentYear();
+            const currentYear = CURRENTYEAR;
 
             // If match not started and on ladder page break away
             if (matchMode === 'Pre' && !modifiable) {
@@ -198,7 +215,7 @@ export function getRoundFixtures(
                 winningTeam={winningTeam}
                 ladder={ladder}
                 isFinalsFootball={isFinalsFootball}
-                modifiable={modifiable}
+                modifiable={modifiable && fixture.matchMode === 'Pre'}
                 modifiedFixtureCb={modifiedFixtureCb}
             />
         );

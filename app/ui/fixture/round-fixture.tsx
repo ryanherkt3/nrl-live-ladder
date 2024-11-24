@@ -121,7 +121,7 @@ function getMatchState(
     let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
     const { matchMode, matchState, homeTeam, awayTeam, clock } = matchData;
 
-    if (matchState === 'FullTime' || matchMode === 'Live') {
+    if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
         commonClasses += ' pt-2';
 
         return (

@@ -67,13 +67,14 @@ export function getOrdinalNumber(cardinalNo: number) {
     }
 }
 
+export let CURRENTYEAR: Number = new Date(Date.now()).getFullYear();
 /**
- * Get the current year
+ * Set the current year
  *
- * @returns {number} the current year (e.g. 2024)
+ * @param {number} the year from the draw (e.g. 2025)
  */
-export function getCurrentYear() {
-    return new Date(Date.now()).getFullYear();
+export function setCurrentYear(year: Number) {
+    CURRENTYEAR = year;
 }
 
 export const NUMS = Object.freeze({

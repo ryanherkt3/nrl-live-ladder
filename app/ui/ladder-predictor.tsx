@@ -1,6 +1,6 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo } from '../lib/definitions';
-import { getCurrentYear, NUMS } from '@/app/lib/utils';
+import { CURRENTYEAR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useState } from 'react';
@@ -15,7 +15,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const { currentRoundNo, allTeams } = pageVariables;
     const { ROUNDS, FINALS_TEAMS } = NUMS;
 
-    const currentYear = getCurrentYear();
+    const currentYear = CURRENTYEAR;
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
@@ -187,7 +187,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 teamList={teams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={ROUNDS}
-                modifiable={roundIndex < currentRoundNo}
+                modifiable={true}
                 modifiedFixtureCb={updateAllTeams}
             />
         </div>
