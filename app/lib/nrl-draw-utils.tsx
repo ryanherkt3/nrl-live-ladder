@@ -48,8 +48,6 @@ export function getMaxPoints(losses: number, draws: number) {
 
     const perfectSeasonPts = WIN_POINTS * MATCHES;
 
-    console.log(perfectSeasonPts);
-
     const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
 
     return pointsLost + (WIN_POINTS * byes);
