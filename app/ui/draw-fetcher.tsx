@@ -7,6 +7,7 @@ import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
+import { setCurrentYear } from '../lib/utils';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
     // Get the data
@@ -20,6 +21,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     if (isLoading) {
         return pageName === 'maxpoints' ? <SkeletonMaxPoints /> : <SkeletonLadder />;
     }
+
+    // Set the current year to be the year of the draw
+    setCurrentYear(seasonDraw[1].selectedSeasonId);
 
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {
