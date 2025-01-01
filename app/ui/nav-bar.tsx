@@ -45,6 +45,7 @@ export default function NavBar() {
     const resetMobileNavOpen = () => {
         if (mobileNavOpen) {
             setTimeout(() => setMobileNavOpen(false), 300);
+            document.querySelector('body')?.classList.remove('no-scroll');
         }
     };
 
