@@ -133,9 +133,10 @@ export function constructTeamStats(
 
                 const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
                 if (predictions[round] && predictions[round][slug]) {
-                    const scores: string[] = Object.values(predictions[round][slug]);
-                    homeTeam.score = parseInt(scores[0]);
-                    awayTeam.score = parseInt(scores[1]);
+                    const prediction = predictions[round][slug];
+
+                    homeTeam.score = prediction[homeTeam.theme.key];
+                    awayTeam.score = prediction[awayTeam.theme.key];
                 }
             }
 

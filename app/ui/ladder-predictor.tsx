@@ -23,7 +23,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const { fixtures, byes } = seasonDraw[currentFixtureRound];
 
-    const updateAllTeams = (slug: string, teamsArray: string, round: number, teamName: string, score: number) => {
+    const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
         const roundKey = round - 1;
 
         const fixtureToUpdate = seasonDrawInfo[roundKey].fixtures.find((fixture) => {
@@ -34,8 +34,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             return;
         }
 
-        const homeTeamSlug = teamsArray[0];
-        const awayTeamSlug = teamsArray[1];
+        const homeTeamSlug = fixtureToUpdate.homeTeam.theme.key;
+        const awayTeamSlug = fixtureToUpdate.awayTeam.theme.key;
         const isAwayTeamUpdated = awayTeamSlug === teamName;
 
         const teamToUpdate = isAwayTeamUpdated ?
@@ -99,11 +99,13 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
         }
         else if (clearRound) {
-            // Reset the scores for every fixture for the chosen round and
+            // Reset the scores for every predicted fixture for the chosen round and
             // delete the localStorage entry for that round
             for (const fixture of seasonDrawInfo[roundNum - 1].fixtures) {
-                fixture.homeTeam.score = '';
-                fixture.awayTeam.score = '';
+                if (fixture.matchMode === 'Pre' || fixture.matchState === 'Upcoming') {
+                    fixture.homeTeam.score = '';
+                    fixture.awayTeam.score = '';
+                }
             }
 
             delete predictedMatches[roundNum];
@@ -117,15 +119,17 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         }
 
         if (clearAll) {
-            // Reset the scores for every fixture and delete the localStorage entry
+            // Reset the scores for every predicted fixture and delete the localStorage entry
             for (const round of seasonDrawInfo) {
                 if (round.selectedRoundId > NUMS.ROUNDS) {
                     break;
                 }
 
                 for (const fixture of round.fixtures) {
-                    fixture.homeTeam.score = '';
-                    fixture.awayTeam.score = '';
+                    if (fixture.matchMode === 'Pre' || fixture.matchState === 'Upcoming') {
+                        fixture.homeTeam.score = '';
+                        fixture.awayTeam.score = '';
+                    }
                 }
             }
             delete localStorage[`predictedMatches${currentYear}`];

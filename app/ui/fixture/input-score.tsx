@@ -15,7 +15,6 @@ export default function InputScore(
     }
 ) {
     const slug = matchSlug.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
-    const teamsArray = slug.split('-v-'); // [homeTeam, awayTeam]
     const round = parseInt(matchSlug.split('/').filter(i => i)[3].replace('round-', '')); // round-x
     const currentYear = CURRENTYEAR;
 
@@ -31,7 +30,7 @@ export default function InputScore(
 
     const updatePrediction = useDebouncedCallback(() => {
         if (typeof modifiedFixtureCb === 'function') {
-            modifiedFixtureCb(slug, teamsArray, round, team, score);
+            modifiedFixtureCb(slug, round, team, score);
         }
     }, 500);
 
