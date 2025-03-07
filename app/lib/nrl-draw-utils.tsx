@@ -130,13 +130,33 @@ export function constructTeamStats(
             if (modifiable && localStorage[`predictedMatches${currentYear}`]) {
                 const slug = matchCentreUrl.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
                 const round = parseInt(roundTitle.split(' ')[1]);
-
                 const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
+
                 if (predictions[round] && predictions[round][slug]) {
                     const prediction = predictions[round][slug];
 
-                    homeTeam.score = prediction[homeTeam.theme.key];
-                    awayTeam.score = prediction[awayTeam.theme.key];
+                    // Update score only if the predicted match has not begun
+                    if (fixture.matchMode === 'Pre') {
+                        homeTeam.score = prediction[homeTeam.theme.key];
+                        awayTeam.score = prediction[awayTeam.theme.key];
+                    }
+                    // Otherwise delete the localStorage entry and get the correct score from the API request
+                    else {
+                        homeTeam.score = fixture.homeTeam.score;
+                        awayTeam.score = fixture.awayTeam.score;
+
+                        delete predictions[round][slug];
+                        if (!Object.values(predictions[round])) {
+                            delete predictions[round];
+                        }
+
+                        if (!Object.values(predictions).filter((round: any) => Object.values(round).length).length) {
+                            delete localStorage[`predictedMatches${currentYear}`];
+                        }
+                        else {
+                            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
+                        }
+                    }
                 }
             }
 
