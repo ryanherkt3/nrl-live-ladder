@@ -21,9 +21,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         setByePoints(newValue);
 
         // Update teams object
-        teams = teams.sort((a: TeamData, b: TeamData) => {
+        setTeams(teams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(newValue, a, b);
-        });
+        }));
     };
     const [byePoints, setByePoints] = useState(true);
 
@@ -37,7 +37,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [byeTeams, setByeTeams] = useState(byes);
 
     const { ROUNDS, FINALS_TEAMS } = NUMS;
-    let teams = allTeams;
+    const [teams, setTeams] = useState(allTeams);
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
@@ -63,7 +63,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 roundNum={roundIndex}
                 byes={byeTeams}
                 fixtures={fixturesToShow}
-                teamList={allTeams}
+                teamList={teams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
                 modifiable={false}
