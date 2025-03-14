@@ -58,6 +58,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             <Standings
                 topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
                 bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+                predictorPage={false}
             />
             <Fixtures
                 roundNum={roundIndex}
@@ -174,6 +175,7 @@ function getLadderRow(
             position={ladderPos.toString()}
             isPlaying={isPlaying}
             byePoints={byePoints}
+            predictorPage={false}
             nextTeam={nextTeam}
             nextMatchUrl={nextMatchUrl}
         />;

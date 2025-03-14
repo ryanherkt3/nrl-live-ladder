@@ -3,7 +3,7 @@ import SkeletonFixtures from './skeleton-fixtures';
 import SkeletonLadderRow from './skeleton-ladder-row';
 import Standings from './../ladder/standings';
 
-export default function SkeletonLadder() {
+export default function SkeletonLadder({ predictorPage }: { predictorPage: boolean; }) {
     const { TEAMS, FINALS_TEAMS } = NUMS;
 
     return (
@@ -12,6 +12,7 @@ export default function SkeletonLadder() {
             <Standings
                 topHalf={getLadderRow(1, FINALS_TEAMS)}
                 bottomHalf={getLadderRow(FINALS_TEAMS + 1, TEAMS)}
+                predictorPage={predictorPage}
             />
             <SkeletonFixtures />
         </div>

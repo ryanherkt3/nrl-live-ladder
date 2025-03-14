@@ -1,5 +1,5 @@
 import LadderRow from './ladder/ladder-row';
-import { TeamData, DrawInfo } from '../lib/definitions';
+import { TeamData, DrawInfo, PageVariables } from '../lib/definitions';
 import { CURRENTYEAR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
@@ -165,8 +165,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1)}
+                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, pageVariables)}
+                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, pageVariables)}
+                predictorPage={true}
             />
             <div className="flex flex-row gap-3 self-end">
                 <LadderPredictorButton
@@ -205,8 +206,22 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
  * @param {number} indexAdd the increment for the team's ladder position (1 or FINALS_TEAMS + 1)
  * @returns {LadderRow} React object
  */
-function getLadderRow(teamList: Array<TeamData>, indexAdd: number) {
+function getLadderRow(teamList: Array<TeamData>, indexAdd: number, pageVariables: PageVariables) {
     return teamList.map((team: TeamData) => {
+        let isPlaying = false;
+
+        const { liveMatches } = pageVariables;
+
+        if (liveMatches) {
+            for (const match of liveMatches) {
+                isPlaying = match.awayTeam.nickName === team.name || match.homeTeam.nickName === team.name;
+
+                if (isPlaying) {
+                    break;
+                }
+            }
+        }
+
         const nextTeam = '';
         const nextMatchUrl = '';
 
@@ -216,8 +231,9 @@ function getLadderRow(teamList: Array<TeamData>, indexAdd: number) {
             key={team.theme.key}
             teamData={team}
             position={ladderPos.toString()}
-            isPlaying={false}
+            isPlaying={isPlaying}
             byePoints={true}
+            predictorPage={true}
             nextTeam={nextTeam}
             nextMatchUrl={nextMatchUrl}
         />;
