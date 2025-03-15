@@ -63,7 +63,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
-                fixtures={fixturesToShow}
+                fixtures={roundIndex === currentRoundNo ? fixtures : fixturesToShow}
                 teamList={teams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
@@ -99,8 +99,7 @@ function getLadderRow(
 
         if (liveMatches) {
             for (const match of liveMatches) {
-                isPlaying = match.awayTeam.nickName === name ||
-                    match.homeTeam.nickName === name;
+                isPlaying = match.awayTeam.nickName === name || match.homeTeam.nickName === name;
 
                 if (isPlaying) {
                     break;
@@ -109,7 +108,7 @@ function getLadderRow(
         }
 
         // Get team's next fixture if there is one
-        // If team has played get fixture from next round, otherwise get one from current round
+        // If team has played (or is playing) get fixture from next round, otherwise get one from current round
         let filteredFixture = null;
         let nextTeam = '';
         let nextMatchUrl = '';

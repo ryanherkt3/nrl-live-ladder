@@ -188,7 +188,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
-                fixtures={fixturesToShow}
+                fixtures={roundIndex === currentFixtureRound ? fixtures : fixturesToShow}
                 teamList={teams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={ROUNDS}
