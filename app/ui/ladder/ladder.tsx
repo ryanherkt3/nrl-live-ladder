@@ -63,7 +63,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 roundNum={roundIndex}
                 byes={byeTeams}
                 fixtures={roundIndex === currentRoundNo ? fixtures : fixturesToShow}
-                teamList={allTeams}
+                teamList={ladderTeams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
                 modifiable={false}
