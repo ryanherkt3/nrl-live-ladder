@@ -143,14 +143,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const pageVariables = getPageVariables(seasonDrawInfo, true);
         const { allTeams } = pageVariables;
 
-        setTeams(allTeams);
+        teams = allTeams;
     };
 
     const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
         JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
         {};
 
-    const [teams, setTeams] = useState(allTeams);
+    let teams = allTeams;
     const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
         inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]
     );

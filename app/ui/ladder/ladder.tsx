@@ -18,14 +18,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             return;
         }
 
+        // Update ladder teams object and bye points value
         setByePoints(newValue);
-
-        // Update teams object
-        setTeams(teams.sort((a: TeamData, b: TeamData) => {
+        setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(newValue, a, b);
         }));
     };
     const [byePoints, setByePoints] = useState(true);
+    const [ladderTeams, setLadderTeams] = useState(allTeams);
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
@@ -37,7 +37,6 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [byeTeams, setByeTeams] = useState(byes);
 
     const { ROUNDS, FINALS_TEAMS } = NUMS;
-    const [teams, setTeams] = useState(allTeams);
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
@@ -56,15 +55,15 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
             <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+                topHalf={getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
+                bottomHalf={getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
                 predictorPage={false}
             />
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
                 fixtures={roundIndex === currentRoundNo ? fixtures : fixturesToShow}
-                teamList={teams}
+                teamList={allTeams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
                 modifiable={false}
