@@ -1,5 +1,5 @@
 import LadderRow from './ladder/ladder-row';
-import { TeamData, DrawInfo, PageVariables } from '../lib/definitions';
+import { TeamData, DrawInfo, Match } from '../lib/definitions';
 import { CURRENTYEAR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
@@ -165,8 +165,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, pageVariables)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, pageVariables)}
+                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, pageVariables.liveMatches)}
+                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, pageVariables.liveMatches)}
                 predictorPage={true}
             />
             <div className="flex flex-row gap-3 self-end">
@@ -204,13 +204,12 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
  *
  * @param {Array<TeamData>} teamList
  * @param {number} indexAdd the increment for the team's ladder position (1 or FINALS_TEAMS + 1)
+ * @param {Array<Match>} liveMatches
  * @returns {LadderRow} React object
  */
-function getLadderRow(teamList: Array<TeamData>, indexAdd: number, pageVariables: PageVariables) {
+function getLadderRow(teamList: Array<TeamData>, indexAdd: number, liveMatches: Array<Match>) {
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
-
-        const { liveMatches } = pageVariables;
 
         if (liveMatches) {
             for (const match of liveMatches) {
