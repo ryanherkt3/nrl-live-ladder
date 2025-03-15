@@ -19,7 +19,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
     }
     if (isLoading) {
-        return pageName === 'maxpoints' ? <SkeletonMaxPoints /> : <SkeletonLadder />;
+        return pageName === 'maxpoints' ?
+            <SkeletonMaxPoints /> :
+            <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
     // Set the current year to be the year of the draw

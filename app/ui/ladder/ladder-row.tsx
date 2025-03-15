@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { TeamData } from '../../lib/definitions';
 import { getShortCode } from '../../lib/utils';
 import TeamImage from '../team-image';
@@ -8,6 +9,7 @@ export default function LadderRow(
         position,
         isPlaying,
         byePoints,
+        predictorPage,
         nextTeam,
         nextMatchUrl
     }: {
@@ -15,6 +17,7 @@ export default function LadderRow(
         position: String;
         isPlaying: boolean;
         byePoints: boolean;
+        predictorPage: boolean;
         nextTeam: string;
         nextMatchUrl: string;
     }
@@ -31,10 +34,18 @@ export default function LadderRow(
                         <span>{position}</span>
                 }
             </div>
-            <div className="hidden sm:flex w-[15%] sm:w-[8%] justify-center">
+            <div className="hidden sm:flex w-[8%] justify-center">
                 <TeamImage matchLink='' teamKey={theme.key} />
             </div>
-            <div className="w-[25%] sm:w-[15%] text-left">
+            <div className={
+                clsx(
+                    'text-left w-[33%]',
+                    {
+                        'sm:w-[23%]': predictorPage,
+                        'sm:w-[15%]': !predictorPage
+                    }
+                )
+            }>
                 <span className='hidden md:block'>{name}</span>
                 <span className='block md:hidden'>
                     {
@@ -51,8 +62,22 @@ export default function LadderRow(
             </div>
             <div className="hidden md:block w-[6%]">{statsData['points for']}</div>
             <div className="hidden md:block w-[6%]">{statsData['points against']}</div>
-            <div className="hidden xs:block w-[15%] sm:w-[6%]">{statsData['points difference']}</div>
-            <div className="flex w-[25%] sm:w-[15%] md:w-[8%] justify-center">
+            <div className={
+                clsx(
+                    'xs:block w-[15%] sm:w-[6%]',
+                    {
+                        'hidden': !predictorPage
+                    }
+                )
+            }>{statsData['points difference']}</div>
+            <div className={
+                clsx(
+                    'flex w-[25%] sm:w-[15%] md:w-[8%] justify-center',
+                    {
+                        'hidden': predictorPage
+                    }
+                )
+            }>
                 {
                     getNextFixture(nextTeam, nextMatchUrl)
                 }
