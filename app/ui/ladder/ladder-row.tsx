@@ -34,7 +34,7 @@ export default function LadderRow(
                         <span>{position}</span>
                 }
             </div>
-            <div className="hidden sm:flex w-[8%] justify-center">
+            <div className="max-sm:hidden sm:flex w-[8%] justify-center">
                 <TeamImage matchLink='' teamKey={theme.key} />
             </div>
             <div className={
@@ -46,27 +46,27 @@ export default function LadderRow(
                     }
                 )
             }>
-                <span className='hidden md:block'>{name}</span>
-                <span className='block md:hidden'>
+                <span className='max-md:hidden md:block'>{name}</span>
+                <span className='max-md:block md:hidden'>
                     {
                         getShortCode(name)
                     }
                 </span>
             </div>
             <div className="w-[15%] sm:w-[6%]">{played}</div>
-            <div className="hidden sm:block sm:w-[6%]">{wins}</div>
-            <div className="hidden sm:block sm:w-[6%]">{drawn}</div>
-            <div className="hidden sm:block sm:w-[6%]">{lost}</div>
-            <div className="hidden sm:block sm:w-[6%]">
+            <div className="max-sm:hidden sm:block sm:w-[6%]">{wins}</div>
+            <div className="max-sm:hidden sm:block sm:w-[6%]">{drawn}</div>
+            <div className="max-sm:hidden sm:block sm:w-[6%]">{lost}</div>
+            <div className="max-sm:hidden sm:block sm:w-[6%]">
                 {byePoints ? byes : 0}
             </div>
-            <div className="hidden md:block w-[6%]">{statsData['points for']}</div>
-            <div className="hidden md:block w-[6%]">{statsData['points against']}</div>
+            <div className="max-md:hidden md:block w-[6%]">{statsData['points for']}</div>
+            <div className="max-md:hidden md:block w-[6%]">{statsData['points against']}</div>
             <div className={
                 clsx(
                     'xs:block w-[15%] sm:w-[6%]',
                     {
-                        'hidden': !predictorPage
+                        'max-xs:hidden': !predictorPage
                     }
                 )
             }>{statsData['points difference']}</div>

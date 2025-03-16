@@ -17,7 +17,7 @@ export default function Standings(
         <div>
             <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                 <div className="w-[10%] md:w-[5%]" title="Position">#</div>
-                <div className="hidden sm:block w-[8%]">Team</div>
+                <div className="max-sm:hidden sm:block w-[8%]">Team</div>
                 <div className={
                     clsx(
                         'w-[33%]',
@@ -28,17 +28,17 @@ export default function Standings(
                     )
                 }></div>
                 <div className="w-[15%] sm:w-[6%]" title="Played">P</div>
-                <div className="hidden sm:block sm:w-[6%]" title="Won">W</div>
-                <div className="hidden sm:block sm:w-[6%]" title="Drawn">D</div>
-                <div className="hidden sm:block sm:w-[6%]" title="Lost">L</div>
-                <div className="hidden sm:block sm:w-[6%]" title="Byes">B</div>
-                <div className="hidden md:block w-[6%]" title="Points For">PF</div>
-                <div className="hidden md:block w-[6%]" title="Points Against">PA</div>
+                <div className="max-sm:hidden sm:block sm:w-[6%]" title="Won">W</div>
+                <div className="max-sm:hidden sm:block sm:w-[6%]" title="Drawn">D</div>
+                <div className="max-sm:hidden sm:block sm:w-[6%]" title="Lost">L</div>
+                <div className="max-sm:hidden sm:block sm:w-[6%]" title="Byes">B</div>
+                <div className="max-md:hidden md:block w-[6%]" title="Points For">PF</div>
+                <div className="max-md:hidden md:block w-[6%]" title="Points Against">PA</div>
                 <div className={
                     clsx(
                         'xs:block w-[15%] sm:w-[6%]',
                         {
-                            'hidden': !predictorPage
+                            'max-sm:hidden': !predictorPage
                         }
                     )
                 } title="Points Difference">PD</div>

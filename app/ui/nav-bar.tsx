@@ -52,15 +52,15 @@ export default function NavBar() {
     // Check if the mobile nav can be opened
     useEffect(() => {
         const handleResize = () => {
-            setIsMobileScreen(window.innerWidth <= 768);
-            if (window.innerWidth > 768 && mobileNavOpen) {
+            setIsMobileScreen(window.innerWidth <= 850);
+            if (window.innerWidth > 850 && mobileNavOpen) {
                 setMobileNavOpen(false);
                 document.querySelector('body')?.classList.remove('no-scroll');
             }
         };
 
         if (!isMobileScreenSet) {
-            setIsMobileScreen(window.innerWidth <= 768);
+            setIsMobileScreen(window.innerWidth <= 850);
         }
         setIsMobileScreenSet(true);
 
@@ -79,8 +79,8 @@ export default function NavBar() {
                 clsx(
                     'md:flex md:flex-row md:gap-4',
                     {
-                        'hidden': !mobileNavOpen,
-                        'absolute-nav': mobileNavOpen,
+                        'hidden': !mobileNavOpen && isMobileScreen,
+                        'absolute-nav': mobileNavOpen && isMobileScreen,
                     }
                 )
             }>
