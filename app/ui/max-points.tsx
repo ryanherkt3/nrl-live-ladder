@@ -138,6 +138,15 @@ function getTableRows(
             }
         }
 
+        const eelsOrPanthersPlaying = nickname === 'Panthers' || nickname === 'Eels';
+        const clsxMatrix = {
+            [`bg-${bgClassName}`]: isPlaying && !isEliminated,
+            'bg-faded': isPlaying && isEliminated,
+            'text-white': isPlaying && !isEliminated && !eelsOrPanthersPlaying,
+            'text-black': isPlaying && eelsOrPanthersPlaying,
+            'bg-transparent text-black': !isPlaying
+        };
+
         return (
             <div key={nickname} className="flex flex-row text-md text-center">
                 <div className="text-left flex items-center font-semibold w-[15%] mr-4">
@@ -145,13 +154,7 @@ function getTableRows(
                         className={
                             clsx(
                                 'hidden md:block',
-                                {
-                                    [`bg-${bgClassName}`]: isPlaying && !isEliminated,
-                                    'bg-faded': isPlaying && isEliminated,
-                                    'text-white': isPlaying && !isEliminated && nickname !== 'Panthers',
-                                    'text-black': isPlaying && nickname === 'Panthers',
-                                    'bg-transparent text-black': !isPlaying
-                                }
+                                clsxMatrix
                             )
                         }
                     >
@@ -163,13 +166,7 @@ function getTableRows(
                         className={
                             clsx(
                                 'block md:hidden',
-                                {
-                                    [`bg-${bgClassName}`]: isPlaying && !isEliminated,
-                                    'bg-faded': isPlaying && isEliminated,
-                                    'text-white': isPlaying && !isEliminated && nickname !== 'Panthers',
-                                    'text-black': isPlaying && nickname === 'Panthers',
-                                    'bg-transparent text-black': !isPlaying
-                                }
+                                clsxMatrix
                             )
                         }
                     >
@@ -223,6 +220,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
 
             pointCells.push(
                 <div
+                    key={`${nickname}-${i}`}
                     className={
                         clsx(
                             `${commonClasses} relative font-semibold`,
@@ -244,7 +242,7 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
         }
         else {
             pointCells.push(
-                <div className={commonClasses}></div>
+                <div key={`${nickname}-${i}`}className={commonClasses}></div>
             );
         }
     }
