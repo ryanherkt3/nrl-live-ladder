@@ -113,16 +113,16 @@ function getLadderRow(
         let nextMatchUrl = '';
 
         const playedAndByes = stats.played + stats.byes;
-        if ((playedAndByes === currentRoundNo || playedAndByes === ROUNDS) && nextRoundInfo) {
-            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                return name === fixture.homeTeam.nickName ||
-                    name === fixture.awayTeam.nickName;
-            });
-        }
-        else {
+
+        if (playedAndByes < currentRoundNo) {
             filteredFixture = fixtures.filter((fixture: Match) => {
                 return (name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName) &&
                     fixture.matchMode === 'Pre';
+            });
+        }
+        else if (nextRoundInfo) {
+            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
             });
         }
 
