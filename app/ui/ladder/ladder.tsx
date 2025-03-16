@@ -20,12 +20,12 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
         // Update ladder teams object and bye points value
         setByePoints(newValue);
-        setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+        ladderTeams = allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(newValue, a, b);
-        }));
+        });
     };
     const [byePoints, setByePoints] = useState(true);
-    const [ladderTeams, setLadderTeams] = useState(allTeams);
+    let ladderTeams = allTeams;
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
