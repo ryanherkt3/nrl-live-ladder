@@ -202,7 +202,7 @@ export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
         }
         return (bStats['points for'] / bStats['points against']) - (aStats['points for'] / aStats['points against']);
     }
-    
+
     if (bNoByePoints !== aNoByePoints) {
         return bNoByePoints - aNoByePoints;
     }

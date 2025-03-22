@@ -29,7 +29,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
     // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates)
     useEffect(() => {
-        if (JSON.stringify(allTeams) === JSON.stringify(ladderTeams)) return;
+        if (JSON.stringify(allTeams) === JSON.stringify(ladderTeams)) {
+            return;
+        }
 
         setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(byePoints, a, b);

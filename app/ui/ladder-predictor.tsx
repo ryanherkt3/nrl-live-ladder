@@ -160,8 +160,10 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Update ladder teams after each re-render if allTeams is changed
     useEffect(() => {
-        if (JSON.stringify(allTeams) === JSON.stringify(teams)) return;
-        
+        if (JSON.stringify(allTeams) === JSON.stringify(teams)) {
+            return;
+        }
+
         setTeams(allTeams);
     }, [allTeams]);
 
