@@ -27,14 +27,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [byePoints, setByePoints] = useState(true);
     const [ladderTeams, setLadderTeams] = useState(allTeams);
 
-    // Update ladder teams after each re-render if allTeams is changed
+    // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates)
     useEffect(() => {
         if (JSON.stringify(allTeams) === JSON.stringify(ladderTeams)) return;
-        
+
         setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(byePoints, a, b);
         }));
-    }, [allTeams]);
+    }, [fixtures]);
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(

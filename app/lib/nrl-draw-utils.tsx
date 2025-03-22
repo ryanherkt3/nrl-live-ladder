@@ -180,6 +180,7 @@ export function constructTeamStats(
  * Function to sort the list of teams to construct a ladder in descending order by:
  * 1. Points
  * 2. Points differential
+ * 3. Points for / points against ratio
  *
  * @param {boolean} showByes if the bye toggle (if it exists) is turned on
  * @param {teamData} a team one
@@ -196,13 +197,19 @@ export function teamSortFunction(showByes: boolean, a: TeamData, b: TeamData) {
         if (bPoints !== aPoints) {
             return bPoints - aPoints;
         }
-        return bStats['points difference'] - aStats['points difference'];
+        if (bStats['points difference'] - aStats['points difference'] !== 0) {
+            return bStats['points difference'] - aStats['points difference'];
+        }
+        return (bStats['points for'] / bStats['points against']) - (aStats['points for'] / aStats['points against']);
     }
-
+    
     if (bNoByePoints !== aNoByePoints) {
         return bNoByePoints - aNoByePoints;
     }
-    return bStats['points difference'] - aStats['points difference'];
+    if (bStats['points difference'] - aStats['points difference'] !== 0) {
+        return bStats['points difference'] - aStats['points difference'];
+    }
+    return (bStats['points for'] / bStats['points against']) - (aStats['points for'] / aStats['points against']);
 }
 
 /**
