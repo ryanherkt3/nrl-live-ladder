@@ -20,6 +20,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
         // Update ladder teams object and bye points value
         setByePoints(newValue);
+        // TODO fix:
+        // with useState - ladder doesn't update but the bye sorting works
+        // withOUT useState - ladder does update but the bye sorting DOES NOT work
         ladderTeams = allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(newValue, a, b);
         });
@@ -49,10 +52,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 description={'Ladder auto-updates every few seconds'}
             />
             {
-                // Do not show bye toggle if in first round or last round and beyond
-                currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
-                    null :
-                    <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
+                // TODO unhide when sorting bug is fixed. Do not show bye toggle if in first round or last round and beyond
+                // currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
+                //     null :
+                //     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
             <Standings
                 topHalf={getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
