@@ -1,10 +1,10 @@
 import LadderRow from './ladder-row';
 import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
 import Fixtures from '../fixture/fixtures';
-import ByeToggleSection from '../bye-toggle';
+// import ByeToggleSection from '../bye-toggle';
 import { useState } from 'react';
 import { NUMS } from '@/app/lib/utils';
-import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
+import { getPageVariables/*, teamSortFunction*/, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
 
@@ -12,23 +12,23 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const pageVariables = getPageVariables(Object.values(seasonDraw), false);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
-    const updateByePoints = (newValue: boolean) => {
-        // Do not set if the value is the same
-        if (newValue === byePoints) {
-            return;
-        }
+    // const updateByePoints = (newValue: boolean) => {
+    //     // Do not set if the value is the same
+    //     if (newValue === byePoints) {
+    //         return;
+    //     }
 
-        // Update ladder teams object and bye points value
-        setByePoints(newValue);
-        // TODO fix:
-        // with useState - ladder doesn't update but the bye sorting works
-        // withOUT useState - ladder does update but the bye sorting DOES NOT work
-        ladderTeams = allTeams.sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(newValue, a, b);
-        });
-    };
-    const [byePoints, setByePoints] = useState(true);
-    let ladderTeams = allTeams;
+    //     // Update ladder teams object and bye points value
+    //     setByePoints(newValue);
+    //     // TODO fix:
+    //     // with useState - ladder doesn't update but the bye sorting works
+    //     // withOUT useState - ladder does update but the bye sorting DOES NOT work
+    //     ladderTeams = allTeams.sort((a: TeamData, b: TeamData) => {
+    //         return teamSortFunction(newValue, a, b);
+    //     });
+    // };
+    const [byePoints/*, setByePoints*/] = useState(true);
+    const ladderTeams = allTeams;
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
@@ -52,7 +52,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 description={'Ladder auto-updates every few seconds'}
             />
             {
-                // TODO unhide when sorting bug is fixed. Do not show bye toggle if in first round or last round and beyond
+                // TODO unhide when sorting bug is fixed. Do not show bye toggle if in R1 or last round and beyond
                 // currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
                 //     null :
                 //     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
