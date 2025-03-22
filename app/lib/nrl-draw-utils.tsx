@@ -273,7 +273,7 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolea
         nextRoundInfo = seasonDraw[currentRoundNo];
     }
     const liveMatches = fixtures.filter((fixture: Match) => {
-        return fixture.matchMode === 'Live';
+        return fixture.matchMode === 'Live' && fixture.matchState !== 'FullTime';
     });
 
     const allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList, modifiable)

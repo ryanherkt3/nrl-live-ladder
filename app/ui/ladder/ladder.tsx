@@ -1,10 +1,10 @@
 import LadderRow from './ladder-row';
 import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
 import Fixtures from '../fixture/fixtures';
-import ByeToggleSection from '../bye-toggle';
+// import ByeToggleSection from '../bye-toggle';
 import { useState } from 'react';
 import { NUMS } from '@/app/lib/utils';
-import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
+import { getPageVariables/*, teamSortFunction*/, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
 
@@ -12,20 +12,23 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const pageVariables = getPageVariables(Object.values(seasonDraw), false);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
-    const updateByePoints = (newValue: boolean) => {
-        // Do not set if the value is the same
-        if (newValue === byePoints) {
-            return;
-        }
+    // const updateByePoints = (newValue: boolean) => {
+    //     // Do not set if the value is the same
+    //     if (newValue === byePoints) {
+    //         return;
+    //     }
 
-        setByePoints(newValue);
-
-        // Update teams object
-        setTeams(teams.sort((a: TeamData, b: TeamData) => {
-            return teamSortFunction(newValue, a, b);
-        }));
-    };
-    const [byePoints, setByePoints] = useState(true);
+    //     // Update ladder teams object and bye points value
+    //     setByePoints(newValue);
+    //     // TODO fix:
+    //     // with useState - ladder doesn't update but the bye sorting works
+    //     // withOUT useState - ladder does update but the bye sorting DOES NOT work
+    //     ladderTeams = allTeams.sort((a: TeamData, b: TeamData) => {
+    //         return teamSortFunction(newValue, a, b);
+    //     });
+    // };
+    const [byePoints/*, setByePoints*/] = useState(true);
+    const ladderTeams = allTeams;
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
@@ -37,7 +40,6 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [byeTeams, setByeTeams] = useState(byes);
 
     const { ROUNDS, FINALS_TEAMS } = NUMS;
-    const [teams, setTeams] = useState(allTeams);
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
@@ -50,20 +52,21 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 description={'Ladder auto-updates every few seconds'}
             />
             {
-                // Do not show bye toggle if in first round or last round and beyond
-                currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
-                    null :
-                    <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
+                // TODO unhide when sorting bug is fixed. Do not show bye toggle if in R1 or last round and beyond
+                // currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
+                //     null :
+                //     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
             <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+                topHalf={getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
+                bottomHalf={getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+                predictorPage={false}
             />
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
-                fixtures={fixturesToShow}
-                teamList={teams}
+                fixtures={roundIndex === currentRoundNo ? fixtures : fixturesToShow}
+                teamList={ladderTeams}
                 updateCallback={updateFixturesCb}
                 lastRoundNo={lastFixtureRound}
                 modifiable={false}
@@ -98,8 +101,7 @@ function getLadderRow(
 
         if (liveMatches) {
             for (const match of liveMatches) {
-                isPlaying = match.awayTeam.nickName === name ||
-                    match.homeTeam.nickName === name;
+                isPlaying = match.awayTeam.nickName === name || match.homeTeam.nickName === name;
 
                 if (isPlaying) {
                     break;
@@ -108,22 +110,22 @@ function getLadderRow(
         }
 
         // Get team's next fixture if there is one
-        // If team has played get fixture from next round, otherwise get one from current round
+        // If team has played (or is playing) get fixture from next round, otherwise get one from current round
         let filteredFixture = null;
         let nextTeam = '';
         let nextMatchUrl = '';
 
         const playedAndByes = stats.played + stats.byes;
-        if ((playedAndByes === currentRoundNo || playedAndByes === ROUNDS) && nextRoundInfo) {
-            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
-                return name === fixture.homeTeam.nickName ||
-                    name === fixture.awayTeam.nickName;
-            });
-        }
-        else {
+
+        if (playedAndByes < currentRoundNo) {
             filteredFixture = fixtures.filter((fixture: Match) => {
                 return (name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName) &&
                     fixture.matchMode === 'Pre';
+            });
+        }
+        else if (nextRoundInfo) {
+            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
             });
         }
 
@@ -174,6 +176,7 @@ function getLadderRow(
             position={ladderPos.toString()}
             isPlaying={isPlaying}
             byePoints={byePoints}
+            predictorPage={false}
             nextTeam={nextTeam}
             nextMatchUrl={nextMatchUrl}
         />;

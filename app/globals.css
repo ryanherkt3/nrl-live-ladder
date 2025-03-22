@@ -1,6 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+    --breakpoint-xs: 420px;
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 850px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+}
+
 
 .hidden {
     display: none;
