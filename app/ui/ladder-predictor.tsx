@@ -3,7 +3,7 @@ import { TeamData, DrawInfo, Match } from '../lib/definitions';
 import { CURRENTYEAR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
 import LadderPredictorButton from './ladder-predictor-button';
@@ -143,20 +143,27 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const pageVariables = getPageVariables(seasonDrawInfo, true);
         const { allTeams } = pageVariables;
 
-        teams = allTeams;
+        setTeams(allTeams);
     };
 
     const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
         JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
         {};
 
-    let teams = allTeams;
+    const [teams, setTeams] = useState(allTeams);
     const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
         inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]
     );
     const [disabledResetBtn, setDisabledResetBtn] = useState(
         inFinalsFootball || !Object.entries(predictedMatches).length
     );
+
+    // Update ladder teams after each re-render if allTeams is changed
+    useEffect(() => {
+        if (JSON.stringify(allTeams) === JSON.stringify(teams)) return;
+        
+        setTeams(allTeams);
+    }, [allTeams]);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
