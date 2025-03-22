@@ -20,9 +20,6 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 
         // Update ladder teams object and bye points value
         setByePoints(newValue);
-        // TODO fix:
-        // with useState - ladder doesn't update but the bye sorting works
-        // withOUT useState - ladder does update but the bye sorting DOES NOT work
         setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(newValue, a, b);
         }));
