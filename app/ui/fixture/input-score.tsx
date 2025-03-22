@@ -24,7 +24,7 @@ export default function InputScore(
         predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
         if (predictions[round] && predictions[round][slug]) {
             const score = predictions[round][slug][team];
-            predictedTeamScore = score || '';
+            predictedTeamScore = score ?? '';
         }
     }
 
@@ -61,7 +61,7 @@ export default function InputScore(
 
                 newScore = parseInt(e.target.value);
 
-                setScore(newScore || '');
+                setScore(newScore ?? '');
                 updatePrediction();
             }
         }
