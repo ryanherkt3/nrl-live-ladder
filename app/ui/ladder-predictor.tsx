@@ -113,6 +113,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictedMatches);
 
             // Set clearAll to true if clearing the round predictions also clears all the predictions
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (!(Object.values(predictedMatches).filter((round: any) => Object.values(round).length).length)) {
                 clearAll = true;
             }

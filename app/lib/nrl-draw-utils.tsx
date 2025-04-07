@@ -150,6 +150,7 @@ export function constructTeamStats(
                             delete predictions[round];
                         }
 
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         if (!Object.values(predictions).filter((round: any) => Object.values(round).length).length) {
                             delete localStorage[`predictedMatches${currentYear}`];
                         }

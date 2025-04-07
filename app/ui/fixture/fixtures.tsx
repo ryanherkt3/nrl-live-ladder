@@ -46,7 +46,7 @@ export default function Fixtures(
 
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-2 justify-center">
+            <div className="flex flex-row gap-2 items-center justify-center">
                 {
                     roundNum === 1 ?
                         <div className="w-8"></div> :
@@ -57,7 +57,7 @@ export default function Fixtures(
                             }}
                         />
                 }
-                <div className="text-2xl font-semibold">{roundHeading}</div>
+                <div className="text-2xl font-semibold text-center">{roundHeading}</div>
                 {
                     roundNum === lastRoundNo ?
                         <div className="w-8"></div> :

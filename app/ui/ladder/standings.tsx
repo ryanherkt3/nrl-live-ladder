@@ -17,16 +17,15 @@ export default function Standings(
         <div>
             <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
                 <div className="w-[10%] md:w-[5%]" title="Position">#</div>
-                <div className="max-sm:hidden sm:block w-[8%]">Team</div>
                 <div className={
                     clsx(
-                        'w-[33%]',
+                        'block text-left',
                         {
-                            'sm:w-[23%]': predictorPage,
-                            'sm:w-[15%]': !predictorPage
+                            'w-[33%]': predictorPage,
+                            'w-[43%] sm:w-[23%]': !predictorPage
                         }
                     )
-                }></div>
+                }>Team</div>
                 <div className="w-[15%] sm:w-[6%]" title="Played">P</div>
                 <div className="max-sm:hidden sm:block sm:w-[6%]" title="Won">W</div>
                 <div className="max-sm:hidden sm:block sm:w-[6%]" title="Drawn">D</div>
