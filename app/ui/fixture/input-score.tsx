@@ -1,4 +1,5 @@
 import { CURRENTYEAR } from '@/app/lib/utils';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
@@ -6,12 +7,14 @@ export default function InputScore(
     {
         modifiedFixtureCb,
         matchSlug,
-        team
+        team,
+        isHomeTeam
     }:
     {
         modifiedFixtureCb: Function | undefined,
         matchSlug: string,
         team: string
+        isHomeTeam: boolean
     }
 ) {
     const slug = matchSlug.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
@@ -42,7 +45,14 @@ export default function InputScore(
     }, [predictedTeamScore]);
 
     return <input
-        className='text-3xl w-[75px] text-center bg-green-400'
+        className={
+            clsx(
+                'max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center bg-green-400',
+                {
+                    'sm:-order-1': !isHomeTeam,
+                }
+            )
+        }
         onChange={
             (e) => {
                 let newScore: number = parseInt(e.target.value);

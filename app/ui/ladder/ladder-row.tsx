@@ -34,24 +34,22 @@ export default function LadderRow(
                         <span>{position}</span>
                 }
             </div>
-            <div className="max-sm:hidden sm:flex w-[8%] justify-center">
-                <TeamImage matchLink='' teamKey={theme.key} />
-            </div>
             <div className={
                 clsx(
-                    'text-left w-[33%]',
+                    'flex flex-row items-center',
                     {
-                        'sm:w-[23%]': predictorPage,
-                        'sm:w-[15%]': !predictorPage
+                        'w-[33%]': predictorPage,
+                        'w-[43%] sm:w-[23%]': !predictorPage
                     }
                 )
             }>
-                <span className='max-md:hidden md:block'>{name}</span>
-                <span className='max-md:block md:hidden'>
-                    {
-                        getShortCode(name)
-                    }
-                </span>
+                <div className='max-xs:hidden xs:block'>
+                    <TeamImage matchLink='' teamKey={theme.key} />
+                </div>
+                <div className='max-xs:px-0 xs:px-3'>
+                    <span className='max-md:hidden md:block'>{name}</span>
+                    <span className='max-md:block md:hidden'>{getShortCode(name)}</span>
+                </div>
             </div>
             <div className="w-[15%] sm:w-[6%]">{played}</div>
             <div className="max-sm:hidden sm:block sm:w-[6%]">{wins}</div>

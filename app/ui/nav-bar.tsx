@@ -44,8 +44,10 @@ export default function NavBar() {
     // Reset the state of mobileNavOpen when going to another page
     const resetMobileNavOpen = () => {
         if (mobileNavOpen) {
-            setTimeout(() => setMobileNavOpen(false), 300);
-            document.querySelector('body')?.classList.remove('no-scroll');
+            setTimeout(() => {
+                setMobileNavOpen(false);
+                document.querySelector('body')?.classList.remove('no-scroll');
+            }, 300);
         }
     };
 
@@ -71,6 +73,18 @@ export default function NavBar() {
             window.removeEventListener('resize', handleResize);
         };
     }, [isMobileScreenSet, mobileNavOpen]);
+
+    // Show a temporary skeleton nav while figuring out if the device is a mobile one or not
+    // TODO implement more robust fix for nav links showing on mobile when they shouldn't (due to tailwind 4 updates)
+    // Revert back to tailwind 3?
+    if (!isMobileScreenSet) {
+        return (
+            <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
+                <span>{ activeLink ? `NRL ${activeLink.title}` : '404 Page' }</span>
+                <div className="shimmer max-md:w-8 md:w-[283px] h-8"></div>
+            </div>
+        );
+    }
 
     return (
         <div className={`${colourClasses} ${textClasses} ${navClasses}`}>

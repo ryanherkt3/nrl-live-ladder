@@ -4,8 +4,8 @@ import SkeletonRoundFixture from './skeleton-round-fixture';
 export default function SkeletonFixtures() {
     return (
         <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-2 justify-center">
-                <div className="text-2xl font-semibold">Fixtures</div>
+            <div className="flex flex-row gap-2 items-center justify-center">
+                <div className="text-2xl font-semibold text-center">Fixtures</div>
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {

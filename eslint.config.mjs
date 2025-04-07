@@ -1,5 +1,19 @@
-{
-    "env": {
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import { FlatCompat } from "@eslint/eslintrc";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  
+  ...compat.config({
+    env: {
         "browser": true,
         "es2020": true,
         "jquery": true,
@@ -13,8 +27,8 @@
             "ts": true
         }
     },
-    "extends": "next/core-web-vitals",
-    "rules": {
+    extends: "next/core-web-vitals",
+    rules: {
         "brace-style": [2, "stroustrup"],
         "comma-style": [2, "last"],
         "curly": [2, "all"],
@@ -40,6 +54,11 @@
         "prefer-const": [2, {"destructuring": "all"}],
         "prefer-destructuring": [1, {"object": true, "array": false}],
         "quotes": [2, "single", { "avoidEscape": true }],
-        "semi": [2, "always"]
-    }
-}
+        "semi": [2, "always"],
+        "@typescript-eslint/no-unsafe-function-type": "off",
+        "@typescript-eslint/no-wrapper-object-types": "off",
+    },
+  })
+];
+
+export default eslintConfig;

@@ -1,12 +1,10 @@
 'use client';
 
 import clsx from 'clsx';
-import { FixtureTeam, Match, TeamData } from '../../lib/definitions';
+import { Match, TeamData } from '../../lib/definitions';
 import moment from 'moment';
 import { getOrdinalNumber } from '../../lib/utils';
-import Score from './score';
 import TeamSection from './team-section';
-import InputScore from './input-score';
 
 export default function RoundFixture(
     {
@@ -66,12 +64,30 @@ export default function RoundFixture(
                     getDateString(clock.kickOffTimeLong)
                 }
             </a>
-            <div className="flex flex-col md:flex-row text-lg items-center justify-between p-2">
-                <TeamSection teamName={homeTeamName} imgKey={homeTeamTheme.key} position={homeTeamPos} />
+            <div className="flex flex-row text-lg items-center justify-center gap-4 p-2">
+                <TeamSection
+                    data={data}
+                    teamName={homeTeamName}
+                    imgKey={homeTeamTheme.key}
+                    position={homeTeamPos}
+                    isHomeTeam={true}
+                    isWinning={winningTeam === 'homeTeam'}
+                    modifiable={modifiable}
+                    modifiedFixtureCb={modifiedFixtureCb}
+                />
                 {
-                    getMatchState(data, winningTeam, modifiable, modifiedFixtureCb, matchCentreUrl)
+                    getMatchState(data, modifiable)
                 }
-                <TeamSection teamName={awayTeamName} imgKey={awayTeamTheme.key} position={awayTeamPos} />
+                <TeamSection
+                    data={data}
+                    teamName={awayTeamName}
+                    imgKey={awayTeamTheme.key}
+                    position={awayTeamPos}
+                    isHomeTeam={false}
+                    isWinning={winningTeam === 'awayTeam'}
+                    modifiable={modifiable}
+                    modifiedFixtureCb={modifiedFixtureCb}
+                />
             </div>
         </div>
     );
@@ -105,21 +121,15 @@ function getDateString(date: string) {
  * the team scores will be displayed
  *
  * @param {Match} matchData data related to the match
- * @param {string} winningTeam the team (if any) that is winning
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {Function | undefined} modifiedFixtureCb
- * @param {string} matchSlug e.g. panthers-v-storm
  * @returns HTML object
  */
 function getMatchState(
     matchData: Match,
-    winningTeam: string,
-    modifiable: boolean,
-    modifiedFixtureCb: Function | undefined,
-    matchSlug: string
+    modifiable: boolean
 ) {
-    let commonClasses = 'flex flex-col md:flex-row gap-6 py-2 md:py-0 items-center justify-center w-full md:w-[34%]';
-    const { matchMode, matchState, homeTeam, awayTeam, clock } = matchData;
+    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2 items-center justify-center text-center';
+    const { matchMode, matchState, clock } = matchData;
 
     if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
         commonClasses += ' pt-2';
@@ -127,27 +137,7 @@ function getMatchState(
         return (
             <div className={commonClasses}>
                 {
-                    getScoreSegment(
-                        matchData,
-                        homeTeam,
-                        winningTeam === 'homeTeam',
-                        modifiable,
-                        modifiedFixtureCb,
-                        matchSlug
-                    )
-                }
-                {
                     getMatchContext(matchData, modifiable)
-                }
-                {
-                    getScoreSegment(
-                        matchData,
-                        awayTeam,
-                        winningTeam === 'awayTeam',
-                        modifiable,
-                        modifiedFixtureCb,
-                        matchSlug
-                    )
                 }
             </div>
         );
@@ -163,36 +153,6 @@ function getMatchState(
 }
 
 /**
- * Get the score segment for display (either the team score or an input field if on
- * the ladder predictor page)
- *
- * @param {String} matchData data pertaining to the match (e.g. match state, match mode)
- * @param {String} team
- * @param {String} winCondition e.g. home team is winning
- * @param {String} modifiable if the score can be modified by the user
- * @param {Function | undefined} modifiedFixtureCb
- * @param {String} matchSlug e.g. panthers-v-storm
- * @returns React component
- */
-function getScoreSegment(
-    matchData: Match,
-    team: FixtureTeam,
-    winCondition: boolean,
-    modifiable: boolean,
-    modifiedFixtureCb: Function | undefined,
-    matchSlug: string
-) {
-    const { matchState, matchMode } = matchData;
-    const teamSlug = team.nickName.toLowerCase().replace(' ', '-');
-
-    if (modifiable && matchState !== 'FullTime' && matchMode !== 'Live') {
-        return <InputScore modifiedFixtureCb={modifiedFixtureCb} matchSlug={matchSlug} team={teamSlug} />;
-    }
-
-    return <Score score={team.score} winCondition={winCondition} />;
-}
-
-/**
  * Get the status of a match (e.g. 1st Half, Full Time)
  *
  * @param {Match} matchData data related to the match
@@ -202,46 +162,56 @@ function getScoreSegment(
 function getMatchContext(matchData: Match, modifiable: boolean) {
     const { matchMode, matchState, clock } = matchData;
 
-    if (modifiable && matchState !== 'FullTime' && matchMode !== 'Live') {
-        return (
-            <div className="border rounded-md px-2 py-1 w-fit border-orange-400 bg-orange-400 text-white">
-                PREDICTION
-            </div>
-        );
-    }
+    if ((modifiable && matchState !== 'FullTime' && matchMode !== 'Live') || matchState === 'FullTime') {
+        const isFullTime = matchState === 'FullTime';
+        const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
+        const mobileString = isFullTime ? 'FT' : 'PRED';
 
-    if (matchState === 'FullTime') {
         return (
-            <div className="border rounded-md px-2 py-1 w-fit border-green-400 bg-green-400 text-white">
-                FULL TIME
+            <div className={
+                clsx(
+                    'border rounded-md px-2 py-1 w-fit text-white',
+                    {
+                        'border-green-400 bg-green-400': isFullTime,
+                        'border-orange-400 bg-orange-400': !isFullTime
+                    }
+                )
+            }>
+                <span className="md:block max-md:hidden">{string}</span>
+                <span className="md:hidden max-md:block">{mobileString}</span>
             </div>
         );
     }
 
     let matchPeriod = '';
+    let mobileMatchPeriod = '';
     switch (matchState) {
         case 'FirstHalf':
             matchPeriod = '1ST HALF';
+            mobileMatchPeriod = 'H1';
             break;
         case 'HalfTime':
             matchPeriod = 'HALF TIME';
+            mobileMatchPeriod = 'HT';
             break;
         case 'SecondHalf':
             matchPeriod = '2ND HALF';
+            mobileMatchPeriod = 'H2';
             break;
         case 'ExtraTime':
             matchPeriod = 'EXTRA TIME';
+            mobileMatchPeriod = 'ET';
             break;
         default:
-            matchPeriod = 'UPCOMING';
             break;
     }
 
-    if (matchMode === 'Live') {
+    if (matchMode === 'Live' && matchPeriod) {
         return (
             <div className="flex flex-col gap-2 items-center text-md">
                 <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
-                    {matchPeriod}
+                    <span className="md:block max-md:hidden">{matchPeriod}</span>
+                    <span className="md:hidden max-md:block">{mobileMatchPeriod}</span>
                 </div>
                 <div>{clock.gameTime}</div>
             </div>
