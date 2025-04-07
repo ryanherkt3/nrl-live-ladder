@@ -128,7 +128,7 @@ function getMatchState(
     matchData: Match,
     modifiable: boolean
 ) {
-    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2 items-center justify-center';
+    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2 items-center justify-center text-center';
     const { matchMode, matchState, clock } = matchData;
 
     if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
