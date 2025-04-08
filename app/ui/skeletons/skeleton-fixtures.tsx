@@ -1,4 +1,4 @@
-import { NUMS } from '@/app/lib/utils';
+import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
 import SkeletonRoundFixture from './skeleton-round-fixture';
 
 export default function SkeletonFixtures() {
@@ -22,7 +22,7 @@ export default function SkeletonFixtures() {
 function getFixtures() {
     const fixtures = [];
 
-    for (let i = 2; i <= NUMS.TEAMS; i += 2) {
+    for (let i = 2; i <= NUMS[CURRENTCOMP].TEAMS; i += 2) {
         fixtures.push(<SkeletonRoundFixture key={i} />);
     }
 

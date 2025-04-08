@@ -58,7 +58,7 @@ input[type=number] {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 16px;
+    padding: 16px 24px;
     width: 100%;
     height: calc(100vh - 80px);
     background-color: white;
@@ -159,4 +159,57 @@ input[type=number] {
 }
 .bg-faded {
     background: #9CA3AF;
+}
+
+.bg-bears-nsw {
+    background: #f55343;
+}
+.bg-jets-nsw {
+    background: #004fa2;
+}
+.bg-magpies-nsw {
+    background: #000000;
+}
+.bg-bears-qld {
+    background: #a10032;
+}
+.bg-jets-qld {
+    background: #265640;
+}
+.bg-magpies-qld {
+    background: #444446;
+}
+
+.bg-blackhawks {
+    background: #00ab58;
+}
+.bg-capras {
+    background: #611434;
+}
+.bg-clydesdales {
+    background: #f5b92c;
+}
+.bg-cutters {
+    background: #009cdd;
+}
+.bg-devils {
+    background: #001a4c;
+}
+.bg-falcons {
+    background: #717477;
+}
+.bg-hunters {
+    background: #c70000;
+}
+.bg-pride {
+    background: #00639e;
+}
+.bg-seagulls {
+    background: #949494;
+}
+.bg-tigers {
+    background: #ed701b;
+}
+.bg-wmseagulls {
+    background: #53a03c;
 }

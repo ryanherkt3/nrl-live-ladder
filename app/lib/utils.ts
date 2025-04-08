@@ -6,6 +6,7 @@
  */
 export function getShortCode(name: string) {
     switch (name) {
+        // NRL/W clubs:
         case 'Broncos':
             return 'BRI';
         case 'Raiders':
@@ -40,6 +41,36 @@ export function getShortCode(name: string) {
             return 'WAR';
         case 'Wests Tigers':
             return 'WST';
+        // NSW & Q Cup
+        case 'Bears':
+            return (CURRENTCOMP === 'nsw' ? 'NSB' : 'BUR');
+        case 'Jets':
+            return (CURRENTCOMP === 'nsw' ? 'NWT' : 'IPS');
+        case 'Magpies':
+            return (CURRENTCOMP === 'nsw' ? 'WSM' : 'MAG');
+        // Q Cup only
+        case 'Blackhawks':
+            return 'BLA';
+        case 'Capras':
+            return 'CAP';
+        case 'Clydesdales':
+            return 'CLY';
+        case 'Cutters':
+            return 'CUT';
+        case 'Devils':
+            return 'DEV';
+        case 'Falcons':
+            return 'FAL';
+        case 'Hunters':
+            return 'PNG';
+        case 'Pride':
+            return 'PRI';
+        case 'Seagulls':
+            return 'SEA';
+        case 'Tigers':
+            return 'TIG';
+        case 'WM Seagulls':
+            return 'SEA';
         default:
             return 'NRL';
     }
@@ -78,7 +109,7 @@ export function setCurrentYear(year: Number) {
 }
 
 // TODO move colours code to new file (lib/colours.ts)
-export let MAINCOLOUR: String = 'nrl-colour';
+export let MAINCOLOUR: string = 'nrl';
 /**
  * Set the main colour.
  *
@@ -98,8 +129,12 @@ export function setMainColour(comp: number, currentRoundNo: number) {
     const nrlSpecials = [5, 10, 17, 23, 24, 25];
     const nrlwSpecials = [6, 7, 8];
 
-    if (comp === COMPID.NRLW && nrlwSpecials.includes(currentRoundNo)) {
-        prefix += `nrlw-${currentRoundNo === 8 ? '-ctry' : '-ind'}`;
+    if (comp === COMPID.NRLW) {
+        prefix = 'nrlw';
+
+        if (nrlwSpecials.includes(currentRoundNo)) {
+            prefix += currentRoundNo === 8 ? '-ctry' : '-ind';
+        }
     }
     else if (comp === COMPID.NRL && nrlSpecials.includes(currentRoundNo)) {
         prefix = 'nrl';
@@ -134,7 +169,17 @@ export function setMainColour(comp: number, currentRoundNo: number) {
     MAINCOLOUR = prefix;
 }
 
-export const COMPID = Object.freeze({
+export let CURRENTCOMP: string = 'nrl';
+/**
+ * Set the current competition (set to nrl by default if the value provided is invalid)
+ *
+ * @param {string} comp the competition (e.g. nrlw)
+ */
+export function setCurrentComp(comp: string) {
+    CURRENTCOMP = Object.keys(COMPID).includes(comp.toUpperCase()) ? comp : 'nrl';
+}
+
+export const COMPID : { [key: string]: number } = Object.freeze({
     NRL: 111,
     NRLW: 161,
     NSW: 113,
@@ -210,12 +255,42 @@ export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
     'nrlw-ctry-hover-text': 'hover:text-nrlw-ctry',
 });
 
-export const NUMS = Object.freeze({
-    ROUNDS: 27,
-    FINALS_WEEKS: 4,
-    BYES: 3,
-    MATCHES: 24,
-    TEAMS: 17,
-    FINALS_TEAMS: 8,
-    WIN_POINTS: 2,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const NUMS : { [key: string]: any } = Object.freeze({
+    nrl: {
+        ROUNDS: 27,
+        FINALS_WEEKS: 4,
+        BYES: 3,
+        MATCHES: 24,
+        TEAMS: 17,
+        FINALS_TEAMS: 8,
+        WIN_POINTS: 2,
+    },
+    nrlw: {
+        ROUNDS: 11,
+        FINALS_WEEKS: 3,
+        BYES: 0,
+        MATCHES: 11,
+        TEAMS: 12,
+        FINALS_TEAMS: 6,
+        WIN_POINTS: 2,
+    },
+    nsw: {
+        ROUNDS: 26,
+        FINALS_WEEKS: 4,
+        BYES: 2,
+        MATCHES: 24,
+        TEAMS: 13,
+        FINALS_TEAMS: 5,
+        WIN_POINTS: 2,
+    },
+    qld: {
+        ROUNDS: 23,
+        FINALS_WEEKS: 4,
+        BYES: 3,
+        MATCHES: 20,
+        TEAMS: 15,
+        FINALS_TEAMS: 8,
+        WIN_POINTS: 2,
+    },
 });

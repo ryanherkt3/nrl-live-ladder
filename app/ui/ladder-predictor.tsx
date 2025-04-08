@@ -1,6 +1,6 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo, Match } from '../lib/definitions';
-import { COLOURCSSVARIANTS, CURRENTYEAR, MAINCOLOUR, NUMS } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS, CURRENTCOMP, CURRENTYEAR, MAINCOLOUR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useEffect, useState } from 'react';
@@ -13,7 +13,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const pageVariables = getPageVariables(seasonDrawInfo, true);
 
     const { currentRoundNo, allTeams } = pageVariables;
-    const { ROUNDS, FINALS_TEAMS } = NUMS;
+    const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
 
     const currentYear = CURRENTYEAR;
 
@@ -47,8 +47,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
-        const predictions = localStorage[`predictedMatches${currentYear}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+        const predictions = localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) :
             {};
 
         // Set the predictions array to update, then update it
@@ -72,8 +72,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         );
 
         // Update the disabled clear round button
-        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+        const predictedMatches = localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) :
             {};
         const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
         if (predictedMatches) {
@@ -87,8 +87,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Update predictions stored in localStorage
     const updatePredictions = (predictions: Object | String, roundNum: number) => {
-        const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+        const predictedMatches = localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] ?
+            JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) :
             {};
 
         const updatePredictions = typeof predictions === 'object';
@@ -96,7 +96,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         let clearAll = typeof predictions === 'string' && predictions === 'clear-all';
 
         if (updatePredictions) {
-            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
+            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictions);
         }
         else if (clearRound) {
             // Reset the scores for every predicted fixture for the chosen round and
@@ -110,7 +110,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
             delete predictedMatches[roundNum];
 
-            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictedMatches);
+            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictedMatches);
 
             // Set clearAll to true if clearing the round predictions also clears all the predictions
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,7 +122,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         if (clearAll) {
             // Reset the scores for every predicted fixture and delete the localStorage entry
             for (const round of seasonDrawInfo) {
-                if (round.selectedRoundId > NUMS.ROUNDS) {
+                if (round.selectedRoundId > ROUNDS) {
                     break;
                 }
 
@@ -133,7 +133,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     }
                 }
             }
-            delete localStorage[`predictedMatches${currentYear}`];
+            delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
         }
 
         // Update the button states
@@ -147,8 +147,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         setTeams(allTeams);
     };
 
-    const predictedMatches = localStorage[`predictedMatches${currentYear}`] ?
-        JSON.parse(localStorage[`predictedMatches${currentYear}`]) :
+    const predictedMatches = localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] ?
+        JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) :
         {};
 
     const [teams, setTeams] = useState(allTeams);

@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { COLOURCSSVARIANTS, MAINCOLOUR } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR } from '../lib/utils';
 
 export default function NavBar() {
     const pathname = usePathname();
@@ -13,6 +13,10 @@ export default function NavBar() {
     let links = [
         {
             url: '/',
+            title: 'Home'
+        },
+        {
+            url: '/ladder',
             title: 'Live Ladder'
         },
         {
@@ -81,15 +85,21 @@ export default function NavBar() {
     if (!isMobileScreenSet) {
         return (
             <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
-                <span>{ activeLink ? `NRL ${activeLink.title}` : '404 Page' }</span>
-                <div className="shimmer max-md:w-8 md:w-[283px] h-8"></div>
+                <span>{ activeLink ? activeLink.title : '404 Page' }</span>
+                <div className="shimmer max-md:w-8 md:w-[412px] h-8"></div>
             </div>
         );
     }
 
+    // Customise query paramaters based on:
+    // 1. whether the comp paramater is valid or not
+    // 2. if the default comp (NRL) is being shown
+    const query = Object.keys(COMPID).includes(CURRENTCOMP.toUpperCase()) && CURRENTCOMP !== 'nrl' ?
+        {['comp']: CURRENTCOMP} : {};
+
     return (
         <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
-            <span>{ activeLink ? `NRL ${activeLink.title}` : '404 Page' }</span>
+            <span>{ activeLink ? activeLink.title : '404 Page' }</span>
             <div className={
                 clsx(
                     'md:flex md:flex-row md:gap-4',
@@ -106,7 +116,7 @@ export default function NavBar() {
                         return (
                             <Link
                                 key={title}
-                                href={url}
+                                href={{ pathname: url, query: query}}
                                 onClick={resetMobileNavOpen}
                                 className={`text-lg md:text-xl ${COLOURCSSVARIANTS[`${MAINCOLOUR}-hover-text`]}`}
                             >

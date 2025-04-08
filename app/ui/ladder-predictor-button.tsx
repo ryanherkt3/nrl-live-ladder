@@ -20,10 +20,10 @@ export default function LadderPredictorButton(
         <button
             className={
                 clsx(
-                    'rounded-lg border font-semibold text-lg w-fit h-fit p-2 cursor-pointer',
+                    'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
                     {
                         [`${activeClasses}`]: disabled,
-                        [`${disabledClasses}`]: !disabled,
+                        [`${disabledClasses} cursor-pointer`]: !disabled,
                     }
                 )
             }

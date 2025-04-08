@@ -1,8 +1,8 @@
-import { NUMS } from '@/app/lib/utils';
+import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
 import SkeletonMaxPointsRow from './skeleton-max-points-row';
 
 export default function SkeletonMaxPoints() {
-    const { TEAMS, FINALS_TEAMS } = NUMS;
+    const { TEAMS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">

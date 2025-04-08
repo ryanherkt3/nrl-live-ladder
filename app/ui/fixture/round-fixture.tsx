@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { Match, TeamData } from '../../lib/definitions';
 import moment from 'moment';
-import { COLOURCSSVARIANTS, getOrdinalNumber, MAINCOLOUR } from '../../lib/utils';
+import { COLOURCSSVARIANTS, CURRENTCOMP, getOrdinalNumber, MAINCOLOUR } from '../../lib/utils';
 import TeamSection from './team-section';
 
 export default function RoundFixture(
@@ -24,7 +24,8 @@ export default function RoundFixture(
         modifiedFixtureCb: Function | undefined
     }
 ) {
-    const { matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock } = data;
+    const { matchMode, matchState, homeTeam, awayTeam, clock } = data;
+    let { matchCentreUrl } = data;
     const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
     const { nickName: awayTeamName, theme: awayTeamTheme } = awayTeam;
 
@@ -41,12 +42,13 @@ export default function RoundFixture(
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
 
-    const gameLink = `https://nrl.com${matchCentreUrl}`;
+    matchCentreUrl = (CURRENTCOMP === 'nrl' || CURRENTCOMP === 'nrlw') ?
+        `https://nrl.com${matchCentreUrl}`: matchCentreUrl;
 
     return (
         <div className="flex flex-col">
             <a
-                href={gameLink} target="_blank"
+                href={matchCentreUrl} target="_blank"
                 className={
                     clsx(
                         'text-center text-lg text-white font-semibold',

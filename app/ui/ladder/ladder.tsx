@@ -3,7 +3,7 @@ import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions'
 import Fixtures from '../fixture/fixtures';
 import ByeToggleSection from '../bye-toggle';
 import { useEffect, useState } from 'react';
-import { NUMS } from '@/app/lib/utils';
+import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
 import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
@@ -47,7 +47,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
-    const { ROUNDS, FINALS_TEAMS } = NUMS;
+    const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
@@ -105,7 +105,7 @@ function getLadderRow(
 
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const { name, stats, theme } = team;
-        const { ROUNDS, FINALS_TEAMS } = NUMS;
+        const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
 
         if (liveMatches) {
             for (const match of liveMatches) {
@@ -145,7 +145,7 @@ function getLadderRow(
             nextTeam = name === homeTeam.nickName ?
                 awayTeam.theme.key :
                 homeTeam.theme.key;
-            nextMatchUrl = `https://nrl.com${matchCentreUrl}`;
+            nextMatchUrl = matchCentreUrl;
         }
         else if (currentRoundNo < ROUNDS) {
             nextTeam = 'BYE';

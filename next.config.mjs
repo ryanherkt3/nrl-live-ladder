@@ -10,6 +10,17 @@ const nextConfig = {
             },
         ];
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'nrl.com',
+                port: '',
+                pathname: '/.theme/**',
+                search: '',
+            },
+        ],
+    },
 };
 
 export default nextConfig;

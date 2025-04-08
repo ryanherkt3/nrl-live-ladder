@@ -6,8 +6,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'NRL Live Ladder',
-    description: 'NRL Live Ladder App by Ryan H',
+    title: 'NRL Live Ladder Home',
+    description: 'NRL Live Ladder App',
 };
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {

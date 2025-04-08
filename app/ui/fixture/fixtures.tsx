@@ -1,6 +1,6 @@
 import { Match, ByeTeam, TeamData } from '../../lib/definitions';
 import TeamImage from '../team-image';
-import { NUMS } from '@/app/lib/utils';
+import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
 import { getRoundFixtures } from '@/app/lib/nrl-draw-utils';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
@@ -26,7 +26,7 @@ export default function Fixtures(
         modifiedFixtureCb: Function | undefined
     }
 ) {
-    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS;
+    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[CURRENTCOMP];
     const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
@@ -74,7 +74,7 @@ export default function Fixtures(
                 getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
             }
             {
-                inFinalsFootball ?
+                inFinalsFootball || !byes ?
                     null :
                     <div className="flex flex-col">
                         <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>

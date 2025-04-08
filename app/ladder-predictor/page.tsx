@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import DrawFetcher from '../ui/draw-fetcher';
 
 export const metadata: Metadata = {
-    title: 'NRL Ladder Predictor',
-    description: 'Predict the outcome of NRL matches and see how your predictions affect the NRL ladder',
+    title: 'Ladder Predictor',
+    description: 'Predict the outcome of rugby league matches and see how your predictions affect the ladder',
 };
 
 export default function LadderPredictorPage() {

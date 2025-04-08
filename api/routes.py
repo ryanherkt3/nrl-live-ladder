@@ -1,3 +1,5 @@
+# TODO move to draw-fetcher.tsx (i.e. deprecate serverless function)
+
 import requests
 
 from flask import Flask
@@ -15,9 +17,11 @@ headers = {
 def season_draw():
     rounds = {}
 
-    # 32 = 27 rounds plus 4 weeks of finals 
-    for i in range(1, 32, 1):
-        apiUrl = f"https://www.nrl.com/draw/data?competition=111&round={i}"
+    comp = request.args.get('comp')
+    compRounds = int(request.args.get('rounds'))
+
+    for i in range(1, compRounds, 1):
+        apiUrl = f"https://www.nrl.com/draw/data?competition={comp}&round={i}"
         rounds.update(
             {i: requests.get(apiUrl, headers=headers).json()}
         )

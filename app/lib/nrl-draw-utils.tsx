@@ -1,6 +1,6 @@
 import RoundFixture from '../ui/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
-import { CURRENTYEAR, NUMS } from './utils';
+import { CURRENTCOMP, CURRENTYEAR, NUMS } from './utils';
 
 /**
  * Construct the data for a team (statistics, team name, theme key)
@@ -44,7 +44,7 @@ export function constructTeamData(teams: Array<TeamData>) {
  * @returns {number}
  */
 export function getMaxPoints(losses: number, draws: number) {
-    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS;
+    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[CURRENTCOMP];
 
     const perfectSeasonPts = WIN_POINTS * MATCHES;
 
@@ -68,7 +68,7 @@ export function constructTeamStats(
     teams: Array<TeamData>,
     modifiable: boolean,
 ) {
-    const { WIN_POINTS } = NUMS;
+    const { WIN_POINTS } = NUMS[CURRENTCOMP];
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -90,22 +90,24 @@ export function constructTeamStats(
             break;
         }
 
-        for (const bye of round.byes) {
-            const byeTeam = teams.filter((team: TeamData) => {
-                return bye.teamNickName === team.name;
-            })[0];
+        if (round.byes) {
+            for (const bye of round.byes) {
+                const byeTeam = teams.filter((team: TeamData) => {
+                    return bye.teamNickName === team.name;
+                })[0];
 
-            const playedRoundFixtures = round.fixtures.filter((fixture) => {
-                return fixture.matchMode !== 'Pre';
-            });
+                const playedRoundFixtures = round.fixtures.filter((fixture) => {
+                    return fixture.matchMode !== 'Pre';
+                });
 
-            // If a fixture has been played (or is being played) for a particular round,
-            // give the bye team their points
-            if (playedRoundFixtures.length) {
-                byeTeam.stats.byes += 1;
-                byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
-                    (WIN_POINTS * byeTeam.stats.byes);
-                byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+                // If a fixture has been played (or is being played) for a particular round,
+                // give the bye team their points
+                if (playedRoundFixtures.length) {
+                    byeTeam.stats.byes += 1;
+                    byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
+                        (WIN_POINTS * byeTeam.stats.byes);
+                    byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+                }
             }
         }
 
@@ -127,10 +129,10 @@ export function constructTeamStats(
             })[0];
 
             // Update score from localStorage (if possible) if on ladder predictor page
-            if (modifiable && localStorage[`predictedMatches${currentYear}`]) {
+            if (modifiable && localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) {
                 const slug = matchCentreUrl.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
                 const round = parseInt(roundTitle.split(' ')[1]);
-                const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
+                const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]);
 
                 if (predictions[round] && predictions[round][slug]) {
                     const prediction = predictions[round][slug];
@@ -152,10 +154,10 @@ export function constructTeamStats(
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         if (!Object.values(predictions).filter((round: any) => Object.values(round).length).length) {
-                            delete localStorage[`predictedMatches${currentYear}`];
+                            delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
                         }
                         else {
-                            localStorage[`predictedMatches${currentYear}`] = JSON.stringify(predictions);
+                            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictions);
                         }
                     }
                 }
@@ -274,7 +276,7 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolea
     });
 
     const { byes, fixtures, selectedRoundId: currentRoundNo } = currentRoundInfo[0];
-    const { ROUNDS, FINALS_WEEKS } = NUMS;
+    const { ROUNDS, FINALS_WEEKS } = NUMS[CURRENTCOMP];
 
     let nextRoundInfo;
     if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
