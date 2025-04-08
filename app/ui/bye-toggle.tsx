@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { COLOURCSSVARIANTS, MAINCOLOUR } from '../lib/utils';
 
 export default function ByeToggleSection({setByeValue, byeValueCb}: {setByeValue: boolean, byeValueCb: Function}) {
     return (
@@ -29,9 +30,9 @@ function ByeToggle(
             <div
                 className={
                     clsx(
-                        'border border-green-400 w-7 rounded-full',
+                        [`border ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]} w-7 rounded-full`],
                         {
-                            'bg-green-400': byeValue === setByeValue
+                            [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`]: byeValue === setByeValue
                         }
                     )
                 }

@@ -1,4 +1,4 @@
-import { CURRENTYEAR } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS, CURRENTYEAR, MAINCOLOUR } from '@/app/lib/utils';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -47,9 +47,11 @@ export default function InputScore(
     return <input
         className={
             clsx(
-                'max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center bg-green-400',
+                // eslint-disable-next-line max-len
+                [`max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center ${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`],
                 {
                     'sm:-order-1': !isHomeTeam,
+                    'text-white': MAINCOLOUR === 'nrl-ctry' || MAINCOLOUR === 'nrl-wil' || MAINCOLOUR === 'nrl-bean'
                 }
             )
         }

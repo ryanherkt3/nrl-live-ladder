@@ -1,4 +1,4 @@
-import { getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
+import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, MAINCOLOUR, NUMS } from '../lib/utils';
 import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from '../lib/definitions';
 import clsx from 'clsx';
 import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
@@ -40,7 +40,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 {
                     getTableRows(allTeams, true, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }
-                <div className="border-4 border-green-400"></div>
+                <div className={`border-4 ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`}></div>
                 {
                     getTableRows(allTeams, false, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }

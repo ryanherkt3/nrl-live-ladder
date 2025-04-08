@@ -1,6 +1,6 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo, Match } from '../lib/definitions';
-import { CURRENTYEAR, NUMS } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS, CURRENTYEAR, MAINCOLOUR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useEffect, useState } from 'react';
@@ -183,7 +183,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 <LadderPredictorButton
                     text={'Clear Round'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
-                    disabledClasses={'border-green-400 hover:bg-green-400 hover:text-white'}
+                    // eslint-disable-next-line max-len
+                    disabledClasses={`${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-hover-bg`]} hover:text-white`}
                     disabled={disabledClearRndBtn}
                     clickCallback={() => updatePredictions('clear-round', roundIndex)}
                 />

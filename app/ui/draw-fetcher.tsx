@@ -7,7 +7,8 @@ import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
-import { setCurrentYear } from '../lib/utils';
+import { setCurrentYear, setMainColour } from '../lib/utils';
+import { DrawInfo } from '../lib/definitions';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
     // Get the data
@@ -26,6 +27,18 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
 
     // Set the current year to be the year of the draw
     setCurrentYear(seasonDraw[1].selectedSeasonId);
+
+
+    // Set the main colour used for the finalists bar, completed games etc
+    const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
+    const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
+    });
+    setMainColour(seasonDraw[1].selectedCompetitionId, currentRound[0].selectedRoundId);
 
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {

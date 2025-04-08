@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
+import { COLOURCSSVARIANTS, MAINCOLOUR } from '../lib/utils';
 
 export default function NavBar() {
     const pathname = usePathname();
@@ -107,7 +108,7 @@ export default function NavBar() {
                                 key={title}
                                 href={url}
                                 onClick={resetMobileNavOpen}
-                                className='text-lg md:text-xl hover:text-green-400'
+                                className={`text-lg md:text-xl ${COLOURCSSVARIANTS[`${MAINCOLOUR}-hover-text`]}`}
                             >
                                 <span>{title}</span>
                             </Link>

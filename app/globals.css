@@ -6,8 +6,20 @@
     --breakpoint-md: 850px;
     --breakpoint-lg: 1024px;
     --breakpoint-xl: 1280px;
-}
 
+    --color-nrl: #05df72;
+    --color-nrlw: #00debc;
+    --color-nsw: #5daee1;
+    --color-qld: #83003f;
+
+    --color-nrl-mclt: #cece00;
+    --color-nrl-wil: #8d42ff;
+    --color-nrl-bean: #186c91;
+    --color-nrl-ind: #f57012;
+    --color-nrl-ctry: #0c53fe;
+    --color-nrlw-ind: #f57012;
+    --color-nrlw-ctry: #0c53fe;
+}
 
 .hidden {
     display: none;
@@ -80,7 +92,7 @@ input[type=number] {
     }
 }
 
-/* Table texts & backgrounds */
+/* Max points backgrounds */
 
 .bg-broncos {
     background: #55183A;
