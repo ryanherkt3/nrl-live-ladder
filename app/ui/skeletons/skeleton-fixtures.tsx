@@ -11,10 +11,9 @@ export default function SkeletonFixtures() {
             {
                 getFixtures()
             }
-            <div className="flex flex-col">
-                <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
-                <div className="shimmer flex flex-row gap-6 justify-center h-9 mt-2 py-4"></div>
-            </div>
+            {
+                getByes()
+            }
         </div>
     );
 }
@@ -27,5 +26,18 @@ function getFixtures() {
     }
 
     return fixtures;
+}
+
+function getByes() {
+    if (!NUMS[CURRENTCOMP].BYES) {
+        return null;
+    }
+
+    return (
+        <div className="flex flex-col">
+            <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+            <div className="shimmer flex flex-row gap-6 justify-center h-9 mt-2 py-4"></div>
+        </div>
+    );
 }
 

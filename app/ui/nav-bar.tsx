@@ -1,13 +1,18 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR, setCurrentComp, setMainColour } from '../lib/utils';
 
 export default function NavBar() {
+    // Get the user's chosen competition, if one exists.
+    // Also set the main colour used for the finalists bar, completed games etc
+    setCurrentComp(useSearchParams().get('comp')?.toLowerCase() || 'nrl');
+    setMainColour(COMPID[CURRENTCOMP.toUpperCase()], -1);
+
     const pathname = usePathname();
 
     let links = [

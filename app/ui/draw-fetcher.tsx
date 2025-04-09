@@ -7,14 +7,10 @@ import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
-import { COMPID, CURRENTCOMP, setCurrentComp, NUMS, setCurrentYear, setMainColour } from '../lib/utils';
+import { COMPID, CURRENTCOMP, NUMS, setCurrentYear, setMainColour } from '../lib/utils';
 import { DrawInfo } from '../lib/definitions';
-import { useSearchParams } from 'next/navigation';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
-    // Get the user's chosen competition, if one exists.
-    setCurrentComp(useSearchParams().get('comp')?.toLowerCase() || 'nrl');
-
     const { ROUNDS, FINALS_WEEKS } = NUMS[CURRENTCOMP];
     const compRounds = ROUNDS + FINALS_WEEKS + 1;
     const compId = COMPID[CURRENTCOMP.toUpperCase()];

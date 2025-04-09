@@ -34,14 +34,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             return;
         }
 
-        const homeTeamSlug = fixtureToUpdate.homeTeam.theme.key;
-        const awayTeamSlug = fixtureToUpdate.awayTeam.theme.key;
+        const { homeTeam, awayTeam } = fixtureToUpdate;
+
+        const homeTeamSlug = homeTeam.nickName.toLowerCase().replace(' ', '-');
+        const awayTeamSlug = awayTeam.nickName.toLowerCase().replace(' ', '-');
         const isAwayTeamUpdated = awayTeamSlug === teamName;
 
-        const teamToUpdate = isAwayTeamUpdated ?
-            fixtureToUpdate.awayTeam : fixtureToUpdate.homeTeam;
-        const opponent = isAwayTeamUpdated ?
-            fixtureToUpdate.homeTeam : fixtureToUpdate.awayTeam;
+        const teamToUpdate = isAwayTeamUpdated ? awayTeam : homeTeam;
+        const opponent = isAwayTeamUpdated ? homeTeam : awayTeam;
 
         teamToUpdate.score = score;
         const opponentScore = opponent.score || '';

@@ -85,8 +85,8 @@ export function constructTeamStats(
     };
 
     for (const round of seasonDraw) {
-        // Do not count stats for games not started or finals games
-        if (round.selectedRoundId > currentRoundNo) {
+        // Do not count stats for games not started or finals games (unless on the predictor page)
+        if (!modifiable && round.selectedRoundId > currentRoundNo) {
             break;
         }
 
@@ -130,7 +130,9 @@ export function constructTeamStats(
 
             // Update score from localStorage (if possible) if on ladder predictor page
             if (modifiable && localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) {
-                const slug = matchCentreUrl.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
+                const teamsIndex = CURRENTCOMP.includes('nrl') ? 4 : 6;
+                const slug = matchCentreUrl.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
+
                 const round = parseInt(roundTitle.split(' ')[1]);
                 const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]);
 
@@ -139,8 +141,8 @@ export function constructTeamStats(
 
                     // Update score only if the predicted match has not begun
                     if (fixture.matchMode === 'Pre') {
-                        homeTeam.score = prediction[homeTeam.theme.key];
-                        awayTeam.score = prediction[awayTeam.theme.key];
+                        homeTeam.score = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];
+                        awayTeam.score = prediction[awayTeam.nickName.toLowerCase().replace(' ', '-')];
                     }
                     // Otherwise delete the localStorage entry and get the correct score from the API request
                     else {
