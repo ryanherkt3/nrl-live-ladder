@@ -27,7 +27,7 @@ export default function TeamImage({ matchLink, teamKey, }: {matchLink: string, t
     const image = <Image src={imgUrl} width={36} height={36} alt={teamKey} />;
 
     if (matchLink) {
-        matchLink = CURRENTCOMP === 'nrl' || CURRENTCOMP === 'nrlw' ? `https://nrl.com${matchLink}`: matchLink;
+        matchLink = CURRENTCOMP.includes('nrl') ? `https://nrl.com${matchLink}`: matchLink;
 
         return (
             <a href={matchLink} target="_blank">
