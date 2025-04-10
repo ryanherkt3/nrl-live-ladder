@@ -8,7 +8,18 @@ const nextConfig = {
                     ? 'http://127.0.0.1:8080/api/:path*'
                     : '/api/',
             },
-        ]
+        ];
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'nrl.com',
+                port: '',
+                pathname: '/.theme/**',
+                search: '',
+            },
+        ],
     },
 };
 

@@ -7,12 +7,18 @@ import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
-import { setCurrentYear } from '../lib/utils';
+import { COMPID, CURRENTCOMP, NUMS, setCurrentYear, setMainColour } from '../lib/utils';
+import { DrawInfo } from '../lib/definitions';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
+    const { ROUNDS, FINALS_WEEKS } = NUMS[CURRENTCOMP];
+    const compRounds = ROUNDS + FINALS_WEEKS + 1;
+    const compId = COMPID[CURRENTCOMP.toUpperCase()];
+    const apiUrl = `/api/seasondraw?comp=${compId}&rounds=${compRounds}`;
+
     // Get the data
     const fetcher = (url: string) => axios.get(url).then(res => res.data);
-    const { data: seasonDraw, error, isLoading } = useSWR('/api/seasondraw', fetcher);
+    const { data: seasonDraw, error, isLoading } = useSWR(apiUrl, fetcher);
 
     // Loading states
     if (error) {
@@ -27,9 +33,20 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     // Set the current year to be the year of the draw
     setCurrentYear(seasonDraw[1].selectedSeasonId);
 
+    // Set the main colour used for the finalists bar, completed games etc
+    const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
+    const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
+        if (round.byes) {
+            return round.byes[0].isCurrentRound;
+        }
+
+        return round.fixtures[0].isCurrentRound;
+    });
+    setMainColour(compId, currentRound[0].selectedRoundId);
+
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {
-        case 'main':
+        case 'ladder':
             return <Ladder seasonDraw={seasonDraw} />;
         case 'ladder-predictor':
             return <LadderPredictor seasonDraw={seasonDraw} />;

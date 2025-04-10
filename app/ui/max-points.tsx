@@ -1,4 +1,4 @@
-import { getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
+import { COLOURCSSVARIANTS, CURRENTCOMP, getOrdinalNumber, getShortCode, MAINCOLOUR, NUMS } from '../lib/utils';
 import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from '../lib/definitions';
 import clsx from 'clsx';
 import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
@@ -40,7 +40,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 {
                     getTableRows(allTeams, true, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }
-                <div className="border-4 border-green-400"></div>
+                <div className={`border-4 ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`}></div>
                 {
                     getTableRows(allTeams, false, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }
@@ -68,7 +68,7 @@ function getTableRows(
     minPointsForSpots: TeamStatuses,
     liveMatches: Array<Match>
 ) {
-    const { FINALS_TEAMS, MATCHES } = NUMS;
+    const { FINALS_TEAMS, MATCHES } = NUMS[CURRENTCOMP];
 
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(FINALS_TEAMS);
@@ -84,8 +84,14 @@ function getTableRows(
         const { points: currentPoints, maxPoints } = stats;
         const { eliminated, topTwo, topFour, topEight } = minPointsForSpots;
 
-        const bgClassName = nickname.toLowerCase().replace(' ', '') +
-            (nickname === 'Broncos' || nickname === 'Roosters' ? '-gradient' : '');
+        let bgClassName = nickname.toLowerCase().replace(' ', '');
+
+        if (nickname === 'Broncos' || nickname === 'Roosters') {
+            bgClassName += '-gradient';
+        }
+        else if (nickname === 'Bears' || nickname === 'Jets' || nickname === 'Magpies') {
+            bgClassName += `-${CURRENTCOMP}`;
+        }
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
@@ -110,7 +116,7 @@ function getTableRows(
             (
                 // Is also qualified if top placed bottom team has worse points differential
                 // when tied on points at end of season
-                feStats.played === NUMS.MATCHES &&
+                feStats.played === MATCHES &&
                 feStats.points <= currentPoints &&
                 feStats['points difference'] < stats['points difference']
             )
@@ -216,7 +222,13 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
             const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
                 (!isEliminated && useAltBg && nickname === 'broncos');
 
-            const bgName = `bg-${nickname}${useGradientBg ? '-gradient' : useAltBg ? '-alt' : ''}`;
+            let bgName = `bg-${nickname}`;
+            if (nickname === 'bears' || nickname === 'jets' || nickname === 'magpies') {
+                bgName += `-${CURRENTCOMP}`;
+            }
+            if (useGradientBg || useAltBg) {
+                bgName += useGradientBg ? '-gradient' : '-alt';
+            }
 
             pointCells.push(
                 <div
@@ -274,7 +286,7 @@ function getLadderStatus(
 
         return filteredTeamStats.points > maxPoints ||
             (isFinished && team.name !== nickname &&
-                filteredTeamStats.played === NUMS.MATCHES &&
+                filteredTeamStats.played === NUMS[CURRENTCOMP].MATCHES &&
                 filteredTeamStats.points >= maxPoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );

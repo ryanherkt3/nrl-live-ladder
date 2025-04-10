@@ -1,4 +1,4 @@
-import { CURRENTYEAR } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS, CURRENTCOMP, CURRENTYEAR, MAINCOLOUR } from '@/app/lib/utils';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -17,14 +17,17 @@ export default function InputScore(
         isHomeTeam: boolean
     }
 ) {
-    const slug = matchSlug.split('/').filter(i => i)[4]; // homeTeam-v-awayTeam
-    const round = parseInt(matchSlug.split('/').filter(i => i)[3].replace('round-', '')); // round-x
+    const teamsIndex = CURRENTCOMP.includes('nrl') ? 4 : 6;
+    const roundIndex = teamsIndex - 1;
+
+    const slug = matchSlug.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
+    const round = parseInt(matchSlug.split('/').filter(i => i)[roundIndex].replace('round-', '')); // round-x
     const currentYear = CURRENTYEAR;
 
     let predictions;
     let predictedTeamScore: number | undefined;
-    if (localStorage[`predictedMatches${currentYear}`]) {
-        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}`]);
+    if (localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) {
+        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]);
         if (predictions[round] && predictions[round][slug]) {
             const score = predictions[round][slug][team];
             predictedTeamScore = score ?? '';
@@ -44,12 +47,16 @@ export default function InputScore(
         setScore(predictedTeamScore ?? '');
     }, [predictedTeamScore]);
 
+    const whiteTextBoxes = ['nrl-ctry', 'nrl-bean', 'nrl-wil', 'qld'];
+
     return <input
         className={
             clsx(
-                'max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center bg-green-400',
+                // eslint-disable-next-line max-len
+                [`max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center ${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`],
                 {
                     'sm:-order-1': !isHomeTeam,
+                    'text-white': whiteTextBoxes.includes(MAINCOLOUR)
                 }
             )
         }

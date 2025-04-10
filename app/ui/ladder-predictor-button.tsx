@@ -23,7 +23,7 @@ export default function LadderPredictorButton(
                     'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
                     {
                         [`${activeClasses}`]: disabled,
-                        [`${disabledClasses}`]: !disabled,
+                        [`${disabledClasses} cursor-pointer`]: !disabled,
                     }
                 )
             }

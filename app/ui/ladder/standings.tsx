@@ -1,3 +1,4 @@
+import { COLOURCSSVARIANTS, MAINCOLOUR } from '@/app/lib/utils';
 import clsx from 'clsx';
 import { ReactElement } from 'react';
 
@@ -52,7 +53,7 @@ export default function Standings(
                 <div className="w-[15%] sm:w-[6%]" title="Points">PTS</div>
             </div>
             {topHalf}
-            <div className="border-2 border-green-400"></div>
+            <div className={`border-2 ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`}></div>
             {bottomHalf}
         </div>
     );

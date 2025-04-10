@@ -1,4 +1,4 @@
-import { NUMS } from '@/app/lib/utils';
+import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
 import SkeletonRoundFixture from './skeleton-round-fixture';
 
 export default function SkeletonFixtures() {
@@ -11,10 +11,9 @@ export default function SkeletonFixtures() {
             {
                 getFixtures()
             }
-            <div className="flex flex-col">
-                <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
-                <div className="shimmer flex flex-row gap-6 justify-center h-9 mt-2 py-4"></div>
-            </div>
+            {
+                getByes()
+            }
         </div>
     );
 }
@@ -22,10 +21,22 @@ export default function SkeletonFixtures() {
 function getFixtures() {
     const fixtures = [];
 
-    for (let i = 2; i <= NUMS.TEAMS; i += 2) {
+    for (let i = 2; i <= NUMS[CURRENTCOMP].TEAMS; i += 2) {
         fixtures.push(<SkeletonRoundFixture key={i} />);
     }
 
     return fixtures;
 }
 
+function getByes() {
+    if (!NUMS[CURRENTCOMP].BYES) {
+        return null;
+    }
+
+    return (
+        <div className="flex flex-col">
+            <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
+            <div className="shimmer flex flex-row gap-6 justify-center h-9 mt-2 py-4"></div>
+        </div>
+    );
+}

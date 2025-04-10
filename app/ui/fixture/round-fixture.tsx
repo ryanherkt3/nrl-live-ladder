@@ -3,7 +3,7 @@
 import clsx from 'clsx';
 import { Match, TeamData } from '../../lib/definitions';
 import moment from 'moment';
-import { getOrdinalNumber } from '../../lib/utils';
+import { COLOURCSSVARIANTS, CURRENTCOMP, getOrdinalNumber, MAINCOLOUR } from '../../lib/utils';
 import TeamSection from './team-section';
 
 export default function RoundFixture(
@@ -24,7 +24,8 @@ export default function RoundFixture(
         modifiedFixtureCb: Function | undefined
     }
 ) {
-    const { matchMode, matchState, homeTeam, awayTeam, matchCentreUrl, clock } = data;
+    const { matchMode, matchState, homeTeam, awayTeam, clock } = data;
+    let { matchCentreUrl } = data;
     const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
     const { nickName: awayTeamName, theme: awayTeamTheme } = awayTeam;
 
@@ -41,18 +42,20 @@ export default function RoundFixture(
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
 
-    const gameLink = `https://nrl.com${matchCentreUrl}`;
+    if (CURRENTCOMP.includes('nrl')) {
+        matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
+    }
 
     return (
         <div className="flex flex-col">
             <a
-                href={gameLink} target="_blank"
+                href={matchCentreUrl} target="_blank"
                 className={
                     clsx(
                         'text-center text-lg text-white font-semibold',
                         {
-                            'bg-orange-400': modifiable && matchMode === 'Pre',
-                            'bg-green-400': isFullTime,
+                            'bg-indigo-400': modifiable && matchMode === 'Pre',
+                            [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`]: isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
                             'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
@@ -172,8 +175,9 @@ function getMatchContext(matchData: Match, modifiable: boolean) {
                 clsx(
                     'border rounded-md px-2 py-1 w-fit text-white',
                     {
-                        'border-green-400 bg-green-400': isFullTime,
-                        'border-orange-400 bg-orange-400': !isFullTime
+                        // eslint-disable-next-line max-len
+                        [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`]: isFullTime,
+                        'border-indigo-400 bg-indigo-400': !isFullTime
                     }
                 )
             }>

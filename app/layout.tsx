@@ -2,12 +2,13 @@ import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import NavBar from './ui/nav-bar';
 import './globals.css';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'NRL Live Ladder',
-    description: 'NRL Live Ladder App by Ryan H',
+    title: 'NRL Live Ladder Home',
+    description: 'NRL Live Ladder App',
 };
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {
@@ -19,7 +20,9 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
     return (
         <html lang="en">
             <body className={`${inter.className} antialiased`}>
-                <NavBar />
+                <Suspense>
+                    <NavBar />
+                </Suspense>
                 {children}
                 <footer
                     className={
@@ -28,7 +31,7 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
                 >
                     <div>&copy; Ryan Herkt {currentYear}</div>
                     <a className="visited:text-purple-500 hover:text-blue-500 text-blue-500"
-                        href="https://github.com/ryanherkt3"
+                        href="https://github.com/ryanherkt3/nrl-live-ladder"
                         target="_blank">
                         <span>Github</span>
                     </a>

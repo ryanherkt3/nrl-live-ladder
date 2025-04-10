@@ -6,6 +6,7 @@
  */
 export function getShortCode(name: string) {
     switch (name) {
+        // NRL/W clubs:
         case 'Broncos':
             return 'BRI';
         case 'Raiders':
@@ -40,6 +41,36 @@ export function getShortCode(name: string) {
             return 'WAR';
         case 'Wests Tigers':
             return 'WST';
+        // NSW & Q Cup
+        case 'Bears':
+            return (CURRENTCOMP === 'nsw' ? 'NSB' : 'BUR');
+        case 'Jets':
+            return (CURRENTCOMP === 'nsw' ? 'NWT' : 'IPS');
+        case 'Magpies':
+            return (CURRENTCOMP === 'nsw' ? 'WSM' : 'MAG');
+        // Q Cup only
+        case 'Blackhawks':
+            return 'BLA';
+        case 'Capras':
+            return 'CAP';
+        case 'Clydesdales':
+            return 'CLY';
+        case 'Cutters':
+            return 'CUT';
+        case 'Devils':
+            return 'DEV';
+        case 'Falcons':
+            return 'FAL';
+        case 'Hunters':
+            return 'PNG';
+        case 'Pride':
+            return 'PRI';
+        case 'Seagulls':
+            return 'SEA';
+        case 'Tigers':
+            return 'TIG';
+        case 'WM Seagulls':
+            return 'SEA';
         default:
             return 'NRL';
     }
@@ -77,12 +108,189 @@ export function setCurrentYear(year: Number) {
     CURRENTYEAR = year;
 }
 
-export const NUMS = Object.freeze({
-    ROUNDS: 27,
-    FINALS_WEEKS: 4,
-    BYES: 3,
-    MATCHES: 24,
-    TEAMS: 17,
-    FINALS_TEAMS: 8,
-    WIN_POINTS: 2,
+// TODO move colours code to new file (lib/colours.ts)
+export let MAINCOLOUR: string = 'nrl';
+/**
+ * Set the main colour.
+ *
+ * Special round colours:
+ * Multicultural - round 5
+ * Women in League - round 10
+ * Beanies for Brain Cancer - round 17
+ * Indigenous - round 23-24 | 6-7
+ * Country - round 25 | 8
+ *
+ * @param {string} comp the competition ID (e.g. 111 for NRL)
+ * @param {number} currentRoundNo the current round number (e.g. 7)
+ */
+export function setMainColour(comp: number, currentRoundNo: number) {
+    let prefix = '';
+
+    const nrlSpecials = [5, 10, 17, 23, 24, 25];
+    const nrlwSpecials = [6, 7, 8];
+
+    if (comp === COMPID.NRLW) {
+        prefix = 'nrlw';
+
+        if (nrlwSpecials.includes(currentRoundNo)) {
+            prefix += currentRoundNo === 8 ? '-ctry' : '-ind';
+        }
+    }
+    else if (comp === COMPID.NRL && nrlSpecials.includes(currentRoundNo)) {
+        prefix = 'nrl';
+        switch (currentRoundNo) {
+            case 5:
+                prefix += '-mclt';
+                break;
+            case 10:
+                prefix += '-wil';
+                break;
+            case 17:
+                prefix += '-bean';
+                break;
+            case 23:
+            case 24:
+                prefix += '-ind';
+                break;
+            case 25:
+                prefix += '-ctry';
+                break;
+            default:
+                break;
+        }
+    }
+    else if (comp === COMPID.NSW || comp === COMPID.QLD) {
+        prefix = comp === COMPID.NSW ? 'nsw' : 'qld';
+    }
+    else {
+        prefix = 'nrl';
+    }
+
+    MAINCOLOUR = prefix;
+}
+
+export let CURRENTCOMP: string = 'nrl';
+/**
+ * Set the current competition (set to nrl by default if the value provided is invalid)
+ *
+ * @param {string} comp the competition (e.g. nrlw)
+ */
+export function setCurrentComp(comp: string) {
+    CURRENTCOMP = Object.keys(COMPID).includes(comp.toUpperCase()) ? comp : 'nrl';
+}
+
+export const COMPID : { [key: string]: number } = Object.freeze({
+    NRL: 111,
+    NRLW: 161,
+    NSW: 113,
+    QLD: 114,
+});
+
+// TODO is there a more efficient way to do this?
+export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
+    'nrl-bg': 'bg-nrl',
+    'nrl-border': 'border-nrl',
+    'nrl-text': 'text-nrl',
+    'nrl-hover-bg': 'hover:bg-nrl',
+    'nrl-hover-text': 'hover:text-nrl',
+
+    'nrlw-bg': 'bg-nrlw',
+    'nrlw-border': 'border-nrlw',
+    'nrlw-text': 'text-nrlw',
+    'nrlw-hover-bg': 'hover:bg-nrlw',
+    'nrlw-hover-text': 'hover:text-nrlw',
+
+    'nsw-bg': 'bg-nsw',
+    'nsw-border': 'border-nsw',
+    'nsw-text': 'text-nsw',
+    'nsw-hover-bg': 'hover:bg-nsw',
+    'nsw-hover-text': 'hover:text-nsw',
+
+    'qld-bg': 'bg-qld',
+    'qld-border': 'border-qld',
+    'qld-text': 'text-qld',
+    'qld-hover-bg': 'hover:bg-qld',
+    'qld-hover-text': 'hover:text-qld',
+
+    'nrl-mclt-bg': 'bg-nrl-mclt',
+    'nrl-mclt-border': 'border-nrl-mclt',
+    'nrl-mclt-text': 'text-nrl-mclt',
+    'nrl-mclt-hover-bg': 'hover:bg-nrl-mclt',
+    'nrl-mclt-hover-text': 'hover:text-nrl-mclt',
+
+    'nrl-wil-bg': 'bg-nrl-wil',
+    'nrl-wil-border': 'border-nrl-wil',
+    'nrl-wil-text': 'text-nrl-wil',
+    'nrl-wil-hover-bg': 'hover:bg-nrl-wil',
+    'nrl-wil-hover-text': 'hover:text-nrl-wil',
+
+    'nrl-bean-bg': 'bg-nrl-bean',
+    'nrl-bean-border': 'border-nrl-bean',
+    'nrl-bean-text': 'text-nrl-bean',
+    'nrl-bean-hover-bg': 'hover:bg-nrl-bean',
+    'nrl-bean-hover-text': 'hover:text-nrl-bean',
+
+    'nrl-ind-bg': 'bg-nrl-ind',
+    'nrl-ind-border': 'border-nrl-ind',
+    'nrl-ind-text': 'text-nrl-ind',
+    'nrl-ind-hover-bg': 'hover:bg-nrl-ind',
+    'nrl-ind-hover-text': 'hover:text-nrl-ind',
+
+    'nrl-ctry-bg': 'bg-nrl-ctry',
+    'nrl-ctry-border': 'border-nrl-ctry',
+    'nrl-ctry-text': 'text-nrl-ctry',
+    'nrl-ctry-hover-bg': 'hover:bg-nrl-ctry',
+    'nrl-ctry-hover-text': 'hover:text-nrl-ctry',
+
+    'nrlw-ind-bg': 'bg-nrlw-ind',
+    'nrlw-ind-border': 'border-nrlw-ind',
+    'nrlw-ind-text': 'text-nrlw-ind',
+    'nrlw-ind-hover-bg': 'hover:bg-nrlw-ind',
+    'nrlw-ind-hover-text': 'hover:text-nrlw-ind',
+
+    'nrlw-ctry-bg': 'bg-nrlw-ctry',
+    'nrlw-ctry-border': 'border-nrlw-ctry',
+    'nrlw-ctry-hover-bg': 'hover:bg-nrlw-ctry',
+    'nrlw-ctry-text': 'text-nrlw-ctry',
+    'nrlw-ctry-hover-text': 'hover:text-nrlw-ctry',
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const NUMS : { [key: string]: any } = Object.freeze({
+    nrl: {
+        ROUNDS: 27,
+        FINALS_WEEKS: 4,
+        BYES: 3,
+        MATCHES: 24,
+        TEAMS: 17,
+        FINALS_TEAMS: 8,
+        WIN_POINTS: 2,
+    },
+    nrlw: {
+        ROUNDS: 11,
+        FINALS_WEEKS: 3,
+        BYES: 0,
+        MATCHES: 11,
+        TEAMS: 12,
+        FINALS_TEAMS: 6,
+        WIN_POINTS: 2,
+    },
+    nsw: {
+        ROUNDS: 26,
+        FINALS_WEEKS: 4,
+        BYES: 2,
+        MATCHES: 24,
+        TEAMS: 13,
+        FINALS_TEAMS: 5,
+        WIN_POINTS: 2,
+    },
+    qld: {
+        ROUNDS: 23,
+        FINALS_WEEKS: 4,
+        BYES: 3,
+        MATCHES: 20,
+        TEAMS: 15,
+        FINALS_TEAMS: 8,
+        WIN_POINTS: 2,
+    },
 });

@@ -97,5 +97,7 @@ function getScoreSegment(
         );
     }
 
-    return <Score score={team.score} winCondition={winCondition} isHomeTeam={isHomeTeam} />;
+    const score = matchState !== 'Upcoming' && matchMode !== 'Pre' ? team.score : '';
+
+    return <Score score={score} winCondition={winCondition} isHomeTeam={isHomeTeam} />;
 }
