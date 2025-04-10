@@ -42,7 +42,7 @@ export default function RoundFixture(
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
 
-    if (CURRENTCOMP.includes('nrl') {
+    if (CURRENTCOMP.includes('nrl')) {
         matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
     }
 

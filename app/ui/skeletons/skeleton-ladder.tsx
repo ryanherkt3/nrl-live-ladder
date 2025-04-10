@@ -14,6 +14,9 @@ export default function SkeletonLadder({ predictorPage }: { predictorPage: boole
                 bottomHalf={getLadderRow(FINALS_TEAMS + 1, TEAMS)}
                 predictorPage={predictorPage}
             />
+            {
+                getPredictorButtons(predictorPage)
+            }
             <SkeletonFixtures />
         </div>
     );
@@ -32,4 +35,17 @@ function getLadderRow(startPos: number, endPos: number) {
     }
 
     return rows;
+}
+
+function getPredictorButtons(predictorPage: boolean) {
+    if (predictorPage) {
+        return (
+            <div className="flex flex-row gap-3 self-end">
+                <div className='rounded-lg border border-gray-200 shimmer w-[124px] h-[45px]'></div>
+                <div className='rounded-lg border border-gray-200 shimmer w-[93px] h-[45px]'></div>
+            </div>
+        );
+    }
+
+    return null;
 }
