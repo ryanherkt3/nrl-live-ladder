@@ -3,7 +3,7 @@ import { CURRENTCOMP } from '../lib/utils';
 
 export default function TeamImage({ matchLink, teamKey, }: {matchLink: string, teamKey: string}) {
     let imageType = 'badge.png';
-    if (CURRENTCOMP === 'nrl' || CURRENTCOMP === 'nrlw') {
+    if (CURRENTCOMP.includes('nrl')) {
         imageType = 'badge-basic24.svg';
     }
     else if (CURRENTCOMP === 'nsw') {

@@ -90,7 +90,7 @@ function getTableRows(
             bgClassName += '-gradient';
         }
         else if (nickname === 'Bears' || nickname === 'Jets' || nickname === 'Magpies') {
-            bgClassName += '-nsw';
+            bgClassName += `-${CURRENTCOMP}`;
         }
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
