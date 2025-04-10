@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import NavBar from './ui/nav-bar';
 import './globals.css';
 import { Suspense } from 'react';
+import SkeletonNavBar from './ui/skeletons/skeleton-nav-bar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,7 +21,7 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
     return (
         <html lang="en">
             <body className={`${inter.className} antialiased`}>
-                <Suspense>
+                <Suspense fallback={<SkeletonNavBar />}>
                     <NavBar />
                 </Suspense>
                 {children}

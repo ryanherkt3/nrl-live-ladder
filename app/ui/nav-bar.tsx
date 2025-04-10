@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR, setCurrentComp, setMainColour } from '../lib/utils';
+import SkeletonNavBar from './skeletons/skeleton-nav-bar';
 
 export default function NavBar() {
     // Get the user's chosen competition, if one exists.
@@ -88,12 +89,7 @@ export default function NavBar() {
     // TODO implement more robust fix for nav links showing on mobile when they shouldn't (due to tailwind 4 updates)
     // Revert back to tailwind 3?
     if (!isMobileScreenSet) {
-        return (
-            <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
-                <span>{ activeLink ? activeLink.title : '404 Page' }</span>
-                <div className="shimmer max-md:w-8 md:w-[412px] h-8"></div>
-            </div>
-        );
+        return <SkeletonNavBar />;
     }
 
     // Customise query paramaters based on:
