@@ -111,14 +111,11 @@ export function setCurrentYear(year: Number) {
 // TODO move colours code to new file (lib/colours.ts)
 export let MAINCOLOUR: string = 'nrl';
 /**
- * Set the main colour.
+ * Set the main colour to be used across the site for the team divider, upcoming games, predictor boxes etc.
  *
- * Special round colours:
- * Multicultural - round 5
- * Women in League - round 10
- * Beanies for Brain Cancer - round 17
- * Indigenous - round 23-24 | 6-7
- * Country - round 25 | 8
+ * Special rounds:
+ * Multicultural (mclt), Magic Round (magic), Women in League (wil)
+ * Beanies for Brain Cancer (bean), Indigenous (ind), Country (ctry)
  *
  * @param {string} comp the competition ID (e.g. 111 for NRL)
  * @param {number} currentRoundNo the current round number (e.g. 7)
@@ -126,41 +123,38 @@ export let MAINCOLOUR: string = 'nrl';
 export function setMainColour(comp: number, currentRoundNo: number) {
     let prefix = '';
 
-    const nrlSpecials = [5, 10, 17, 23, 24, 25];
-    const nrlwSpecials = [6, 7, 8];
+    const { NSW, NRLW, NRL, QLD } = COMPID;
 
-    if (comp === COMPID.NRLW) {
+    if (comp === NRLW) {
+        const NRLWROUNDID : { [key: number]: string } = Object.freeze({
+            6: 'ind',
+            7: 'ind',
+            8: 'ctry'
+        });
+
         prefix = 'nrlw';
+        if (NRLWROUNDID[currentRoundNo]) {
+            prefix += `-${NRLWROUNDID[currentRoundNo]}`;
+        }
+    }
+    else if (comp === NRL) {
+        const NRLROUNDID : { [key: number]: string } = Object.freeze({
+            5: 'mclt',
+            9: 'magic',
+            10: 'wil',
+            17: 'bean',
+            23: 'ind',
+            24: 'ind',
+            25: 'ctry'
+        });
 
-        if (nrlwSpecials.includes(currentRoundNo)) {
-            prefix += currentRoundNo === 8 ? '-ctry' : '-ind';
-        }
-    }
-    else if (comp === COMPID.NRL && nrlSpecials.includes(currentRoundNo)) {
         prefix = 'nrl';
-        switch (currentRoundNo) {
-            case 5:
-                prefix += '-mclt';
-                break;
-            case 10:
-                prefix += '-wil';
-                break;
-            case 17:
-                prefix += '-bean';
-                break;
-            case 23:
-            case 24:
-                prefix += '-ind';
-                break;
-            case 25:
-                prefix += '-ctry';
-                break;
-            default:
-                break;
+        if (NRLROUNDID[currentRoundNo]) {
+            prefix += `-${NRLROUNDID[currentRoundNo]}`;
         }
     }
-    else if (comp === COMPID.NSW || comp === COMPID.QLD) {
-        prefix = comp === COMPID.NSW ? 'nsw' : 'qld';
+    else if (comp === NSW || comp === QLD) {
+        prefix = comp === NSW ? 'nsw' : 'qld';
     }
     else {
         prefix = 'nrl';
@@ -217,6 +211,12 @@ export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
     'nrl-mclt-text': 'text-nrl-mclt',
     'nrl-mclt-hover-bg': 'hover:bg-nrl-mclt',
     'nrl-mclt-hover-text': 'hover:text-nrl-mclt',
+
+    'nrl-magic-bg': 'bg-nrl-magic',
+    'nrl-magic-border': 'border-nrl-magic',
+    'nrl-magic-text': 'text-nrl-magic',
+    'nrl-magic-hover-bg': 'hover:bg-nrl-magic',
+    'nrl-magic-hover-text': 'hover:text-nrl-magic',
 
     'nrl-wil-bg': 'bg-nrl-wil',
     'nrl-wil-border': 'border-nrl-wil',
