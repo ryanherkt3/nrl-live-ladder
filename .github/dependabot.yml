@@ -1,0 +1,14 @@
+# `dependabot.yml` file with
+# customized schedule for version updates
+
+version: 2
+updates:
+  # Keep npm dependencies up to date
+  - package-ecosystem: "npm"
+    directory: "/"
+    # Check the npm registry every week on Monday at 14:00 NZ Time
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "14:00"
+      timezone: "Pacific/Auckland"
