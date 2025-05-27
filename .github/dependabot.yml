@@ -12,3 +12,7 @@ updates:
       day: "monday"
       time: "14:00"
       timezone: "Pacific/Auckland"
+    groups:
+      dev-dependencies:
+        patterns: 
+          - "*"
