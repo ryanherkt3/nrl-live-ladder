@@ -7,9 +7,6 @@ import PageDescription from './page-desc';
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false);
 
-    const firstPlaceMaxPts = allTeams[0].stats.maxPoints;
-    const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
-
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
@@ -19,6 +16,9 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         topEight: teamsByMaxPoints[8].stats.maxPoints,
         eliminated: allTeams[7].stats.points,
     };
+
+    const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
+    const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
@@ -38,11 +38,11 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     <div className="w-[25%]">Worst</div>
                 </div>
                 {
-                    getTableRows(allTeams, true, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
+                    getTableRows(allTeams, true, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }
                 <div className={`border-4 ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`}></div>
                 {
-                    getTableRows(allTeams, false, firstPlaceMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
+                    getTableRows(allTeams, false, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches)
                 }
             </div>
         </div>
@@ -54,8 +54,8 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
  *
  * @param {Array<TeamData>} allTeams an object with all the teams
  * @param {boolean} topHalf whether to map against the top teams or the bottom ones
- * @param {number} firstPlaceMaxPts the max points the first placed team can get
- * @param {number} lastPlacePts the max points the last placed team can get
+ * @param {number} highestMaxPts the highest max points value any team can get
+ * @param {number} lastPlacePts the current points the last placed team has
  * @param {TeamStatuses} minPointsForSpots an object with the points required to attain a certain status (e.g top 2)
  * @param {Array<Match>} liveMatches a list of the ongoing match(es)
  * @returns
@@ -63,7 +63,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 function getTableRows(
     allTeams: Array<TeamData>,
     topHalf: boolean,
-    firstPlaceMaxPts: number,
+    highestMaxPts: number,
     lastPlacePts: number,
     minPointsForSpots: TeamStatuses,
     liveMatches: Array<Match>
@@ -126,7 +126,7 @@ function getTableRows(
 
         const pointValues: TeamPoints = {
             lowestCurrentPoints: lastPlacePts,
-            highestMaxPoints: firstPlaceMaxPts,
+            highestMaxPoints: highestMaxPts,
             currentPoints: currentPoints,
             maxPoints: maxPoints
         };
