@@ -170,13 +170,14 @@ function getMatchContext(matchData: Match, modifiable: boolean) {
         const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
         const mobileString = isFullTime ? 'FT' : 'PRED';
 
+        const trueClasses = `${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`;
+
         return (
             <div className={
                 clsx(
                     'border rounded-md px-2 py-1 w-fit text-white',
                     {
-                        // eslint-disable-next-line max-len
-                        [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`]: isFullTime,
+                        [`${trueClasses}`]: isFullTime,
                         'border-indigo-400 bg-indigo-400': !isFullTime
                     }
                 )

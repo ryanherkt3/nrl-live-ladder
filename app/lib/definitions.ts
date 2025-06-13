@@ -88,3 +88,13 @@ export type PageVariables = {
     liveMatches: Match[],
     allTeams: TeamData[]
 }
+
+export type CompInfo = {
+    ROUNDS: number,
+    FINALS_WEEKS: number,
+    BYES: number,
+    MATCHES: number,
+    TEAMS: number,
+    FINALS_TEAMS: number,
+    WIN_POINTS: number,
+}
