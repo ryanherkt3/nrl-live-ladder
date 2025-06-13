@@ -139,28 +139,47 @@ export function constructTeamStats(
                 if (predictions[round] && predictions[round][slug]) {
                     const prediction = predictions[round][slug];
 
-                    // Update score only if the predicted match has not begun
+                    const homeScore = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];
+                    const awayScore = prediction[awayTeam.nickName.toLowerCase().replace(' ', '-')];
+
+                    // TODO redux to update button state if the if conditions are entered
+                    const cleanUpPredictions = () => {
+                        delete predictions[round][slug];
+                        if (Object.values(predictions[round]).length === 0) {
+                            delete predictions[round];
+                        }
+
+                        // If no predictions, delete the localStorage entry,
+                        // otherwise update it with the new predictions
+                        if (['null', '""', '{}'].includes(JSON.stringify(predictions))) {
+                            delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
+                        }
+                        else {
+                            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictions);
+                        }
+                    };
+
+                    const bothScoresInvalid = [null, ''].includes(homeScore) && [null, ''].includes(awayScore);
+
+                    // Update score only if the predicted match has not begun and both scores are valid
                     if (fixture.matchMode === 'Pre') {
-                        homeTeam.score = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];
-                        awayTeam.score = prediction[awayTeam.nickName.toLowerCase().replace(' ', '-')];
+                        if (bothScoresInvalid) {
+                            cleanUpPredictions();
+                        }
+                        else {
+                            homeTeam.score = homeScore;
+                            awayTeam.score = awayScore;
+                        }
+                    }
+                    else if (bothScoresInvalid) {
+                        cleanUpPredictions();
                     }
                     // Otherwise delete the localStorage entry and get the correct score from the API request
                     else {
                         homeTeam.score = fixture.homeTeam.score;
                         awayTeam.score = fixture.awayTeam.score;
 
-                        delete predictions[round][slug];
-                        if (!Object.values(predictions[round])) {
-                            delete predictions[round];
-                        }
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        if (!Object.values(predictions).filter((round: any) => Object.values(round).length).length) {
-                            delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
-                        }
-                        else {
-                            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictions);
-                        }
+                        cleanUpPredictions();
                     }
                 }
             }

@@ -27,9 +27,10 @@ export default function TeamSection(
         modifiedFixtureCb: Function | undefined
     }
 ) {
+    const mqStyles = 'max-sm:flex-col sm:flex-row max-sm:gap-2 sm:gap-6';
+
     return (
-        // eslint-disable-next-line max-len
-        <div className="flex max-sm:flex-col sm:flex-row max-sm:gap-2 sm:gap-6 pb-0 items-center justify-between min-w-[35%]">
+        <div className={`flex ${mqStyles} pb-0 items-center justify-between min-w-[35%]`}>
             <div className='flex flex-col text-center'>
                 <div className="font-semibold">
                     <span className="md:block max-md:hidden">{teamName}</span>

@@ -1,3 +1,5 @@
+import { CompInfo } from './definitions';
+
 /**
  * Get the three letter code for a club
  *
@@ -109,6 +111,7 @@ export function setCurrentYear(year: Number) {
 }
 
 // TODO move colours code to new file (lib/colours.ts)
+// TODO fix nav hover colour not updating for special rounds (redux)
 export let MAINCOLOUR: string = 'nrl';
 /**
  * Set the main colour to be used across the site for the team divider, upcoming games, predictor boxes etc.
@@ -255,8 +258,7 @@ export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
     'nrlw-ctry-hover-text': 'hover:text-nrlw-ctry',
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const NUMS : { [key: string]: any } = Object.freeze({
+export const NUMS : { [key: string]: CompInfo } = Object.freeze({
     nrl: {
         ROUNDS: 27,
         FINALS_WEEKS: 4,

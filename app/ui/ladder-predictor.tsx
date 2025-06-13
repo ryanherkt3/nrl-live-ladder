@@ -1,6 +1,6 @@
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo, Match } from '../lib/definitions';
-import { COLOURCSSVARIANTS, CURRENTCOMP, CURRENTYEAR, MAINCOLOUR, NUMS } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS as CCV, CURRENTCOMP, CURRENTYEAR, MAINCOLOUR, NUMS } from '@/app/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useEffect, useState } from 'react';
@@ -113,8 +113,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictedMatches);
 
             // Set clearAll to true if clearing the round predictions also clears all the predictions
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            if (!(Object.values(predictedMatches).filter((round: any) => Object.values(round).length).length)) {
+            if (['null', '""', '{}'].includes(JSON.stringify(predictedMatches))) {
                 clearAll = true;
             }
         }
@@ -136,7 +135,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
         }
 
-        // Update the button states
+        // Update the button states - TODO migrate to redux
         setDisabledClearRndBtn(clearRound || clearAll);
         setDisabledResetBtn(clearAll);
 
@@ -183,8 +182,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 <LadderPredictorButton
                     text={'Clear Round'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
-                    // eslint-disable-next-line max-len
-                    disabledClasses={`${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-hover-bg`]} hover:text-white`}
+                    disabledClasses={`${CCV[`${MAINCOLOUR}-border`]} ${CCV[`${MAINCOLOUR}-hover-bg`]} hover:text-white`}
                     disabled={disabledClearRndBtn}
                     clickCallback={() => updatePredictions('clear-round', roundIndex)}
                 />

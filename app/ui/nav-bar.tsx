@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR, setCurrentComp, setMainColour } from '../lib/utils';
-import SkeletonNavBar from './skeletons/skeleton-nav-bar';
 
 export default function NavBar() {
     // Get the user's chosen competition, if one exists.
@@ -85,13 +84,6 @@ export default function NavBar() {
         };
     }, [isMobileScreenSet, mobileNavOpen]);
 
-    // Show a temporary skeleton nav while figuring out if the device is a mobile one or not
-    // TODO implement more robust fix for nav links showing on mobile when they shouldn't (due to tailwind 4 updates)
-    // Revert back to tailwind 3?
-    if (!isMobileScreenSet) {
-        return <SkeletonNavBar />;
-    }
-
     // Customise query paramaters based on:
     // 1. whether the comp paramater is valid or not
     // 2. if the default comp (NRL) is being shown
@@ -103,9 +95,8 @@ export default function NavBar() {
             <span>{ activeLink ? activeLink.title : '404 Page' }</span>
             <div className={
                 clsx(
-                    'md:flex md:flex-row md:gap-4',
+                    'md:flex md:flex-row md:gap-4 max-md:hidden',
                     {
-                        'hidden': !mobileNavOpen && isMobileScreen,
                         'absolute-nav': mobileNavOpen && isMobileScreen,
                     }
                 )
@@ -127,21 +118,14 @@ export default function NavBar() {
                     })
                 }
             </div>
-            {
-                getNavIcon(isMobileScreen, mobileNavOpen, toggleMobileNavOpen)
-            }
+            <div className='md:hidden'>
+                {
+                    (mobileNavOpen ?
+                        <XMarkIcon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} /> :
+                        <Bars3Icon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} />
+                    )
+                }
+            </div>
         </div>
     );
 }
-
-function getNavIcon(isMobileScreen: boolean, mobileNavOpen: boolean, toggleMobileNavOpen: Function) {
-    if (isMobileScreen) {
-        if (mobileNavOpen) {
-            return <XMarkIcon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} />;
-        }
-        return <Bars3Icon className="cursor-pointer w-8" onClick={toggleMobileNavOpen.bind(null)} />;
-    }
-
-    return null;
-}
-

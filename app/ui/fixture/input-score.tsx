@@ -48,12 +48,12 @@ export default function InputScore(
     }, [predictedTeamScore]);
 
     const whiteTextBoxes = ['nrl-ctry', 'nrl-bean', 'nrl-wil', 'qld'];
+    const mqStyles = 'max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px]';
 
     return <input
         className={
             clsx(
-                // eslint-disable-next-line max-len
-                [`max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px] text-center ${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`],
+                [`${mqStyles} text-center ${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`],
                 {
                     'sm:-order-1': !isHomeTeam,
                     'text-white': whiteTextBoxes.includes(MAINCOLOUR)

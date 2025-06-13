@@ -131,14 +131,17 @@ function getMatchState(
     matchData: Match,
     modifiable: boolean
 ) {
-    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2 items-center justify-center text-center';
+    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2';
+    const widthClasses = 'sm:w-[90px] md:w-[140px]';
+    const alignmentClasses = 'items-center justify-center text-center';
+
     const { matchMode, matchState, clock } = matchData;
 
     if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
         commonClasses += ' pt-2';
 
         return (
-            <div className={commonClasses}>
+            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-[60px]`}>
                 {
                     getMatchContext(matchData, modifiable)
                 }
@@ -149,7 +152,7 @@ function getMatchState(
     const kickoffTime = moment(clock.kickOffTimeLong).format('LT');
 
     return (
-        <div className={commonClasses}>
+        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-[60px]`}>
             <div>{kickoffTime}</div>
         </div>
     );
@@ -170,13 +173,14 @@ function getMatchContext(matchData: Match, modifiable: boolean) {
         const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
         const mobileString = isFullTime ? 'FT' : 'PRED';
 
+        const trueClasses = `${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`;
+
         return (
             <div className={
                 clsx(
-                    'border rounded-md px-2 py-1 w-fit text-white',
+                    'border rounded-md px-2 py-1 w-[60px] sm:w-[90px] md:w-[140px] text-white',
                     {
-                        // eslint-disable-next-line max-len
-                        [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`]: isFullTime,
+                        [`${trueClasses}`]: isFullTime,
                         'border-indigo-400 bg-indigo-400': !isFullTime
                     }
                 )
@@ -188,36 +192,34 @@ function getMatchContext(matchData: Match, modifiable: boolean) {
     }
 
     let matchPeriod = '';
-    let mobileMatchPeriod = '';
     switch (matchState) {
         case 'FirstHalf':
-            matchPeriod = '1ST HALF';
-            mobileMatchPeriod = 'H1';
+            matchPeriod = 'H1';
             break;
         case 'HalfTime':
-            matchPeriod = 'HALF TIME';
-            mobileMatchPeriod = 'HT';
+            matchPeriod = 'HT';
             break;
         case 'SecondHalf':
-            matchPeriod = '2ND HALF';
-            mobileMatchPeriod = 'H2';
+            matchPeriod = 'H2';
             break;
         case 'ExtraTime':
-            matchPeriod = 'EXTRA TIME';
-            mobileMatchPeriod = 'ET';
+            matchPeriod = 'ET';
             break;
         default:
             break;
     }
 
     if (matchMode === 'Live' && matchPeriod) {
+        const colourClasses = 'border-red-500 bg-red-500 text-white';
+        const widthClasses = 'w-[60px] sm:w-[90px] md:w-[140px]';
+
         return (
             <div className="flex flex-col gap-2 items-center text-md">
-                <div className="border rounded-md px-2 py-1 w-fit border-red-500 bg-red-500 text-white">
-                    <span className="md:block max-md:hidden">{matchPeriod}</span>
-                    <span className="md:hidden max-md:block">{mobileMatchPeriod}</span>
+                <div className={`border rounded-md px-2 py-1 ${colourClasses} ${widthClasses}`}>
+                    <span className="md:block max-md:hidden">{matchPeriod} | {clock.gameTime}</span>
+                    <span className="md:hidden max-md:block">{matchPeriod}</span>
                 </div>
-                <div>{clock.gameTime}</div>
+                <div className="md:hidden max-md:block">{clock.gameTime}</div>
             </div>
         );
     }
