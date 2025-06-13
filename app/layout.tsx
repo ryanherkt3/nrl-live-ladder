@@ -32,7 +32,7 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
                 >
                     <div>&copy; Ryan Herkt {currentYear}</div>
                     <a className="visited:text-purple-500 hover:text-blue-500 text-blue-500"
-                        href="https://github.com/ryanherkt3/nrl-live-ladder"
+                        href="https://github.com/ryanherkt3/"
                         target="_blank">
                         <span>Github</span>
                     </a>
