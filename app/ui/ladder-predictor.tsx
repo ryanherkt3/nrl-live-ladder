@@ -92,10 +92,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
             {};
         const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
-        if (predictedMatches) {
+
+        // Update the button states if they are different
+        if (predictedMatches && clearRoundButtonDisabled !== !predictedMatches[index]) {
             dispatch(clearRdBtnUpdate(!predictedMatches[index]));
         }
-        dispatch(resetAllBtnUpdate(!Object.entries(predictedMatches).length));
+        if (resetAllButtonDisabled !== !Object.entries(predictedMatches).length) {
+            dispatch(resetAllBtnUpdate(!Object.entries(predictedMatches).length));
+        }
     };
     const [roundIndex, setRoundIndex] = useState(currentFixtureRound);
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
@@ -151,9 +155,13 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete localStorage[`predictedMatches${year}${comp}`];
         }
 
-        // Update the button states
-        dispatch(clearRdBtnUpdate(clearRound || clearAll));
-        dispatch(resetAllBtnUpdate(clearAll));
+        // Update the button states if they are different
+        if (clearRoundButtonDisabled !== (clearRound || clearAll)) {
+            dispatch(clearRdBtnUpdate(clearRound || clearAll));
+        }
+        if (resetAllButtonDisabled !== clearAll) {
+            dispatch(resetAllBtnUpdate(clearAll));
+        }
 
         // Get updated data for each match
         const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
@@ -168,8 +176,15 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const [teams, setTeams] = useState(allTeams);
 
-    dispatch(clearRdBtnUpdate(inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]));
-    dispatch(resetAllBtnUpdate(inFinalsFootball || !Object.entries(predictedMatches).length));
+    const clearRdBtnValue = inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex];
+    if (clearRoundButtonDisabled !== clearRdBtnValue) {
+        dispatch(clearRdBtnUpdate(clearRdBtnValue));
+    }
+
+    const resetAllBtnValue = inFinalsFootball || !Object.entries(predictedMatches).length;
+    if (resetAllButtonDisabled !== resetAllBtnValue) {
+        dispatch(resetAllBtnUpdate(resetAllBtnValue));
+    }
 
     // Update ladder teams after each re-render if allTeams is changed
     // TODO redux for this?
