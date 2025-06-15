@@ -98,3 +98,8 @@ export type CompInfo = {
     FINALS_TEAMS: number,
     WIN_POINTS: number,
 }
+
+export type MainSiteColour = {
+    colour: string,
+    finalUpdate: boolean
+}

@@ -1,14 +1,15 @@
 import RoundFixture from '../ui/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
-import { CURRENTCOMP, CURRENTYEAR, NUMS } from './utils';
+import { NUMS } from './utils';
 
 /**
  * Construct the data for a team (statistics, team name, theme key)
  *
  * @param {Array<TeamData>} teams
+ * @param {string} currentComp
  * @returns {Array<TeamData>} the list of teams
  */
-export function constructTeamData(teams: Array<TeamData>) {
+export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
     const teamList: Array<TeamData> = [];
 
     for (const team of teams) {
@@ -24,7 +25,7 @@ export function constructTeamData(teams: Array<TeamData>) {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: getMaxPoints(0, 0)
+                maxPoints: getMaxPoints(0, 0, currentComp)
             },
             name: team.name,
             theme: {
@@ -41,10 +42,11 @@ export function constructTeamData(teams: Array<TeamData>) {
  *
  * @param {number} losses
  * @param {number} draws
+ * @param {string} currentComp
  * @returns {number}
  */
-export function getMaxPoints(losses: number, draws: number) {
-    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[CURRENTCOMP];
+export function getMaxPoints(losses: number, draws: number, currentComp: string) {
+    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[currentComp];
 
     const perfectSeasonPts = WIN_POINTS * MATCHES;
 
@@ -60,6 +62,8 @@ export function getMaxPoints(losses: number, draws: number) {
  * @param {number} currentRoundNo
  * @param {Array<TeamData>} teams
  * @param {Boolean} modifiable if the team stats can be modified (on the ladder predictor page)
+ * @param {string} currentComp
+ * @param {number} currentYear
  * @returns {Array<TeamData>} the list of teams
  */
 export function constructTeamStats(
@@ -67,8 +71,10 @@ export function constructTeamStats(
     currentRoundNo: number,
     teams: Array<TeamData>,
     modifiable: boolean,
+    currentComp: string,
+    currentYear: number,
 ) {
-    const { WIN_POINTS } = NUMS[CURRENTCOMP];
+    const { WIN_POINTS } = NUMS[currentComp];
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -81,7 +87,7 @@ export function constructTeamStats(
         team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
             (WIN_POINTS * team.stats.byes);
         team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn);
+        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp);
     };
 
     for (const round of seasonDraw) {
@@ -113,7 +119,6 @@ export function constructTeamStats(
 
         for (const fixture of round.fixtures) {
             const { matchMode, homeTeam, awayTeam, roundTitle, matchCentreUrl } = fixture;
-            const currentYear = CURRENTYEAR;
 
             // If match not started and on ladder page break away
             if (matchMode === 'Pre' && !modifiable) {
@@ -129,12 +134,12 @@ export function constructTeamStats(
             })[0];
 
             // Update score from localStorage (if possible) if on ladder predictor page
-            if (modifiable && localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) {
-                const teamsIndex = CURRENTCOMP.includes('nrl') ? 4 : 6;
+            if (modifiable && localStorage[`predictedMatches${currentYear}${currentComp}`]) {
+                const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
                 const slug = matchCentreUrl.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
 
                 const round = parseInt(roundTitle.split(' ')[1]);
-                const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]);
+                const predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]);
 
                 if (predictions[round] && predictions[round][slug]) {
                     const prediction = predictions[round][slug];
@@ -152,10 +157,10 @@ export function constructTeamStats(
                         // If no predictions, delete the localStorage entry,
                         // otherwise update it with the new predictions
                         if (['null', '""', '{}'].includes(JSON.stringify(predictions))) {
-                            delete localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`];
+                            delete localStorage[`predictedMatches${currentYear}${currentComp}`];
                         }
                         else {
-                            localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`] = JSON.stringify(predictions);
+                            localStorage[`predictedMatches${currentYear}${currentComp}`] = JSON.stringify(predictions);
                         }
                     };
 
@@ -281,11 +286,18 @@ export function getRoundFixtures(
  *
  * @param {Array<DrawInfo>} seasonDraw
  * @param {Boolean} modifiable if the team stats can be modified (on the ladder predictor page)
+ * @param {string} currentComp
+ * @param {number} currentYear
  * @returns {PageVariables}
  */
-export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolean) {
+export function getPageVariables(
+    seasonDraw: Array<DrawInfo>,
+    modifiable: boolean,
+    currentComp: string,
+    currentYear: number
+) {
     // Construct list of teams manually
-    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams);
+    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams, currentComp);
 
     // Get current round number
     const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
@@ -297,7 +309,7 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolea
     });
 
     const { byes, fixtures, selectedRoundId: currentRoundNo } = currentRoundInfo[0];
-    const { ROUNDS, FINALS_WEEKS } = NUMS[CURRENTCOMP];
+    const { ROUNDS, FINALS_WEEKS } = NUMS[currentComp];
 
     let nextRoundInfo;
     if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
@@ -307,7 +319,7 @@ export function getPageVariables(seasonDraw: Array<DrawInfo>, modifiable: boolea
         return fixture.matchMode === 'Live' && fixture.matchState !== 'FullTime';
     });
 
-    const allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList, modifiable)
+    const allTeams = constructTeamStats(seasonDraw, currentRoundNo, teamList, modifiable, currentComp, currentYear)
         .sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(true, a, b);
         });

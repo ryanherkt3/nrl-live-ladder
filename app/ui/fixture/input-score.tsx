@@ -1,6 +1,8 @@
-import { COLOURCSSVARIANTS, CURRENTCOMP, CURRENTYEAR, MAINCOLOUR } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS } from '@/app/lib/utils';
+import { RootState } from '@/app/state/store';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 
 export default function InputScore(
@@ -17,17 +19,22 @@ export default function InputScore(
         isHomeTeam: boolean
     }
 ) {
-    const teamsIndex = CURRENTCOMP.includes('nrl') ? 4 : 6;
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+    const { colour } = mainSiteColour;
+
+    const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
     const roundIndex = teamsIndex - 1;
 
     const slug = matchSlug.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
     const round = parseInt(matchSlug.split('/').filter(i => i)[roundIndex].replace('round-', '')); // round-x
-    const currentYear = CURRENTYEAR;
 
     let predictions;
     let predictedTeamScore: number | undefined;
-    if (localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]) {
-        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${CURRENTCOMP}`]);
+    if (localStorage[`predictedMatches${currentYear}${currentComp}`]) {
+        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]);
         if (predictions[round] && predictions[round][slug]) {
             const score = predictions[round][slug][team];
             predictedTeamScore = score ?? '';
@@ -53,10 +60,10 @@ export default function InputScore(
     return <input
         className={
             clsx(
-                [`${mqStyles} text-center ${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`],
+                [`${mqStyles} text-center ${COLOURCSSVARIANTS[`${colour}-bg`]}`],
                 {
                     'sm:-order-1': !isHomeTeam,
-                    'text-white': whiteTextBoxes.includes(MAINCOLOUR)
+                    'text-white': whiteTextBoxes.includes(colour)
                 }
             )
         }

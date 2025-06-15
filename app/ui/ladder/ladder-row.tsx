@@ -2,6 +2,8 @@ import clsx from 'clsx';
 import { TeamData } from '../../lib/definitions';
 import { getShortCode } from '../../lib/utils';
 import TeamImage from '../team-image';
+import { RootState } from '@/app/state/store';
+import { useSelector } from 'react-redux';
 
 export default function LadderRow(
     {
@@ -22,6 +24,8 @@ export default function LadderRow(
         nextMatchUrl: string;
     }
 ) {
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+
     const { stats: statsData, theme, name } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
 
@@ -48,7 +52,7 @@ export default function LadderRow(
                 </div>
                 <div className='max-xs:px-0 xs:px-3'>
                     <span className='max-md:hidden md:block'>{name}</span>
-                    <span className='max-md:block md:hidden'>{getShortCode(name)}</span>
+                    <span className='max-md:block md:hidden'>{getShortCode(name, currentComp)}</span>
                 </div>
             </div>
             <div className="w-[15%] sm:w-[6%]">{played}</div>

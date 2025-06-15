@@ -1,15 +1,21 @@
+/* eslint-disable max-len */
 import LadderRow from './ladder-row';
 import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
 import Fixtures from '../fixture/fixtures';
 import ByeToggleSection from '../bye-toggle';
 import { useEffect, useState } from 'react';
-import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
+import { NUMS } from '@/app/lib/utils';
 import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../state/store';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
-    const pageVariables = getPageVariables(Object.values(seasonDraw), false);
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+
+    const pageVariables = getPageVariables(Object.values(seasonDraw), false, currentComp, currentYear);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
     const updateByePoints = (newValue: boolean) => {
@@ -47,11 +53,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
-    const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
+    const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
     const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
+
+    const topTeams = getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables, currentComp);
+    const bottomTeams = getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables, currentComp);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -66,8 +75,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
             <Standings
-                topHalf={getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables)}
-                bottomHalf={getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables)}
+                topHalf={topTeams}
+                bottomHalf={bottomTeams}
                 predictorPage={false}
             />
             <Fixtures
@@ -91,6 +100,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
  * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
  * @param {boolean} byePoints
  * @param {PageVariables} pageVariables
+ * @param {String} currentComp
  * @returns {LadderRow} React object
  */
 function getLadderRow(
@@ -98,6 +108,7 @@ function getLadderRow(
     indexAdd: number,
     byePoints: boolean,
     pageVariables: PageVariables,
+    currentComp: string,
 ) {
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
@@ -105,7 +116,7 @@ function getLadderRow(
 
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const { name, stats, theme } = team;
-        const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
+        const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
 
         if (liveMatches) {
             for (const match of liveMatches) {

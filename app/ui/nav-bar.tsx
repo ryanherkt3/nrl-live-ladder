@@ -5,13 +5,39 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { COLOURCSSVARIANTS, COMPID, CURRENTCOMP, MAINCOLOUR, setCurrentComp, setMainColour } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { update as compUpdate } from '../state/current-comp/currentComp';
+import { update as navColourUpdate } from '../state/main-site-colour/mainSiteColour';
+import { RootState } from '../state/store';
 
 export default function NavBar() {
     // Get the user's chosen competition, if one exists.
     // Also set the main colour used for the finalists bar, completed games etc
-    setCurrentComp(useSearchParams().get('comp')?.toLowerCase() || 'nrl');
-    setMainColour(COMPID[CURRENTCOMP.toUpperCase()], -1);
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+    const { colour } = mainSiteColour;
+
+    const dispatch = useDispatch();
+
+    const initCompParam = useSearchParams().get('comp')?.toLowerCase() || 'nrl';
+
+    if (currentComp === '') {
+        dispatch(compUpdate(initCompParam));
+    }
+
+    if (colour === '') {
+        dispatch(
+            navColourUpdate(
+                {
+                    comp: COMPID[currentComp.toUpperCase()],
+                    currentRoundNo: -1,
+                    finalUpdate: false,
+                }
+            )
+        );
+    }
 
     const pathname = usePathname();
 
@@ -87,8 +113,8 @@ export default function NavBar() {
     // Customise query paramaters based on:
     // 1. whether the comp paramater is valid or not
     // 2. if the default comp (NRL) is being shown
-    const query = Object.keys(COMPID).includes(CURRENTCOMP.toUpperCase()) && CURRENTCOMP !== 'nrl' ?
-        {['comp']: CURRENTCOMP} : {};
+    const query = Object.keys(COMPID).includes(currentComp.toUpperCase()) && currentComp !== 'nrl' ?
+        {['comp']: currentComp} : {};
 
     return (
         <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
@@ -110,7 +136,7 @@ export default function NavBar() {
                                 key={title}
                                 href={{ pathname: url, query: query}}
                                 onClick={resetMobileNavOpen}
-                                className={`text-lg md:text-xl ${COLOURCSSVARIANTS[`${MAINCOLOUR}-hover-text`]}`}
+                                className={`text-lg md:text-xl ${COLOURCSSVARIANTS[`${colour}-hover-text`]}`}
                             >
                                 <span>{title}</span>
                             </Link>

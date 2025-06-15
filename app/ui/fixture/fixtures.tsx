@@ -1,8 +1,10 @@
 import { Match, ByeTeam, TeamData } from '../../lib/definitions';
 import TeamImage from '../team-image';
-import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
+import { NUMS } from '@/app/lib/utils';
 import { getRoundFixtures } from '@/app/lib/nrl-draw-utils';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/app/state/store';
 
 export default function Fixtures(
     {
@@ -26,7 +28,9 @@ export default function Fixtures(
         modifiedFixtureCb: Function | undefined
     }
 ) {
-    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[CURRENTCOMP];
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+
+    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[currentComp];
     const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;

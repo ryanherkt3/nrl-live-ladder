@@ -7,13 +7,23 @@ import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
-import { COMPID, CURRENTCOMP, NUMS, setCurrentYear, setMainColour } from '../lib/utils';
+import { COMPID, NUMS } from '../lib/utils';
 import { DrawInfo } from '../lib/definitions';
+import { useDispatch, useSelector } from 'react-redux';
+import { update as navColourUpdate } from '../state/main-site-colour/mainSiteColour';
+import { update as currentYearUpdate } from '../state/current-year/currentYear';
+import { RootState } from '../state/store';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
-    const { ROUNDS, FINALS_WEEKS } = NUMS[CURRENTCOMP];
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+
+    const dispatch = useDispatch();
+
+    const { ROUNDS, FINALS_WEEKS } = NUMS[currentComp];
     const compRounds = ROUNDS + FINALS_WEEKS + 1;
-    const compId = COMPID[CURRENTCOMP.toUpperCase()];
+    const compId = COMPID[currentComp.toUpperCase()];
     const apiUrl = `/api/seasondraw?comp=${compId}&rounds=${compRounds}`;
 
     // Get the data
@@ -31,7 +41,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     }
 
     // Set the current year to be the year of the draw
-    setCurrentYear(seasonDraw[1].selectedSeasonId);
+    if (currentYear === 0) {
+        dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
+    }
 
     // Set the main colour used for the finalists bar, completed games etc
     const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
@@ -42,7 +54,18 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
 
         return round.fixtures[0].isCurrentRound;
     });
-    setMainColour(compId, currentRound[0].selectedRoundId);
+
+    if (!mainSiteColour.finalUpdate) {
+        dispatch(
+            navColourUpdate(
+                {
+                    comp: compId,
+                    currentRoundNo: currentRound[0].selectedRoundId,
+                    finalUpdate: true,
+                }
+            )
+        );
+    }
 
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {

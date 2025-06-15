@@ -1,10 +1,13 @@
+/* eslint-disable max-len */
 'use client';
 
 import clsx from 'clsx';
 import { Match, TeamData } from '../../lib/definitions';
 import moment from 'moment';
-import { COLOURCSSVARIANTS, CURRENTCOMP, getOrdinalNumber, MAINCOLOUR } from '../../lib/utils';
+import { COLOURCSSVARIANTS, getOrdinalNumber } from '../../lib/utils';
 import TeamSection from './team-section';
+import { RootState } from '@/app/state/store';
+import { useSelector } from 'react-redux';
 
 export default function RoundFixture(
     {
@@ -24,6 +27,11 @@ export default function RoundFixture(
         modifiedFixtureCb: Function | undefined
     }
 ) {
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+    const { colour } = mainSiteColour;
+
     const { matchMode, matchState, homeTeam, awayTeam, clock } = data;
     let { matchCentreUrl } = data;
     const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
@@ -42,7 +50,7 @@ export default function RoundFixture(
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
 
-    if (CURRENTCOMP.includes('nrl')) {
+    if (currentComp.includes('nrl')) {
         matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
     }
 
@@ -55,7 +63,7 @@ export default function RoundFixture(
                         'text-center text-lg text-white font-semibold',
                         {
                             'bg-indigo-400': modifiable && matchMode === 'Pre',
-                            [`${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]}`]: isFullTime,
+                            [`${COLOURCSSVARIANTS[`${colour}-bg`]}`]: isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
                             'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
@@ -79,7 +87,7 @@ export default function RoundFixture(
                     modifiedFixtureCb={modifiedFixtureCb}
                 />
                 {
-                    getMatchState(data, modifiable)
+                    getMatchState(data, modifiable, colour)
                 }
                 <TeamSection
                     data={data}
@@ -125,11 +133,13 @@ function getDateString(date: string) {
  *
  * @param {Match} matchData data related to the match
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
+ * @param {string} mainSiteColour
  * @returns HTML object
  */
 function getMatchState(
     matchData: Match,
-    modifiable: boolean
+    modifiable: boolean,
+    mainSiteColour: string
 ) {
     let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2';
     const widthClasses = 'sm:w-[90px] md:w-[140px]';
@@ -143,7 +153,7 @@ function getMatchState(
         return (
             <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-[60px]`}>
                 {
-                    getMatchContext(matchData, modifiable)
+                    getMatchContext(matchData, modifiable, mainSiteColour)
                 }
             </div>
         );
@@ -163,9 +173,10 @@ function getMatchState(
  *
  * @param {Match} matchData data related to the match
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
+ * @param {string} mainSiteColour
  * @returns HTML object
  */
-function getMatchContext(matchData: Match, modifiable: boolean) {
+function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: string) {
     const { matchMode, matchState, clock } = matchData;
 
     if ((modifiable && matchState !== 'FullTime' && matchMode !== 'Live') || matchState === 'FullTime') {
@@ -173,7 +184,7 @@ function getMatchContext(matchData: Match, modifiable: boolean) {
         const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
         const mobileString = isFullTime ? 'FT' : 'PRED';
 
-        const trueClasses = `${COLOURCSSVARIANTS[`${MAINCOLOUR}-bg`]} ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`;
+        const trueClasses = `${COLOURCSSVARIANTS[`${mainSiteColour}-bg`]} ${COLOURCSSVARIANTS[`${mainSiteColour}-border`]}`;
 
         return (
             <div className={
