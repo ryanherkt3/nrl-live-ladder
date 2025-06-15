@@ -1,12 +1,16 @@
+import { CurrentComp, ReduxUpdateFlags } from '@/app/lib/definitions';
 import { COMPID } from '@/app/lib/utils';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface CurrentCompState {
-    value: string;
+    value: CurrentComp;
 }
 
 const initialState: CurrentCompState = {
-    value: '',
+    value: {
+        comp: 'nrl',
+        updateStatus: ReduxUpdateFlags.NotUpdated
+    },
 };
 
 const CurrentCompSlice = createSlice({
@@ -14,7 +18,9 @@ const CurrentCompSlice = createSlice({
     initialState,
     reducers: {
         update: (state, action) => {
-            state.value = Object.keys(COMPID).includes(action.payload.toUpperCase()) ? action.payload : 'nrl';
+            const comp = Object.keys(COMPID).includes(action.payload.toUpperCase()) ? action.payload : 'nrl';
+
+            state.value = { comp: comp, updateStatus: ReduxUpdateFlags.FinalUpdate };
         }
     }
 });

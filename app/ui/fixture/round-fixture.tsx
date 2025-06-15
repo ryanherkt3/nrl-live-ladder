@@ -28,6 +28,7 @@ export default function RoundFixture(
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
@@ -50,7 +51,7 @@ export default function RoundFixture(
     const homeTeamPos = getOrdinalNumber(ladder.indexOf(homeTeamObj[0]) + 1);
     const awayTeamPos = getOrdinalNumber(ladder.indexOf(awayTeamObj[0]) + 1);
 
-    if (currentComp.includes('nrl')) {
+    if (comp.includes('nrl')) {
         matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
     }
 

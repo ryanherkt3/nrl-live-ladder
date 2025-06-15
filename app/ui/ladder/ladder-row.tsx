@@ -25,6 +25,7 @@ export default function LadderRow(
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
 
     const { stats: statsData, theme, name } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
@@ -52,7 +53,7 @@ export default function LadderRow(
                 </div>
                 <div className='max-xs:px-0 xs:px-3'>
                     <span className='max-md:hidden md:block'>{name}</span>
-                    <span className='max-md:block md:hidden'>{getShortCode(name, currentComp)}</span>
+                    <span className='max-md:block md:hidden'>{getShortCode(name, comp)}</span>
                 </div>
             </div>
             <div className="w-[15%] sm:w-[6%]">{played}</div>

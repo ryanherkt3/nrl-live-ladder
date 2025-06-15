@@ -8,13 +8,15 @@ import clsx from 'clsx';
 import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { update as compUpdate } from '../state/current-comp/currentComp';
-import { update as navColourUpdate } from '../state/main-site-colour/mainSiteColour';
+import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { RootState } from '../state/store';
+import { ReduxUpdateFlags } from '../lib/definitions';
 
 export default function NavBar() {
     // Get the user's chosen competition, if one exists.
     // Also set the main colour used for the finalists bar, completed games etc
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
@@ -23,15 +25,15 @@ export default function NavBar() {
 
     const initCompParam = useSearchParams().get('comp')?.toLowerCase() || 'nrl';
 
-    if (currentComp === '') {
+    if (currentComp.updateStatus === ReduxUpdateFlags.NotUpdated) {
         dispatch(compUpdate(initCompParam));
     }
 
-    if (colour === '') {
+    if (mainSiteColour.updateStatus === ReduxUpdateFlags.NotUpdated) {
         dispatch(
-            navColourUpdate(
+            mainColourUpdate(
                 {
-                    comp: COMPID[currentComp.toUpperCase()],
+                    comp: COMPID[comp.toUpperCase()],
                     currentRoundNo: -1,
                     finalUpdate: false,
                 }
@@ -113,8 +115,8 @@ export default function NavBar() {
     // Customise query paramaters based on:
     // 1. whether the comp paramater is valid or not
     // 2. if the default comp (NRL) is being shown
-    const query = Object.keys(COMPID).includes(currentComp.toUpperCase()) && currentComp !== 'nrl' ?
-        {['comp']: currentComp} : {};
+    const query = Object.keys(COMPID).includes(comp.toUpperCase()) && comp !== 'nrl' ?
+        {['comp']: comp} : {};
 
     return (
         <div className={`${colourClasses} ${textClasses} ${navClasses}`}>

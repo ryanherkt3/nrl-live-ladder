@@ -1,4 +1,4 @@
-import { MainSiteColour } from '@/app/lib/definitions';
+import { MainSiteColour, ReduxUpdateFlags } from '@/app/lib/definitions';
 import { COMPID } from '@/app/lib/utils';
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -8,8 +8,8 @@ interface MainSiteColourState {
 
 const initialState: MainSiteColourState = {
     value: {
-        colour: '',
-        finalUpdate: false
+        colour: 'nrl',
+        updateStatus: ReduxUpdateFlags.NotUpdated
     },
 };
 
@@ -22,8 +22,11 @@ const MainSiteColourSlice = createSlice({
 
             const { comp, currentRoundNo, finalUpdate } = action.payload;
 
+            const { InitialUpdate, FinalUpdate } = ReduxUpdateFlags;
+            const updateStatus = finalUpdate ? FinalUpdate : InitialUpdate;
+
             if (!comp || !currentRoundNo) {
-                state.value = { colour: 'nrl', finalUpdate: finalUpdate };
+                state.value = { colour: 'nrl', updateStatus: updateStatus };
                 return;
             }
 
@@ -64,7 +67,7 @@ const MainSiteColourSlice = createSlice({
                 mainSiteColour = 'nrl';
             }
 
-            state.value = { colour: mainSiteColour, finalUpdate: finalUpdate };
+            state.value = { colour: mainSiteColour, updateStatus: updateStatus };
         }
     }
 });

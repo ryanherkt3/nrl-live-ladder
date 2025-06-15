@@ -8,12 +8,15 @@ import { RootState } from '../state/store';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { year } = currentYear;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, currentComp, currentYear);
+    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
@@ -47,13 +50,13 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 </div>
                 {
                     getTableRows(
-                        allTeams, true, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, currentComp
+                        allTeams, true, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, comp
                     )
                 }
                 <div className={`border-4 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
                 {
                     getTableRows(
-                        allTeams, false, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, currentComp
+                        allTeams, false, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, comp
                     )
                 }
             </div>

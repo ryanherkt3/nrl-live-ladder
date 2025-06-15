@@ -1,11 +1,15 @@
+import { CurrentYear, ReduxUpdateFlags } from '@/app/lib/definitions';
 import { createSlice } from '@reduxjs/toolkit';
 
 interface CurrentYearState {
-    value: number;
+    value: CurrentYear;
 }
 
 const initialState: CurrentYearState = {
-    value: 0,
+    value: {
+        year: new Date().getFullYear(),
+        updateStatus: ReduxUpdateFlags.NotUpdated
+    },
 };
 
 const CurrentYearSlice = createSlice({
@@ -13,7 +17,7 @@ const CurrentYearSlice = createSlice({
     initialState,
     reducers: {
         update: (state, action) => {
-            state.value = action.payload;
+            state.value = { year: action.payload, updateStatus: ReduxUpdateFlags.FinalUpdate };
         }
     }
 });

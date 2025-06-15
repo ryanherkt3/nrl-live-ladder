@@ -29,8 +29,9 @@ export default function Fixtures(
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
 
-    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[currentComp];
+    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[comp];
     const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;

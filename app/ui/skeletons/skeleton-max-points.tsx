@@ -5,7 +5,9 @@ import { useSelector } from 'react-redux';
 
 export default function SkeletonMaxPoints() {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { TEAMS, FINALS_TEAMS } = NUMS[currentComp];
+    const { comp } = currentComp;
+
+    const { TEAMS, FINALS_TEAMS } = NUMS[comp];
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">

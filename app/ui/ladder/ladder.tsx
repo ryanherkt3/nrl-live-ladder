@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import LadderRow from './ladder-row';
 import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
 import Fixtures from '../fixture/fixtures';
@@ -13,9 +12,12 @@ import { RootState } from '../../state/store';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { comp } = currentComp;
 
-    const pageVariables = getPageVariables(Object.values(seasonDraw), false, currentComp, currentYear);
+    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { year } = currentYear;
+
+    const pageVariables = getPageVariables(Object.values(seasonDraw), false, comp, year);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
     const updateByePoints = (newValue: boolean) => {
@@ -33,7 +35,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [byePoints, setByePoints] = useState(true);
     const [ladderTeams, setLadderTeams] = useState(allTeams);
 
-    // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates)
+    // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates).
+    // TODO redux for this?
     useEffect(() => {
         if (JSON.stringify(allTeams) === JSON.stringify(ladderTeams)) {
             return;
@@ -53,14 +56,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
-    const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
+    const { ROUNDS, FINALS_TEAMS } = NUMS[comp];
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
     const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
 
-    const topTeams = getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables, currentComp);
-    const bottomTeams = getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables, currentComp);
+    const topTeams = getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables, comp);
+    const bottomTeams = getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables, comp);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">

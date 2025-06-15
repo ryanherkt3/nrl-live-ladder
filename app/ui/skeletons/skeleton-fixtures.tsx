@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 
 export default function SkeletonFixtures() {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
 
     return (
         <div className="flex flex-col gap-4">
@@ -13,10 +14,10 @@ export default function SkeletonFixtures() {
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getFixtures(currentComp)
+                getFixtures(comp)
             }
             {
-                getByes(currentComp)
+                getByes(comp)
             }
         </div>
     );

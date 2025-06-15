@@ -20,12 +20,15 @@ export default function InputScore(
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { year } = currentYear;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
+    const teamsIndex = comp.includes('nrl') ? 4 : 6;
     const roundIndex = teamsIndex - 1;
 
     const slug = matchSlug.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
@@ -33,8 +36,8 @@ export default function InputScore(
 
     let predictions;
     let predictedTeamScore: number | undefined;
-    if (localStorage[`predictedMatches${currentYear}${currentComp}`]) {
-        predictions = JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]);
+    if (localStorage[`predictedMatches${year}${comp}`]) {
+        predictions = JSON.parse(localStorage[`predictedMatches${year}${comp}`]);
         if (predictions[round] && predictions[round][slug]) {
             const score = predictions[round][slug][team];
             predictedTeamScore = score ?? '';

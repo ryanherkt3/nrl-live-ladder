@@ -12,16 +12,19 @@ import { RootState } from '../state/store';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { year } = currentYear;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
     const seasonDrawInfo = Object.values(seasonDraw);
-    const pageVariables = getPageVariables(seasonDrawInfo, true, currentComp, currentYear);
+    const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
 
     const { currentRoundNo, allTeams } = pageVariables;
-    const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
+    const { ROUNDS, FINALS_TEAMS } = NUMS[comp];
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
@@ -53,8 +56,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
-        const predictions = localStorage[`predictedMatches${currentYear}${currentComp}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]) :
+        const predictions = localStorage[`predictedMatches${year}${comp}`] ?
+            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
             {};
 
         // Set the predictions array to update, then update it
@@ -78,8 +81,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         );
 
         // Update the disabled clear round button
-        const predictedMatches = localStorage[`predictedMatches${currentYear}${currentComp}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]) :
+        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
+            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
             {};
         const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
         if (predictedMatches) {
@@ -93,8 +96,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Update predictions stored in localStorage
     const updatePredictions = (predictions: Object | String, roundNum: number) => {
-        const predictedMatches = localStorage[`predictedMatches${currentYear}${currentComp}`] ?
-            JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]) :
+        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
+            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
             {};
 
         const updatePredictions = typeof predictions === 'object';
@@ -102,7 +105,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         let clearAll = typeof predictions === 'string' && predictions === 'clear-all';
 
         if (updatePredictions) {
-            localStorage[`predictedMatches${currentYear}${currentComp}`] = JSON.stringify(predictions);
+            localStorage[`predictedMatches${year}${comp}`] = JSON.stringify(predictions);
         }
         else if (clearRound) {
             // Reset the scores for every predicted fixture for the chosen round and
@@ -116,7 +119,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
             delete predictedMatches[roundNum];
 
-            localStorage[`predictedMatches${currentYear}${currentComp}`] = JSON.stringify(predictedMatches);
+            localStorage[`predictedMatches${year}${comp}`] = JSON.stringify(predictedMatches);
 
             // Set clearAll to true if clearing the round predictions also clears all the predictions
             if (['null', '""', '{}'].includes(JSON.stringify(predictedMatches))) {
@@ -138,7 +141,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     }
                 }
             }
-            delete localStorage[`predictedMatches${currentYear}${currentComp}`];
+            delete localStorage[`predictedMatches${year}${comp}`];
         }
 
         // Update the button states - TODO migrate to redux
@@ -146,14 +149,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         setDisabledResetBtn(clearAll);
 
         // Get updated data for each match
-        const pageVariables = getPageVariables(seasonDrawInfo, true, currentComp, currentYear);
+        const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
         const { allTeams } = pageVariables;
 
         setTeams(allTeams);
     };
 
-    const predictedMatches = localStorage[`predictedMatches${currentYear}${currentComp}`] ?
-        JSON.parse(localStorage[`predictedMatches${currentYear}${currentComp}`]) :
+    const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
+        JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
         {};
 
     const [teams, setTeams] = useState(allTeams);
@@ -165,6 +168,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     );
 
     // Update ladder teams after each re-render if allTeams is changed
+    // TODO redux for this?
     useEffect(() => {
         if (JSON.stringify(allTeams) === JSON.stringify(teams)) {
             return;

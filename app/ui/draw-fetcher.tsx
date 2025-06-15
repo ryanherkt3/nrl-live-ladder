@@ -8,22 +8,24 @@ import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
 import MaxPoints from './max-points';
 import { COMPID, NUMS } from '../lib/utils';
-import { DrawInfo } from '../lib/definitions';
+import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';
 import { useDispatch, useSelector } from 'react-redux';
-import { update as navColourUpdate } from '../state/main-site-colour/mainSiteColour';
+import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
 
     const dispatch = useDispatch();
 
-    const { ROUNDS, FINALS_WEEKS } = NUMS[currentComp];
+    const { ROUNDS, FINALS_WEEKS } = NUMS[comp];
     const compRounds = ROUNDS + FINALS_WEEKS + 1;
-    const compId = COMPID[currentComp.toUpperCase()];
+    const compId = COMPID[comp.toUpperCase()];
     const apiUrl = `/api/seasondraw?comp=${compId}&rounds=${compRounds}`;
 
     // Get the data
@@ -40,8 +42,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
-    // Set the current year to be the year of the draw
-    if (currentYear === 0) {
+    // Set the current year to be the year of the draw if it is not matching
+    const seasonId = seasonDraw[1].selectedSeasonId;
+    if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
         dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
     }
 
@@ -55,9 +58,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
         return round.fixtures[0].isCurrentRound;
     });
 
-    if (!mainSiteColour.finalUpdate) {
+    if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate) {
         dispatch(
-            navColourUpdate(
+            mainColourUpdate(
                 {
                     comp: compId,
                     currentRoundNo: currentRound[0].selectedRoundId,
