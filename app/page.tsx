@@ -1,7 +1,13 @@
 'use client';
 
+import { Metadata } from 'next';
 import CompButton from './ui/comp-button';
 import PageDescription from './ui/page-desc';
+
+export const metadata: Metadata = {
+    title: 'Home | NRL Live Ladder',
+    description: 'NRL Live Ladder App',
+};
 
 export default function HomePage() {
     return (

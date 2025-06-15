@@ -1,6 +1,5 @@
 'use client';
 
-// import { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import NavBar from './ui/nav-bar';
 import './globals.css';
@@ -10,12 +9,6 @@ import { Provider } from 'react-redux';
 import { store } from './state/store';
 
 const inter = Inter({ subsets: ['latin'] });
-
-// TODO fix metadata
-// export const metadata: Metadata = {
-//     title: 'NRL Live Ladder Home',
-//     description: 'NRL Live Ladder App',
-// };
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {
     const currentYear = new Date().getFullYear();
