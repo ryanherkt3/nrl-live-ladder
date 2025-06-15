@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
 import LadderPredictorButton from './ladder-predictor-button';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
+import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
 import { RootState } from '../state/store';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
@@ -19,6 +21,11 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
+
+    const clearRoundButtonDisabled = useSelector((state: RootState) => state.clearRoundButton.value);
+    const resetAllButtonDisabled = useSelector((state: RootState) => state.resetAllButton.value);
+
+    const dispatch = useDispatch();
 
     const seasonDrawInfo = Object.values(seasonDraw);
     const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
@@ -86,9 +93,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             {};
         const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
         if (predictedMatches) {
-            setDisabledClearRndBtn(!predictedMatches[index]);
+            dispatch(clearRdBtnUpdate(!predictedMatches[index]));
         }
-        setDisabledResetBtn(!Object.entries(predictedMatches).length);
+        dispatch(resetAllBtnUpdate(!Object.entries(predictedMatches).length));
     };
     const [roundIndex, setRoundIndex] = useState(currentFixtureRound);
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
@@ -144,9 +151,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             delete localStorage[`predictedMatches${year}${comp}`];
         }
 
-        // Update the button states - TODO migrate to redux
-        setDisabledClearRndBtn(clearRound || clearAll);
-        setDisabledResetBtn(clearAll);
+        // Update the button states
+        dispatch(clearRdBtnUpdate(clearRound || clearAll));
+        dispatch(resetAllBtnUpdate(clearAll));
 
         // Get updated data for each match
         const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
@@ -160,12 +167,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         {};
 
     const [teams, setTeams] = useState(allTeams);
-    const [disabledClearRndBtn, setDisabledClearRndBtn] = useState(
-        inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]
-    );
-    const [disabledResetBtn, setDisabledResetBtn] = useState(
-        inFinalsFootball || !Object.entries(predictedMatches).length
-    );
+
+    dispatch(clearRdBtnUpdate(inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex]));
+    dispatch(resetAllBtnUpdate(inFinalsFootball || !Object.entries(predictedMatches).length));
 
     // Update ladder teams after each re-render if allTeams is changed
     // TODO redux for this?
@@ -193,14 +197,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     text={'Clear Round'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={`${CCV[`${colour}-border`]} ${CCV[`${colour}-hover-bg`]} hover:text-white`}
-                    disabled={disabledClearRndBtn}
+                    disabled={clearRoundButtonDisabled}
                     clickCallback={() => updatePredictions('clear-round', roundIndex)}
                 />
                 <LadderPredictorButton
                     text={'Reset All'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={'border-red-400 hover:bg-red-400 hover:text-white'}
-                    disabled={disabledResetBtn}
+                    disabled={resetAllButtonDisabled}
                     clickCallback={() => updatePredictions('clear-all', 0)}
                 />
             </div>

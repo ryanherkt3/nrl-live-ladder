@@ -147,7 +147,6 @@ export function constructTeamStats(
                     const homeScore = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];
                     const awayScore = prediction[awayTeam.nickName.toLowerCase().replace(' ', '-')];
 
-                    // TODO redux to update button state if the if conditions are entered
                     const cleanUpPredictions = () => {
                         delete predictions[round][slug];
                         if (Object.values(predictions[round]).length === 0) {
