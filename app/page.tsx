@@ -1,5 +1,3 @@
-'use client';
-
 import { Metadata } from 'next';
 import CompButton from './ui/comp-button';
 import PageDescription from './ui/page-desc';
