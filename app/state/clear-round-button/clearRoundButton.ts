@@ -5,7 +5,7 @@ interface ClearRoundButtonState {
 }
 
 const initialState: ClearRoundButtonState = {
-    value: false,
+    value: true, // is disabled
 };
 
 const ClearRoundButtonSlice = createSlice({

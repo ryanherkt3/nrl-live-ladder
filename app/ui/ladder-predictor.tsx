@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import LadderRow from './ladder/ladder-row';
 import { TeamData, DrawInfo, Match } from '../lib/definitions';
 import { COLOURCSSVARIANTS as CCV, NUMS } from '@/app/lib/utils';
@@ -74,12 +75,32 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             [`${awayTeamSlug}`]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
         };
 
+        let clearRoundOrAll = false;
+        let predictionsClearArg = '';
+
         // Delete the entry from localStorage if both values are empty (i.e the match is not predicted)
-        if (Object.values(predictions[roundKey + 1][slug]).filter(val => val === '').length === 2) {
+        if (Object.values(predictions[roundKey + 1][slug]).filter(val => (val === '' || Number.isNaN(val))).length === 2) {
             delete predictions[roundKey + 1][slug];
+
+            if (Object.values(predictions[roundKey + 1]).length === 0) {
+                delete predictions[roundKey + 1];
+
+                clearRoundOrAll = true;
+                predictionsClearArg = 'clear-round';
+            }
         }
 
-        updatePredictions(predictions, roundIndex);
+        if (clearRoundOrAll) {
+            // Clear all predictions if there are none left
+            if (['null', '""', '{}'].includes(JSON.stringify(predictions))) {
+                predictionsClearArg = 'clear-all';
+            }
+
+            updatePredictions(predictionsClearArg, roundIndex);
+        }
+        else {
+            updatePredictions(predictions, roundIndex);
+        }
     };
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
@@ -170,21 +191,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         setTeams(allTeams);
     };
 
-    const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
-        JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
-        {};
-
     const [teams, setTeams] = useState(allTeams);
-
-    const clearRdBtnValue = inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex];
-    if (clearRoundButtonDisabled !== clearRdBtnValue) {
-        dispatch(clearRdBtnUpdate(clearRdBtnValue));
-    }
-
-    const resetAllBtnValue = inFinalsFootball || !Object.entries(predictedMatches).length;
-    if (resetAllButtonDisabled !== resetAllBtnValue) {
-        dispatch(resetAllBtnUpdate(resetAllBtnValue));
-    }
 
     // Update ladder teams after each re-render if allTeams is changed
     // TODO redux for this?
@@ -195,6 +202,22 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
         setTeams(allTeams);
     }, [allTeams]);
+
+    useEffect(() => {
+        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
+            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
+            {};
+
+        const clearRdBtnValue = inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex];
+        if (clearRoundButtonDisabled !== clearRdBtnValue) {
+            dispatch(clearRdBtnUpdate(clearRdBtnValue));
+        }
+
+        const resetAllBtnValue = inFinalsFootball || !Object.entries(predictedMatches).length;
+        if (resetAllButtonDisabled !== resetAllBtnValue) {
+            dispatch(resetAllBtnUpdate(resetAllBtnValue));
+        }
+    }, [clearRoundButtonDisabled, comp, dispatch, inFinalsFootball, resetAllButtonDisabled, roundIndex, teams, year]);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">

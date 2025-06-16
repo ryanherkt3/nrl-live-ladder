@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 'use client';
 
 import Ladder from './ladder/ladder';
@@ -13,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
+import { useEffect } from 'react';
 
 export default function DrawFetcher({pageName}: {pageName: String}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -32,6 +34,39 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     const fetcher = (url: string) => axios.get(url).then(res => res.data);
     const { data: seasonDraw, error, isLoading } = useSWR(apiUrl, fetcher);
 
+    useEffect(() => {
+        if (!error && !isLoading) {
+            // Set the main colour used for the finalists bar, completed games etc
+            const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
+            const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
+                if (round.byes) {
+                    return round.byes[0].isCurrentRound;
+                }
+
+                return round.fixtures[0].isCurrentRound;
+            });
+
+            // Set the current year to be the year of the draw if it is not matching
+            const seasonId = seasonDraw[1].selectedSeasonId;
+            if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
+                dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
+            }
+
+            // TODO does the second condition work as expected when going from NRL -> NRLW (and from NRLW -> NRL)
+            if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate || !mainSiteColour.colour.includes(comp)) {
+                dispatch(
+                    mainColourUpdate(
+                        {
+                            comp: compId,
+                            currentRoundNo: currentRound[0].selectedRoundId,
+                            finalUpdate: true,
+                        }
+                    )
+                );
+            }
+        }
+    }, [currentComp, comp, currentYear, mainSiteColour, mainSiteColour.colour, error, isLoading, seasonDraw, dispatch, compId]);
+
     // Loading states
     if (error) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
@@ -40,34 +75,6 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
         return pageName === 'maxpoints' ?
             <SkeletonMaxPoints /> :
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
-    }
-
-    // Set the current year to be the year of the draw if it is not matching
-    const seasonId = seasonDraw[1].selectedSeasonId;
-    if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
-        dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
-    }
-
-    // Set the main colour used for the finalists bar, completed games etc
-    const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
-    const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
-        if (round.byes) {
-            return round.byes[0].isCurrentRound;
-        }
-
-        return round.fixtures[0].isCurrentRound;
-    });
-
-    if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate) {
-        dispatch(
-            mainColourUpdate(
-                {
-                    comp: compId,
-                    currentRoundNo: currentRound[0].selectedRoundId,
-                    finalUpdate: true,
-                }
-            )
-        );
     }
 
     // Load the UI component based on the pageName argument passed in

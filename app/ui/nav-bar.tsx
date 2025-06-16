@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { update as compUpdate } from '../state/current-comp/currentComp';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { RootState } from '../state/store';
-import { ReduxUpdateFlags } from '../lib/definitions';
 
 export default function NavBar() {
     // Get the user's chosen competition, if one exists.
@@ -25,21 +24,22 @@ export default function NavBar() {
 
     const initCompParam = useSearchParams().get('comp')?.toLowerCase() || 'nrl';
 
-    if (currentComp.updateStatus === ReduxUpdateFlags.NotUpdated) {
-        dispatch(compUpdate(initCompParam));
-    }
+    useEffect(() => {
+        const compsNotMatching = initCompParam !== comp;
 
-    if (mainSiteColour.updateStatus === ReduxUpdateFlags.NotUpdated) {
-        dispatch(
-            mainColourUpdate(
-                {
-                    comp: COMPID[comp.toUpperCase()],
-                    currentRoundNo: -1,
-                    finalUpdate: false,
-                }
-            )
-        );
-    }
+        if (compsNotMatching) {
+            dispatch(
+                mainColourUpdate(
+                    {
+                        comp: COMPID[initCompParam.toUpperCase()],
+                        currentRoundNo: -1,
+                        finalUpdate: false,
+                    }
+                )
+            );
+            dispatch(compUpdate(initCompParam));
+        }
+    }, [currentComp, mainSiteColour, initCompParam, colour, comp, dispatch]);
 
     const pathname = usePathname();
 

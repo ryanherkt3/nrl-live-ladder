@@ -5,7 +5,7 @@ interface ResetAllButtonState {
 }
 
 const initialState: ResetAllButtonState = {
-    value: false,
+    value: true, // is disabled
 };
 
 const ResetAllButtonSlice = createSlice({
