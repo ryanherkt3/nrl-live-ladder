@@ -194,7 +194,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const [teams, setTeams] = useState(allTeams);
 
     // Update ladder teams after each re-render if allTeams is changed
-    // TODO redux for this?
     useEffect(() => {
         if (JSON.stringify(allTeams) === JSON.stringify(teams)) {
             return;

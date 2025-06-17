@@ -52,8 +52,12 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
                 dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
             }
 
-            // TODO does the second condition work as expected when going from NRL -> NRLW (and from NRLW -> NRL)
-            if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate || !mainSiteColour.colour.includes(comp)) {
+            const { colour } = mainSiteColour;
+            const colourMatchesComp = comp === colour;
+
+            // Update the main site colour if the final update has not been executed,
+            // or when there is a mismatch (e.g. NRL Ladder -> Homepage -> NSW Cup)
+            if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate || !colourMatchesComp) {
                 dispatch(
                     mainColourUpdate(
                         {

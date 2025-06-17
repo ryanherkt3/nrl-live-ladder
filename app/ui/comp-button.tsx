@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { COLOURCSSVARIANTS } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import { update as compUpdate } from '../state/current-comp/currentComp';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
@@ -14,7 +14,7 @@ export default function CompButton({compKey}: {compKey: string}) {
     let buttonTitle = '';
 
     const resetStates = (compKey: string) => {
-        if (compKey.toLowerCase() !== comp.toLowerCase()) {
+        if (compKey !== comp && Object.keys(COMPID).includes(compKey.toUpperCase())) {
             dispatch(compUpdate(compKey));
             dispatch(
                 mainColourUpdate(

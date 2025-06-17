@@ -20,6 +20,12 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const pageVariables = getPageVariables(Object.values(seasonDraw), false, comp, year);
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
+    const [byePoints, setByePoints] = useState(true);
+    const [ladderTeams, setLadderTeams] = useState(allTeams);
+    const [roundIndex, setRoundIndex] = useState(currentRoundNo);
+    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
+    const [byeTeams, setByeTeams] = useState(byes);
+
     const updateByePoints = (newValue: boolean) => {
         // Do not set if the value is the same
         if (newValue === byePoints) {
@@ -32,11 +38,8 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             return teamSortFunction(newValue, a, b);
         }));
     };
-    const [byePoints, setByePoints] = useState(true);
-    const [ladderTeams, setLadderTeams] = useState(allTeams);
 
-    // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates).
-    // TODO redux for this?
+    // Update ladder teams after each re-render if the fixtures get changed (i.e. the score updates)
     useEffect(() => {
         if (JSON.stringify(allTeams) === JSON.stringify(ladderTeams)) {
             return;
@@ -52,9 +55,6 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
         );
     };
-    const [roundIndex, setRoundIndex] = useState(currentRoundNo);
-    const [fixturesToShow, setFixturesToShow] = useState(fixtures);
-    const [byeTeams, setByeTeams] = useState(byes);
 
     const { ROUNDS, FINALS_TEAMS } = NUMS[comp];
 
