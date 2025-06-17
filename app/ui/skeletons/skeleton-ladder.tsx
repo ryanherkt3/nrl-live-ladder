@@ -13,6 +13,13 @@ export default function SkeletonLadder({ predictorPage }: { predictorPage: boole
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <div className="text-xl text-center">
+                {
+                    predictorPage ?
+                        'Predict the outcome of every match and see how the ladder looks!' :
+                        'Ladder auto-updates every few seconds'
+                }
+            </div>
             <div className="flex flex-row self-end shimmer w-[200px] h-[72px] xs:h-7"></div>
             <Standings
                 topHalf={getLadderRow(1, FINALS_TEAMS)}
