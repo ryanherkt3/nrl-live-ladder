@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
     const comp = searchParams.get('comp');
     const compRounds = searchParams.get('rounds');
 
-    if (!compRounds || !comp) {
+    if (!compRounds || !comp || isNaN(parseInt(compRounds)) || isNaN(parseInt(comp))) {
         return new Response(JSON.stringify({ 'error': 'Invalid arguments' }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }
@@ -32,8 +32,6 @@ export async function GET(request: NextRequest) {
 
         rounds.push(roundDataResult);
     }
-
-    console.log(Object.keys(rounds));
 
     return new Response(JSON.stringify({ 'success': true, 'data': rounds }), {
         status: 200,
