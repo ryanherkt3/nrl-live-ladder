@@ -30,11 +30,13 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
+    const seasonData = seasonDraw.data;
+
     // Set the current year to be the year of the draw
-    setCurrentYear(seasonDraw[1].selectedSeasonId);
+    setCurrentYear(seasonData[0].selectedSeasonId);
 
     // Set the main colour used for the finalists bar, completed games etc
-    const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
+    const seasonDrawValues: Array<DrawInfo> = Object.values(seasonData);
     const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
         if (round.byes) {
             return round.byes[0].isCurrentRound;
@@ -47,12 +49,12 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {
         case 'ladder':
-            return <Ladder seasonDraw={seasonDraw} />;
+            return <Ladder seasonDraw={seasonData} />;
         case 'ladder-predictor':
-            return <LadderPredictor seasonDraw={seasonDraw} />;
+            return <LadderPredictor seasonDraw={seasonData} />;
         case 'maxpoints':
-            return <MaxPoints seasonDraw={seasonDraw} />;
+            return <MaxPoints seasonDraw={seasonData} />;
         default:
-            return <Ladder seasonDraw={seasonDraw} />;
+            return <Ladder seasonDraw={seasonData} />;
     }
 }
