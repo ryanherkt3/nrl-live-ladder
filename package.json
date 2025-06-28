@@ -3,9 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "scripts": {
-    "flask-dev": "python -m flask --app api/routes run -p 8080",
-    "next-dev": "next dev",
-    "dev": "npx concurrently \"npm run next-dev\" \"npm run flask-dev\"",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
