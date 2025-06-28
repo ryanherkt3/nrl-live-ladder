@@ -81,15 +81,17 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
+    const seasonData = seasonDraw.data;
+
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {
         case 'ladder':
-            return <Ladder seasonDraw={seasonDraw} />;
+            return <Ladder seasonDraw={seasonData} />;
         case 'ladder-predictor':
-            return <LadderPredictor seasonDraw={seasonDraw} />;
+            return <LadderPredictor seasonDraw={seasonData} />;
         case 'maxpoints':
-            return <MaxPoints seasonDraw={seasonDraw} />;
+            return <MaxPoints seasonDraw={seasonData} />;
         default:
-            return <Ladder seasonDraw={seasonDraw} />;
+            return <Ladder seasonDraw={seasonData} />;
     }
 }

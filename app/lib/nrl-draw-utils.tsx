@@ -348,12 +348,16 @@ export function updateFixturesToShow(
 ) {
     const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
 
+    const newRoundInfo = seasonDraw.filter((rounds: DrawInfo) => {
+        return rounds.selectedRoundId === newRoundIndex;
+    });
+
     // Fixtures don't exist so return early
-    if (!seasonDraw[newRoundIndex]) {
+    if (!newRoundInfo) {
         return false;
     }
 
-    const { fixtures, byes } = seasonDraw[newRoundIndex];
+    const { fixtures, byes } = newRoundInfo[0];
 
     setRoundIndex(newRoundIndex);
     setFixturesToShow(fixtures);

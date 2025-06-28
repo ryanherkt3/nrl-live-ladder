@@ -13,21 +13,29 @@ npx create-next-app@latest nrl-live-ladder --use-npm --example "https://github.c
 npm install
 ```
 
-For local development, `Python` is also required. To download version 3.12 go to https://www.python.org/downloads/.
-
-Then, to install the required `Python` packages, run:
-
-```bash
-pip install -r requirements.txt
-```
-
-### Local Development
+### Local Development (NPM)
 
 ```bash
 npm run dev
 ```
 
 And browse to http://localhost:3000.
+
+### Local Development (Docker)
+
+Alternatively, if you would like to run the code in a Docker container, run the following commands:
+
+```bash
+docker build -t nrl-live-ladder .
+docker run -p 3000:3000 nrl-live-ladder
+```
+
+To kill the container, in a new terminal run:
+```bash
+docker ps
+docker container stop {id}
+```
+Where `{id}` is the ID of the container currently running.
 
 ### Website Features
 

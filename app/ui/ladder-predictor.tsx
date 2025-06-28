@@ -31,14 +31,12 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const seasonDrawInfo = Object.values(seasonDraw);
     const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
 
-    const { currentRoundNo, allTeams } = pageVariables;
+    const { currentRoundNo, allTeams, fixtures, byes } = pageVariables;
     const { ROUNDS, FINALS_TEAMS } = NUMS[comp];
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
     const currentFixtureRound = inFinalsFootball ? ROUNDS : currentRoundNo;
-
-    const { fixtures, byes } = seasonDraw[currentFixtureRound];
 
     const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
         const roundKey = round - 1;
