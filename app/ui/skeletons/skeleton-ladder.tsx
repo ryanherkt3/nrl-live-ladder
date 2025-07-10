@@ -9,7 +9,7 @@ export default function SkeletonLadder({ predictorPage }: { predictorPage: boole
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
-    const { TEAMS, FINALS_TEAMS } = NUMS[comp];
+    const { TEAMS, FINALS_TEAMS, BYES } = NUMS[comp];
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -20,7 +20,11 @@ export default function SkeletonLadder({ predictorPage }: { predictorPage: boole
                         'Ladder auto-updates every few seconds'
                 }
             </div>
-            <div className="flex flex-row self-end shimmer w-[200px] h-[72px] xs:h-7"></div>
+            {
+                BYES === 0 || predictorPage ?
+                    null :
+                    <div className="flex flex-row self-end shimmer w-[200px] h-[72px] xs:h-7"></div>
+            }
             <Standings
                 topHalf={getLadderRow(1, FINALS_TEAMS)}
                 bottomHalf={getLadderRow(FINALS_TEAMS + 1, TEAMS)}

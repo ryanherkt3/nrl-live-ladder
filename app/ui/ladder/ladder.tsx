@@ -73,9 +73,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             />
             {
                 // Do not show bye toggle if:
-                // 1. The competition does not have byes, OR
+                // 1. The competition does not have byes, (BYES = 0) OR
                 // 2. The competition is in round 1 or the last round and beyond
-                BYES > 0 || (currentRoundNo === 1 || currentRoundNo >= ROUNDS) ?
+                BYES === 0 || (currentRoundNo === 1 || currentRoundNo >= ROUNDS) ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
