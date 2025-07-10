@@ -47,7 +47,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const [fixturesToShow, setFixturesToShow] = useState(fixtures);
     const [byeTeams, setByeTeams] = useState(byes);
 
-    const { ROUNDS, FINALS_TEAMS } = NUMS[CURRENTCOMP];
+    const { ROUNDS, FINALS_TEAMS, BYES } = NUMS[CURRENTCOMP];
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
@@ -60,8 +60,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 description={'Ladder auto-updates every few seconds'}
             />
             {
-                //Do not show bye toggle if in R1, last round, or finals football
-                currentRoundNo === 1 || currentRoundNo >= ROUNDS ?
+                // Do not show bye toggle if:
+                // 1. The competition does not have byes, OR
+                // 2. The competition is in round 1 or the last round and beyond
+                BYES > 0 || (currentRoundNo === 1 || currentRoundNo >= ROUNDS) ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
