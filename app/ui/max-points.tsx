@@ -6,6 +6,7 @@ import PageDescription from './page-desc';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false);
+    const { FINALS_TEAMS } = NUMS[CURRENTCOMP];
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
@@ -13,8 +14,8 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const minPointsForSpots: TeamStatuses = {
         topTwo: teamsByMaxPoints[2].stats.maxPoints,
         topFour: teamsByMaxPoints[4].stats.maxPoints,
-        topEight: teamsByMaxPoints[8].stats.maxPoints,
-        eliminated: allTeams[7].stats.points,
+        finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints,
+        eliminated: allTeams[FINALS_TEAMS - 1].stats.points,
     };
 
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
@@ -82,7 +83,7 @@ function getTableRows(
     return teamList.map((team: TeamData) => {
         const { stats, name: nickname } = team;
         const { points: currentPoints, maxPoints } = stats;
-        const { eliminated, topTwo, topFour, topEight } = minPointsForSpots;
+        const { eliminated, topTwo, topFour, finalsQualification } = minPointsForSpots;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
@@ -112,7 +113,7 @@ function getTableRows(
         else if (currentPoints > topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > topEight  ||
+        else if (currentPoints > finalsQualification  ||
             (
                 // Is also qualified if top placed bottom team has worse points differential
                 // when tied on points at end of season
