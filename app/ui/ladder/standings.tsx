@@ -1,6 +1,8 @@
-import { COLOURCSSVARIANTS, MAINCOLOUR } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS } from '@/app/lib/utils';
+import { RootState } from '@/app/state/store';
 import clsx from 'clsx';
 import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function Standings(
     {
@@ -14,6 +16,9 @@ export default function Standings(
         predictorPage: Boolean
     }
 ) {
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+    const { colour } = mainSiteColour;
+
     return (
         <div>
             <div className="flex flex-row gap-2 text-xl pb-4 font-semibold text-center">
@@ -53,7 +58,7 @@ export default function Standings(
                 <div className="w-[15%] sm:w-[6%]" title="Points">PTS</div>
             </div>
             {topHalf}
-            <div className={`border-2 ${COLOURCSSVARIANTS[`${MAINCOLOUR}-border`]}`}></div>
+            <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
             {bottomHalf}
         </div>
     );

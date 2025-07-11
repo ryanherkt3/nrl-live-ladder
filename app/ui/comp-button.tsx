@@ -1,8 +1,32 @@
 import Link from 'next/link';
-import { COLOURCSSVARIANTS } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { update as compUpdate } from '../state/current-comp/currentComp';
+import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
+import { RootState } from '../state/store';
 
 export default function CompButton({compKey}: {compKey: string}) {
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
+    const dispatch = useDispatch();
+
     let buttonTitle = '';
+
+    const resetStates = (compKey: string) => {
+        if (compKey !== comp && Object.keys(COMPID).includes(compKey.toUpperCase())) {
+            dispatch(compUpdate(compKey));
+            dispatch(
+                mainColourUpdate(
+                    {
+                        comp: compKey,
+                        currentRoundNo: -1,
+                        finalUpdate: false,
+                    }
+                )
+            );
+        }
+    };
 
     switch (compKey) {
         case 'nrl':
@@ -30,6 +54,7 @@ export default function CompButton({compKey}: {compKey: string}) {
         <Link
             key={compKey}
             href={{ pathname: '/ladder', query: {['comp']: compKey}}}
+            onClick={() => resetStates(compKey)}
             className={`p-6 cursor-pointer font-bold ${borderClasses} ${textClasses} ${hoverBgStyle}`}
         >
             {buttonTitle}

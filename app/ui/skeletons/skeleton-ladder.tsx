@@ -1,13 +1,25 @@
-import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
+import { NUMS } from '@/app/lib/utils';
 import SkeletonFixtures from './skeleton-fixtures';
 import SkeletonLadderRow from './skeleton-ladder-row';
 import Standings from './../ladder/standings';
+import { RootState } from '../../state/store';
+import { useSelector } from 'react-redux';
 
 export default function SkeletonLadder({ predictorPage }: { predictorPage: boolean; }) {
-    const { TEAMS, FINALS_TEAMS, BYES } = NUMS[CURRENTCOMP];
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
+    const { TEAMS, FINALS_TEAMS, BYES } = NUMS[comp];
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
+            <div className="text-xl text-center">
+                {
+                    predictorPage ?
+                        'Predict the outcome of every match and see how the ladder looks!' :
+                        'Ladder auto-updates every few seconds'
+                }
+            </div>
             {
                 BYES === 0 || predictorPage ?
                     null :

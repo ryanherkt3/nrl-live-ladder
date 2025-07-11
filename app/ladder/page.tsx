@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import DrawFetcher from '../ui/draw-fetcher';
 
 export const metadata: Metadata = {
-    title: 'Live Ladder',
+    title: 'NRL Live Ladder',
     description: 'Live rugby league (NRL / NRLW / NSW Cup / Q Cup) ladder',
 };
 

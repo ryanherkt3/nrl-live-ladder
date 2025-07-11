@@ -4,6 +4,8 @@ import clsx from 'clsx';
 import { Match } from '@/app/lib/definitions';
 import InputScore from './input-score';
 import Score from './score';
+import { RootState } from '@/app/state/store';
+import { useSelector } from 'react-redux';
 
 export default function TeamSection(
     {
@@ -27,6 +29,9 @@ export default function TeamSection(
         modifiedFixtureCb: Function | undefined
     }
 ) {
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     const mqStyles = 'max-sm:flex-col sm:flex-row max-sm:gap-2 sm:gap-6';
 
     return (
@@ -34,7 +39,7 @@ export default function TeamSection(
             <div className='flex flex-col text-center'>
                 <div className="font-semibold">
                     <span className="md:block max-md:hidden">{teamName}</span>
-                    <span className="md:hidden max-md:block">{getShortCode(teamName)}</span>
+                    <span className="md:hidden max-md:block">{getShortCode(teamName, comp)}</span>
                 </div>
                 <div>{position}</div>
             </div>

@@ -4,9 +4,12 @@ import { CompInfo } from './definitions';
  * Get the three letter code for a club
  *
  * @param {string} name
+ * @param {string} currentComp the competition for which the shortcodes are required
  * @returns {String}
  */
-export function getShortCode(name: string) {
+export function getShortCode(name: string, currentComp: string) {
+    const isNSWCup = currentComp === 'nsw';
+
     switch (name) {
         // NRL/W clubs:
         case 'Broncos':
@@ -45,11 +48,11 @@ export function getShortCode(name: string) {
             return 'WST';
         // NSW & Q Cup
         case 'Bears':
-            return (CURRENTCOMP === 'nsw' ? 'NSB' : 'BUR');
+            return (isNSWCup ? 'NSB' : 'BUR');
         case 'Jets':
-            return (CURRENTCOMP === 'nsw' ? 'NWT' : 'IPS');
+            return (isNSWCup ? 'NWT' : 'IPS');
         case 'Magpies':
-            return (CURRENTCOMP === 'nsw' ? 'WSM' : 'MAG');
+            return (isNSWCup ? 'WSM' : 'MAG');
         // Q Cup only
         case 'Blackhawks':
             return 'BLA';
@@ -79,101 +82,23 @@ export function getShortCode(name: string) {
 }
 
 /**
- * Converts a cardinal to an ordinal one (e.g 2 -> 2nd)
+ * Converts a cardinal to an ordinal number (e.g 2 -> 2nd). Used for showing dates and ladder positions
  *
  * @param {number} cardinalNo
  * @returns {String} the ordinal number
  */
 export function getOrdinalNumber(cardinalNo: number) {
-    switch (cardinalNo) {
-        case 1:
-        case 21:
-            return `${cardinalNo}st`;
-        case 2:
-        case 22:
-            return `${cardinalNo}nd`;
-        case 3:
-        case 23:
-            return `${cardinalNo}rd`;
-        default:
-            return `${cardinalNo}th`;
+    if (cardinalNo % 10 === 1 && cardinalNo !== 11) {
+        return `${cardinalNo}st`;
     }
-}
-
-export let CURRENTYEAR: Number = new Date(Date.now()).getFullYear();
-/**
- * Set the current year
- *
- * @param {number} the year from the draw (e.g. 2025)
- */
-export function setCurrentYear(year: Number) {
-    CURRENTYEAR = year;
-}
-
-// TODO move colours code to new file (lib/colours.ts)
-// TODO fix nav hover colour not updating for special rounds (redux)
-export let MAINCOLOUR: string = 'nrl';
-/**
- * Set the main colour to be used across the site for the team divider, upcoming games, predictor boxes etc.
- *
- * Special rounds:
- * Multicultural (mclt), Magic Round (magic), Women in League (wil)
- * Beanies for Brain Cancer (bean), Indigenous (ind), Country (ctry)
- *
- * @param {string} comp the competition ID (e.g. 111 for NRL)
- * @param {number} currentRoundNo the current round number (e.g. 7)
- */
-export function setMainColour(comp: number, currentRoundNo: number) {
-    let prefix = '';
-
-    const { NSW, NRLW, NRL, QLD } = COMPID;
-
-    if (comp === NRLW) {
-        const NRLWROUNDID : { [key: number]: string } = Object.freeze({
-            6: 'ind',
-            7: 'ind',
-            8: 'ctry'
-        });
-
-        prefix = 'nrlw';
-        if (NRLWROUNDID[currentRoundNo]) {
-            prefix += `-${NRLWROUNDID[currentRoundNo]}`;
-        }
+    if (cardinalNo % 10 === 2 && cardinalNo !== 12) {
+        return `${cardinalNo}nd`;
     }
-    else if (comp === NRL) {
-        const NRLROUNDID : { [key: number]: string } = Object.freeze({
-            5: 'mclt',
-            9: 'magic',
-            10: 'wil',
-            17: 'bean',
-            23: 'ind',
-            24: 'ind',
-            25: 'ctry'
-        });
-
-        prefix = 'nrl';
-        if (NRLROUNDID[currentRoundNo]) {
-            prefix += `-${NRLROUNDID[currentRoundNo]}`;
-        }
-    }
-    else if (comp === NSW || comp === QLD) {
-        prefix = comp === NSW ? 'nsw' : 'qld';
-    }
-    else {
-        prefix = 'nrl';
+    if (cardinalNo % 10 === 3 && cardinalNo !== 13) {
+        return `${cardinalNo}rd`;
     }
 
-    MAINCOLOUR = prefix;
-}
-
-export let CURRENTCOMP: string = 'nrl';
-/**
- * Set the current competition (set to nrl by default if the value provided is invalid)
- *
- * @param {string} comp the competition (e.g. nrlw)
- */
-export function setCurrentComp(comp: string) {
-    CURRENTCOMP = Object.keys(COMPID).includes(comp.toUpperCase()) ? comp : 'nrl';
+    return `${cardinalNo}th`;
 }
 
 export const COMPID : { [key: string]: number } = Object.freeze({
@@ -183,8 +108,10 @@ export const COMPID : { [key: string]: number } = Object.freeze({
     QLD: 114,
 });
 
-// TODO is there a more efficient way to do this?
-export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
+// TODO
+// 1. Is there a more efficient way to do this?
+// 2. Move colours code to new file (lib/colours.ts)
+export const COLOURCSSVARIANTS : { [key: string]: string } = Object.freeze({
     'nrl-bg': 'bg-nrl',
     'nrl-border': 'border-nrl',
     'nrl-text': 'text-nrl',

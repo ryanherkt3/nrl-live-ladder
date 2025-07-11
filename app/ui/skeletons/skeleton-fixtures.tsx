@@ -1,7 +1,12 @@
-import { CURRENTCOMP, NUMS } from '@/app/lib/utils';
+import { NUMS } from '@/app/lib/utils';
 import SkeletonRoundFixture from './skeleton-round-fixture';
+import { RootState } from '../../state/store';
+import { useSelector } from 'react-redux';
 
 export default function SkeletonFixtures() {
+    const currentComp = useSelector((state: RootState) => state.currentComp.value);
+    const { comp } = currentComp;
+
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-row gap-2 items-center justify-center">
@@ -9,27 +14,27 @@ export default function SkeletonFixtures() {
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getFixtures()
+                getFixtures(comp)
             }
             {
-                getByes()
+                getByes(comp)
             }
         </div>
     );
 }
 
-function getFixtures() {
+function getFixtures(currentComp: string) {
     const fixtures = [];
 
-    for (let i = 2; i <= NUMS[CURRENTCOMP].TEAMS; i += 2) {
+    for (let i = 2; i <= NUMS[currentComp].TEAMS; i += 2) {
         fixtures.push(<SkeletonRoundFixture key={i} />);
     }
 
     return fixtures;
 }
 
-function getByes() {
-    if (!NUMS[CURRENTCOMP].BYES) {
+function getByes(currentComp: string) {
+    if (!NUMS[currentComp].BYES) {
         return null;
     }
 

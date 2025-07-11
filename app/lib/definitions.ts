@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export type TeamData = {
     stats: TeamStats;
     name: string;
@@ -98,3 +99,26 @@ export type CompInfo = {
     FINALS_TEAMS: number,
     WIN_POINTS: number,
 }
+
+
+export type MainSiteColour = {
+    colour: string,
+    updateStatus: ReduxUpdateFlags
+}
+
+export type CurrentComp = {
+    comp: string,
+    updateStatus: ReduxUpdateFlags
+}
+
+export type CurrentYear = {
+    year: number,
+    updateStatus: ReduxUpdateFlags
+}
+
+export enum ReduxUpdateFlags {
+    NotUpdated = 0,
+    InitialUpdate = 1,
+    FinalUpdate = 2,
+}
+
