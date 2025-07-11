@@ -82,25 +82,23 @@ export function getShortCode(name: string, currentComp: string) {
 }
 
 /**
- * Converts a cardinal to an ordinal one (e.g 2 -> 2nd)
+ * Converts a cardinal to an ordinal number (e.g 2 -> 2nd). Used for showing dates and ladder positions
  *
  * @param {number} cardinalNo
  * @returns {String} the ordinal number
  */
 export function getOrdinalNumber(cardinalNo: number) {
-    switch (cardinalNo) {
-        case 1:
-        case 21:
-            return `${cardinalNo}st`;
-        case 2:
-        case 22:
-            return `${cardinalNo}nd`;
-        case 3:
-        case 23:
-            return `${cardinalNo}rd`;
-        default:
-            return `${cardinalNo}th`;
+    if (cardinalNo % 10 === 1 && cardinalNo !== 11) {
+        return `${cardinalNo}st`;
     }
+    if (cardinalNo % 10 === 2 && cardinalNo !== 12) {
+        return `${cardinalNo}nd`;
+    }
+    if (cardinalNo % 10 === 3 && cardinalNo !== 13) {
+        return `${cardinalNo}rd`;
+    }
+
+    return `${cardinalNo}th`;
 }
 
 export const COMPID : { [key: string]: number } = Object.freeze({
@@ -110,9 +108,10 @@ export const COMPID : { [key: string]: number } = Object.freeze({
     QLD: 114,
 });
 
-// TODO is there a more efficient way to do this?
-// TODO move colours code to new file (lib/colours.ts)
-export const COLOURCSSVARIANTS : { [key: string]: unknown } = Object.freeze({
+// TODO
+// 1. Is there a more efficient way to do this?
+// 2. Move colours code to new file (lib/colours.ts)
+export const COLOURCSSVARIANTS : { [key: string]: string } = Object.freeze({
     'nrl-bg': 'bg-nrl',
     'nrl-border': 'border-nrl',
     'nrl-text': 'text-nrl',
