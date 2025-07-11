@@ -36,8 +36,10 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
 
     useEffect(() => {
         if (!error && !isLoading) {
+            const seasonData = seasonDraw.data;
+
             // Set the main colour used for the finalists bar, completed games etc
-            const seasonDrawValues: Array<DrawInfo> = Object.values(seasonDraw);
+            const seasonDrawValues: Array<DrawInfo> = Object.values(seasonData);
             const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
                 if (round.byes) {
                     return round.byes[0].isCurrentRound;
@@ -47,9 +49,9 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             });
 
             // Set the current year to be the year of the draw if it is not matching
-            const seasonId = seasonDraw[1].selectedSeasonId;
+            const seasonId = seasonData[1].selectedSeasonId;
             if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
-                dispatch(currentYearUpdate(seasonDraw[1].selectedSeasonId));
+                dispatch(currentYearUpdate(seasonData[1].selectedSeasonId));
             }
 
             const { colour } = mainSiteColour;
