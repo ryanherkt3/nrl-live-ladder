@@ -69,7 +69,7 @@ export type DrawInfo = {
 export type TeamStatuses = {
     topTwo: number,
     topFour: number,
-    topEight: number,
+    finalsQualification: number,
     eliminated: number,
 }
 
