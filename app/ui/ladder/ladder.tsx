@@ -50,6 +50,19 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         }));
     }, [fixtures]);
 
+    // Update ladder teams, round index, fixtures and byes
+    // when the competition has changed (e.g. from NRL to NRLW)
+    useEffect(() => {
+        setLadderTeams(allTeams.sort((a: TeamData, b: TeamData) => {
+            return teamSortFunction(byePoints, a, b);
+        }));
+        setRoundIndex(currentRoundNo);
+        setFixturesToShow(fixtures);
+        if (byes) {
+            setByeTeams(byes);
+        }
+    }, [currentComp]);
+
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
             showPreviousRound, roundIndex, seasonDraw, setRoundIndex, setFixturesToShow, setByeTeams
