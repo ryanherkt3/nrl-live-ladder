@@ -24,7 +24,7 @@ export default function NavBar() {
 
     // Default to NRL if comp param is not provided or is invalid
     let initCompParam = useSearchParams().get('comp')?.toLowerCase() || 'nrl';
-    initCompParam = Object.keys(COMPID).includes(initCompParam.toUpperCase()) && comp !== 'nrl' ? initCompParam : 'nrl';
+    initCompParam = Object.keys(COMPID).includes(initCompParam.toUpperCase()) ? initCompParam : 'nrl';
 
     useEffect(() => {
         const compsNotMatching = initCompParam !== comp;
