@@ -22,13 +22,17 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
+
+    const lowestPlacedFinalsTeam = allTeams[FINALS_TEAMS - 1];
+    const { wins: lowestPlacedFinalsTeamWins, drawn : lowestPlacedFinalsTeamDraws } = lowestPlacedFinalsTeam.stats;
+
     const minPointsForSpots: TeamStatuses = {
         // Add one to the finals spots
         topTwo: teamsByMaxPoints[2].stats.maxPoints + 1,
         topFour: teamsByMaxPoints[4].stats.maxPoints + 1,
         finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints + 1,
         // Subtract one for the eliminated spots
-        eliminated: allTeams[FINALS_TEAMS - 1].stats.points - 1,
+        eliminated: ((lowestPlacedFinalsTeamWins + lowestPlacedFinalsTeamDraws + NUMS[comp].BYES) * 2) - 1,
     };
 
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
