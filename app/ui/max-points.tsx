@@ -104,6 +104,11 @@ function getTableRows(
         const { points: currentPoints, maxPoints } = stats;
         const { eliminated, topTwo, topFour, finalsQualification } = minPointsForSpots;
 
+        // Include bye points in the calculations, as sometimes a team may look as
+        // though their worst finish is one place above the cut off, but are actually
+        // qualified if bye points are counted
+        const pointsWithByes = (team.stats.wins + NUMS[currentComp].BYES) * 2;
+
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
         if (nickname === 'Broncos' || nickname === 'Roosters') {
@@ -120,24 +125,24 @@ function getTableRows(
                 // Is also eliminated if last placed finals team has better points differential
                 // when tied on points at end of season
                 stats.played === MATCHES &&
-                lfStats.points >= currentPoints &&
+                lfStats.points >= pointsWithByes &&
                 lfStats['points difference'] > stats['points difference']
             );
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
-        else if (currentPoints >= topTwo) {
+        else if (pointsWithByes >= topTwo) {
             qualificationStatus = '(T2)';
         }
-        else if (currentPoints >= topFour) {
+        else if (pointsWithByes >= topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints >= finalsQualification  ||
+        else if (pointsWithByes >= finalsQualification  ||
             (
                 // Is also qualified if top placed bottom team has worse points differential
                 // when tied on points at end of season
                 feStats.played === MATCHES &&
-                feStats.points <= currentPoints &&
+                feStats.points <= pointsWithByes &&
                 feStats['points difference'] < stats['points difference']
             )
         ) {
@@ -303,26 +308,29 @@ function getLadderStatus(
 ) {
     const { currentPoints, maxPoints } = pointValues;
     const isFinished = currentPoints === maxPoints;
+    const pointsWithByes = (teamInfo.stats.wins + NUMS[currentComp].BYES) * 2;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
+        const filteredTeamPointsWithByes = (team.stats.wins + NUMS[currentComp].BYES) * 2;
 
-        return filteredTeamStats.points > maxPoints ||
+        return filteredTeamPointsWithByes > maxPoints ||
             (isFinished && team.name !== nickname &&
                 filteredTeamStats.played === NUMS[currentComp].MATCHES &&
-                filteredTeamStats.points >= maxPoints &&
+                filteredTeamPointsWithByes >= maxPoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );
     }).length;
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
+        const filteredTeamPointsWithByes = (team.stats.wins + NUMS[currentComp].BYES) * 2;
 
         return team.name !== nickname && // not same team
             (
-                (currentPoints < filteredTeamStats.maxPoints) ||
+                (pointsWithByes <= filteredTeamStats.maxPoints) ||
                 (
-                    filteredTeamStats.points === currentPoints &&
+                    filteredTeamPointsWithByes === pointsWithByes &&
                     filteredTeamStats['points difference'] > teamInfo.stats['points difference']
                 )
             );
