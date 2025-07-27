@@ -23,10 +23,12 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
     const minPointsForSpots: TeamStatuses = {
-        topTwo: teamsByMaxPoints[2].stats.maxPoints,
-        topFour: teamsByMaxPoints[4].stats.maxPoints,
-        finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints,
-        eliminated: allTeams[FINALS_TEAMS - 1].stats.points,
+        // Add one to the finals spots
+        topTwo: teamsByMaxPoints[2].stats.maxPoints + 1,
+        topFour: teamsByMaxPoints[4].stats.maxPoints + 1,
+        finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints + 1,
+        // Subtract one for the eliminated spots
+        eliminated: allTeams[FINALS_TEAMS - 1].stats.points - 1,
     };
 
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
@@ -113,7 +115,7 @@ function getTableRows(
 
         // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
         let qualificationStatus = '';
-        const isEliminated = maxPoints < eliminated ||
+        const isEliminated = maxPoints <= eliminated ||
             (
                 // Is also eliminated if last placed finals team has better points differential
                 // when tied on points at end of season
@@ -124,13 +126,13 @@ function getTableRows(
         if (isEliminated) {
             qualificationStatus = '(E)';
         }
-        else if (currentPoints > topTwo) {
+        else if (currentPoints >= topTwo) {
             qualificationStatus = '(T2)';
         }
-        else if (currentPoints > topFour) {
+        else if (currentPoints >= topFour) {
             qualificationStatus = '(T4)';
         }
-        else if (currentPoints > finalsQualification  ||
+        else if (currentPoints >= finalsQualification  ||
             (
                 // Is also qualified if top placed bottom team has worse points differential
                 // when tied on points at end of season
