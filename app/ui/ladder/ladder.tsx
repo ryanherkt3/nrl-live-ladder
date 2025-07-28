@@ -4,11 +4,12 @@ import Fixtures from '../fixture/fixtures';
 import ByeToggleSection from '../bye-toggle';
 import { useEffect, useState } from 'react';
 import { NUMS } from '@/app/lib/utils';
-import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
+import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
+import { teamSortFunction } from '@/app/lib/team-stats';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
