@@ -1,6 +1,4 @@
-// TODO figure out how to mock localStorage - check YT
 const localStorageMock = (() => {
-    // let store: { [key: string]: string } = {};
     let store = {} as Storage;
 
     return {
@@ -9,7 +7,6 @@ const localStorageMock = (() => {
             store[key] = value.toString();
         },
         clear: () => {
-            // store = {};
             store = {} as Storage;
         },
         removeItem: (key: string) => {
@@ -17,5 +14,5 @@ const localStorageMock = (() => {
         }
     };
 })();
-// Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+
 export default localStorageMock;
