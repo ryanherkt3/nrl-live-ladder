@@ -23,7 +23,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
 
-    const lowestPlacedFinalsTeam = allTeams[FINALS_TEAMS - 1];
+    const lowestPlacedFinalsTeam = teamsByMaxPoints[FINALS_TEAMS - 1];
     const { wins: lowestPlacedFinalsTeamWins, drawn : lowestPlacedFinalsTeamDraws } = lowestPlacedFinalsTeam.stats;
 
     const minPointsForSpots: TeamStatuses = {
@@ -111,7 +111,7 @@ function getTableRows(
         // Include bye points in the calculations, as sometimes a team may look as
         // though their worst finish is one place above the cut off, but are actually
         // qualified if bye points are counted
-        const pointsWithByes = (team.stats.wins + team.stats.drawn + NUMS[currentComp].BYES) * 2;
+        const pointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
@@ -312,11 +312,11 @@ function getLadderStatus(
 ) {
     const { currentPoints, maxPoints } = pointValues;
     const isFinished = currentPoints === maxPoints;
-    const pointsWithByes = (teamInfo.stats.wins + teamInfo.stats.drawn + NUMS[currentComp].BYES) * 2;
+    const pointsWithByes = ((teamInfo.stats.wins + NUMS[currentComp].BYES) * 2) + teamInfo.stats.drawn;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = (team.stats.wins + team.stats.drawn + NUMS[currentComp].BYES) * 2;
+        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         return filteredTeamPointsWithByes > maxPoints ||
             (isFinished && team.name !== nickname &&
@@ -328,7 +328,7 @@ function getLadderStatus(
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = (team.stats.wins + team.stats.drawn + NUMS[currentComp].BYES) * 2;
+        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         return team.name !== nickname && // not same team
             (
