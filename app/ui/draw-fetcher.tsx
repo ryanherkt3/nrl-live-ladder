@@ -55,7 +55,7 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             }
 
             const { colour } = mainSiteColour;
-            const colourMatchesComp = comp === colour;
+            const colourMatchesComp = comp === colour.split('-')[0];
 
             // Update the main site colour if the final update has not been executed,
             // or when there is a mismatch (e.g. NRL Ladder -> Homepage -> NSW Cup)
