@@ -1,4 +1,4 @@
-import { NUMS } from '@/app/lib/utils';
+import { COLOURCSSVARIANTS, NUMS } from '@/app/lib/utils';
 import SkeletonMaxPointsRow from './skeleton-max-points-row';
 import { RootState } from '../../state/store';
 import { useSelector } from 'react-redux';
@@ -6,6 +6,9 @@ import { useSelector } from 'react-redux';
 export default function SkeletonMaxPoints() {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
+
+    const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
+    const { colour } = mainSiteColour;
 
     const { TEAMS, FINALS_TEAMS } = NUMS[comp];
 
@@ -18,7 +21,7 @@ export default function SkeletonMaxPoints() {
                 {
                     getMaxPointsRow(1, FINALS_TEAMS)
                 }
-                <div className="border-4 border-green-400"></div>
+                <div className={`border-4 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
                 {
                     getMaxPointsRow(FINALS_TEAMS + 1, TEAMS)
                 }

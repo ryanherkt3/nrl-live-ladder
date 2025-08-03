@@ -13,7 +13,9 @@ export default function LadderRow(
         byePoints,
         predictorPage,
         nextTeam,
-        nextMatchUrl
+        nextTeamTooltip,
+        nextMatchUrl,
+        qualificationStatus
     }: {
         teamData: TeamData;
         position: String;
@@ -21,7 +23,9 @@ export default function LadderRow(
         byePoints: boolean;
         predictorPage: boolean;
         nextTeam: string;
+        nextTeamTooltip: string;
         nextMatchUrl: string;
+        qualificationStatus: string;
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -30,8 +34,38 @@ export default function LadderRow(
     const { stats: statsData, theme, name } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
 
+    let bgClassName = name.toLowerCase().replace(' ', '');
+
+    if (name === 'Broncos' || name === 'Roosters') {
+        bgClassName += '-gradient';
+    }
+    else if (name === 'Bears' || name === 'Jets' || name === 'Magpies') {
+        bgClassName += `-${comp}`;
+    }
+
+    const qualifiedStatuses = ['(T2)', '(T4)', '(Q)'];
+    const isQualified = qualifiedStatuses.includes(qualificationStatus);
+
+    // const redBgTeams = ['Dolphins', 'Dragons', 'Bears', 'Capras', 'Hunters'];
+    const blackTextQualifiedTeams = [
+        'Eels', 'Panthers', // NRL
+        'Bears', // NSW Cup
+        'Clydesdales', 'Seagulls', 'Cutters', 'Tigers', 'WM Seagulls', 'Blackhawks' // QLD
+    ];
+
     return (
-        <div className="flex flex-row gap-2 py-1 items-center text-center text-lg">
+        <div
+            className={
+                clsx(
+                    'flex flex-row gap-2 py-1 items-center text-center text-lg',
+                    {
+                        'bg-faded': qualificationStatus === '(E)',
+                        [`bg-${bgClassName} text-black`]: isQualified && blackTextQualifiedTeams.includes(name),
+                        [`bg-${bgClassName} text-white`]: isQualified && !blackTextQualifiedTeams.includes(name),
+                    }
+                )
+            }
+        >
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
                 {
                     isPlaying ?
@@ -48,10 +82,10 @@ export default function LadderRow(
                     }
                 )
             }>
-                <div className='max-xs:hidden xs:block'>
-                    <TeamImage matchLink='' teamKey={theme.key} />
+                <div className='max-xs:hidden xs:block grow-0'>
+                    <TeamImage matchLink='' teamKey={theme.key} tooltip={name} />
                 </div>
-                <div className='max-xs:px-0 xs:px-3'>
+                <div className='max-xs:px-0 xs:px-3 text-left'>
                     <span className='max-md:hidden md:block'>{name}</span>
                     <span className='max-md:block md:hidden'>{getShortCode(name, comp)}</span>
                 </div>
@@ -82,7 +116,7 @@ export default function LadderRow(
                 )
             }>
                 {
-                    getNextFixture(nextTeam, nextMatchUrl)
+                    getNextFixture(nextTeam, nextTeamTooltip, nextMatchUrl)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -96,16 +130,17 @@ export default function LadderRow(
  * Get a team's next fixture (bye / nothing / image of logo of next opponent)
  *
  * @param {string} nextTeam
+ * @param {string} nextTeamTooltip
  * @param {string} nextMatchUrl
  * @returns {string | undefined | TeamImage}
  */
-function getNextFixture(nextTeam: string, nextMatchUrl: string) {
+function getNextFixture(nextTeam: string, nextTeamTooltip: string, nextMatchUrl: string) {
     switch (nextTeam) {
         case 'BYE':
             return 'BYE';
         case '':
             return null;
         default:
-            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} />;
+            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} tooltip={nextTeamTooltip} />;
     }
 }

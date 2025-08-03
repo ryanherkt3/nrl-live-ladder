@@ -2,7 +2,18 @@ import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 
-export default function TeamImage({ matchLink, teamKey, }: {matchLink: string, teamKey: string}) {
+export default function TeamImage(
+    {
+        matchLink,
+        teamKey,
+        tooltip
+    }:
+    {
+        matchLink: string,
+        teamKey: string,
+        tooltip: string
+    }
+) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -28,7 +39,7 @@ export default function TeamImage({ matchLink, teamKey, }: {matchLink: string, t
     }
 
     const imgUrl = `https://nrl.com/.theme/${teamKey}/${imageType}`;
-    const image = <Image src={imgUrl} width={36} height={36} alt={teamKey} />;
+    const image = <Image src={imgUrl} width={36} height={36} alt={teamKey} title={tooltip} />;
 
     if (matchLink) {
         matchLink = comp.includes('nrl') ? `https://nrl.com${matchLink}`: matchLink;

@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
 import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
 import { RootState } from '../state/store';
+import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -32,7 +33,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
 
     const { currentRoundNo, allTeams, fixtures, byes } = pageVariables;
-    const { ROUNDS, FINALS_TEAMS } = NUMS[comp];
+    const { ROUNDS } = NUMS[comp];
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
@@ -223,8 +224,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
-                topHalf={getLadderRow(teams.slice(0, FINALS_TEAMS), 1, pageVariables.liveMatches)}
-                bottomHalf={getLadderRow(teams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, pageVariables.liveMatches)}
+                topHalf={getLadderRow(true, teams, pageVariables.liveMatches, comp)}
+                bottomHalf={getLadderRow(false, teams, pageVariables.liveMatches, comp)}
                 predictorPage={true}
             />
             <div className="flex flex-row gap-3 self-end">
@@ -258,14 +259,20 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 }
 
 /**
- * Get a row in the ladder
+ * Get a row in the ladder. TODO move this to lib function (duplicated w/ ladder fn)
  *
- * @param {Array<TeamData>} teamList
- * @param {number} indexAdd the increment for the team's ladder position (1 or FINALS_TEAMS + 1)
+ * @param {boolean} isInTopSection if the team is in the top x of the competition
+ * @param {Array<TeamData>} allTeams
  * @param {Array<Match>} liveMatches
+ * @param {String} currentComp
  * @returns {LadderRow} React object
  */
-function getLadderRow(teamList: Array<TeamData>, indexAdd: number, liveMatches: Array<Match>) {
+function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMatches: Array<Match>, currentComp: string) {
+    const { FINALS_TEAMS } = NUMS[currentComp];
+
+    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
+    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
@@ -284,6 +291,11 @@ function getLadderRow(teamList: Array<TeamData>, indexAdd: number, liveMatches: 
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
+        // TODO check in last 3 rounds if quali statuses update properly
+        const qualificationStatus = getQualificationStatus(
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+        );
+
         return <LadderRow
             key={team.theme.key}
             teamData={team}
@@ -292,7 +304,9 @@ function getLadderRow(teamList: Array<TeamData>, indexAdd: number, liveMatches: 
             byePoints={true}
             predictorPage={true}
             nextTeam={nextTeam}
+            nextTeamTooltip={''}
             nextMatchUrl={nextMatchUrl}
+            qualificationStatus={qualificationStatus}
         />;
     });
 }

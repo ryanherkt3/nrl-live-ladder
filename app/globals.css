@@ -30,6 +30,7 @@
     min-height: calc(100vh - 160px);
 }
 
+/* Live match animations - TODO alternate one for red bg teams (ladder-row.tsx) */
 .live-match {
     -webkit-animation: live-animation 2s infinite;
 }
