@@ -37,6 +37,16 @@ docker container stop {id}
 ```
 Where `{id}` is the ID of the container currently running.
 
+### Tests
+
+Test coverage has been added to this project. To run the entire test suite, use one of the following commands:
+```bash
+npm test
+```
+```bash
+jest
+```
+
 ### Website Features
 
 * Full support for all major NRL-affiliated competitions - see the live ladder for the NRL, NRL Womens, NSW Cup, or Q Cup competitions.
@@ -47,6 +57,7 @@ Where `{id}` is the ID of the container currently running.
 
 ### Future improvements
 
+* Add integration and E2E test coverage.
 * Make `SWR` requests on the main page once a minute instead of infrequently.
 * Include the ability to save/load predictions to/from a JSON file.
 * Add support for finals football predictions.

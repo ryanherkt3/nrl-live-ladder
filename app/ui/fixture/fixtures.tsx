@@ -85,9 +85,14 @@ export default function Fixtures(
                         <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
                         <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                             {
-                                byes.map((team: ByeTeam) => {
-                                    const { key } = team.theme;
-                                    return <TeamImage key={key} matchLink='' teamKey={key} />;
+                                byes.map((byeTeam: ByeTeam) => {
+                                    const { key } = byeTeam.theme;
+
+                                    const imageTooltip = teamList.filter((team: TeamData) => {
+                                        return team.theme.key === key;
+                                    })[0].name;
+
+                                    return <TeamImage key={key} matchLink='' teamKey={key} tooltip={imageTooltip} />;
                                 })
                             }
                         </div>

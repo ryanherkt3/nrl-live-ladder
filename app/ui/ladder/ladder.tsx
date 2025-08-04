@@ -4,11 +4,13 @@ import Fixtures from '../fixture/fixtures';
 import ByeToggleSection from '../bye-toggle';
 import { useEffect, useState } from 'react';
 import { NUMS } from '@/app/lib/utils';
-import { getPageVariables, teamSortFunction, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
+import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './../ladder/standings';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
+import { teamSortFunction } from '@/app/lib/team-stats';
+import { getMinPointsForSpots, getQualificationStatus } from '@/app/lib/qualification';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -69,14 +71,14 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
         );
     };
 
-    const { ROUNDS, FINALS_TEAMS, BYES } = NUMS[comp];
+    const { ROUNDS, BYES } = NUMS[comp];
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
     const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
 
-    const topTeams = getLadderRow(ladderTeams.slice(0, FINALS_TEAMS), 1, byePoints, pageVariables, comp);
-    const bottomTeams = getLadderRow(ladderTeams.slice(FINALS_TEAMS), FINALS_TEAMS + 1, byePoints, pageVariables, comp);
+    const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp);
+    const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -112,22 +114,27 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 }
 
 /**
- * Get a row in the ladder
+ * Get a row in the ladder. TODO move this to lib function (duplicated w/ ladder predictor fn)
  *
- * @param {Array<TeamData>} teamList
- * @param {number} indexAdd the increment for the team's ladder position (1 or 9)
+ * @param {boolean} isInTopSection if the team is in the top x of the competition
+ * @param {Array<TeamData>} allTeams
  * @param {boolean} byePoints
  * @param {PageVariables} pageVariables
  * @param {String} currentComp
  * @returns {LadderRow} React object
  */
 function getLadderRow(
-    teamList: Array<TeamData>,
-    indexAdd: number,
+    isInTopSection: boolean,
+    allTeams: Array<TeamData>,
     byePoints: boolean,
     pageVariables: PageVariables,
     currentComp: string,
 ) {
+    const { FINALS_TEAMS } = NUMS[currentComp];
+
+    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
+    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
         let isPlaying = false;
@@ -150,6 +157,7 @@ function getLadderRow(
         // If team has played (or is playing) get fixture from next round, otherwise get one from current round
         let filteredFixture = null;
         let nextTeam = '';
+        let nextTeamTooltip = '';
         let nextMatchUrl = '';
 
         const playedAndByes = stats.played + stats.byes;
@@ -171,9 +179,15 @@ function getLadderRow(
         if (filteredFixture && filteredFixture.length) {
             const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0];
 
-            nextTeam = name === homeTeam.nickName ?
-                awayTeam.theme.key :
-                homeTeam.theme.key;
+            if (name === homeTeam.nickName) {
+                nextTeam = awayTeam.theme.key;
+                nextTeamTooltip = awayTeam.nickName;
+            }
+            else {
+                nextTeam = homeTeam.theme.key;
+                nextTeamTooltip = homeTeam.nickName;
+            }
+
             nextMatchUrl = matchCentreUrl;
         }
         else if (currentRoundNo < ROUNDS) {
@@ -207,6 +221,10 @@ function getLadderRow(
             nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
         }
 
+        const qualificationStatus = getQualificationStatus(
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+        );
+
         return <LadderRow
             key={theme.key}
             teamData={team}
@@ -215,7 +233,9 @@ function getLadderRow(
             byePoints={byePoints}
             predictorPage={false}
             nextTeam={nextTeam}
+            nextTeamTooltip={nextTeamTooltip}
             nextMatchUrl={nextMatchUrl}
+            qualificationStatus={qualificationStatus}
         />;
     });
 }

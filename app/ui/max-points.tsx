@@ -1,10 +1,11 @@
 import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
-import { DrawInfo, Match, TeamData, TeamPoints, TeamStatuses } from '../lib/definitions';
+import { DrawInfo, Match, TeamData, TeamPoints } from '../lib/definitions';
 import clsx from 'clsx';
 import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
 import PageDescription from './page-desc';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
+import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -17,23 +18,10 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const { colour } = mainSiteColour;
 
     const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year);
-    const { FINALS_TEAMS } = NUMS[comp];
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
-
-    const lowestPlacedFinalsTeam = teamsByMaxPoints[FINALS_TEAMS - 1];
-    const { wins: lowestPlacedFinalsTeamWins, drawn : lowestPlacedFinalsTeamDraws } = lowestPlacedFinalsTeam.stats;
-
-    const minPointsForSpots: TeamStatuses = {
-        // Add one to the finals spots
-        topTwo: teamsByMaxPoints[2].stats.maxPoints + 1,
-        topFour: teamsByMaxPoints[4].stats.maxPoints + 1,
-        finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints + 1,
-        // Subtract one for the eliminated spots
-        eliminated: ((lowestPlacedFinalsTeamWins + lowestPlacedFinalsTeamDraws + NUMS[comp].BYES) * 2) - 1,
-    };
 
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
@@ -57,13 +45,13 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 </div>
                 {
                     getTableRows(
-                        allTeams, true, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, comp
+                        allTeams, true, highestMaxPts, lastPlacePts, liveMatches, comp
                     )
                 }
                 <div className={`border-4 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
                 {
                     getTableRows(
-                        allTeams, false, highestMaxPts, lastPlacePts, minPointsForSpots, liveMatches, comp
+                        allTeams, false, highestMaxPts, lastPlacePts, liveMatches, comp
                     )
                 }
             </div>
@@ -78,7 +66,6 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
  * @param {boolean} topHalf whether to map against the top teams or the bottom ones
  * @param {number} highestMaxPts the highest max points value any team can get
  * @param {number} lastPlacePts the current points the last placed team has
- * @param {TeamStatuses} minPointsForSpots an object with the points required to attain a certain status (e.g top 2)
  * @param {Array<Match>} liveMatches a list of the ongoing match(es)
  * @param {string} currentComp
  * @returns
@@ -88,30 +75,18 @@ function getTableRows(
     topHalf: boolean,
     highestMaxPts: number,
     lastPlacePts: number,
-    minPointsForSpots: TeamStatuses,
     liveMatches: Array<Match>,
     currentComp: string
 ) {
-    const { FINALS_TEAMS, MATCHES } = NUMS[currentComp];
+    const { FINALS_TEAMS } = NUMS[currentComp];
 
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(FINALS_TEAMS);
     const teamList = topHalf ? topTeams : bottomTeams;
 
-    const lastFinalist = topTeams[topTeams.length - 1];
-    const { stats: lfStats } = lastFinalist;
-    const firstEliminated = bottomTeams[0];
-    const { stats: feStats } = firstEliminated;
-
     return teamList.map((team: TeamData) => {
         const { stats, name: nickname } = team;
         const { points: currentPoints, maxPoints } = stats;
-        const { eliminated, topTwo, topFour, finalsQualification } = minPointsForSpots;
-
-        // Include bye points in the calculations, as sometimes a team may look as
-        // though their worst finish is one place above the cut off, but are actually
-        // qualified if bye points are counted
-        const pointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
@@ -122,36 +97,10 @@ function getTableRows(
             bgClassName += `-${currentComp}`;
         }
 
-        // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
-        let qualificationStatus = '';
-        const isEliminated = maxPoints <= eliminated ||
-            (
-                // Is also eliminated if last placed finals team has better points differential
-                // when tied on points at end of season
-                stats.played === MATCHES &&
-                lfStats.points >= pointsWithByes &&
-                lfStats['points difference'] > stats['points difference']
-            );
-        if (isEliminated) {
-            qualificationStatus = '(E)';
-        }
-        else if (pointsWithByes >= topTwo) {
-            qualificationStatus = '(T2)';
-        }
-        else if (pointsWithByes >= topFour) {
-            qualificationStatus = '(T4)';
-        }
-        else if (pointsWithByes >= finalsQualification  ||
-            (
-                // Is also qualified if top placed bottom team has worse points differential
-                // when tied on points at end of season
-                feStats.played === MATCHES &&
-                feStats.points <= pointsWithByes &&
-                feStats['points difference'] < stats['points difference']
-            )
-        ) {
-            qualificationStatus = '(Q)';
-        }
+        const qualificationStatus = getQualificationStatus(
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+        );
+        const isEliminated = qualificationStatus === '(E)';
 
         const pointValues: TeamPoints = {
             lowestCurrentPoints: lastPlacePts,
