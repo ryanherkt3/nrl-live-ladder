@@ -82,7 +82,7 @@ export default function LadderRow(
                     }
                 )
             }>
-                <div className='max-xs:hidden xs:block grow-0'>
+                <div className='max-xs:hidden xs:block'>
                     <TeamImage matchLink='' teamKey={theme.key} tooltip={name} />
                 </div>
                 <div className='max-xs:px-0 xs:px-3 text-left'>

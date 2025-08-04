@@ -26,6 +26,7 @@ describe('test suite short codes', () => {
         expect(getShortCode('Jets', 'nsw')).toBe('NWT');
         expect(getShortCode('Magpies', 'nsw')).toBe('WSM');
     });
+    
     it('Returns correct QLD Cup code for Bears, Jets and Magpies', () => {
         expect(getShortCode('Bears', 'qld')).toBe('BUR');
         expect(getShortCode('Jets', 'qld')).toBe('IPS');
