@@ -202,7 +202,6 @@ describe('test suite team stats construction', () => {
         expect(futureRoundResult[1].stats.played).toBe(1);
     });
 
-    // TODO fix
     it('handles byes correctly when round has played fixtures', () => {
         const byeTeam = constructTeamData([{
             name: 'ByeTeam',
