@@ -1,5 +1,6 @@
 import RoundFixture from '../ui/fixture/round-fixture';
-import { DrawInfo, Match, TeamData } from './definitions';
+import LadderRow from '../ui/ladder/ladder-row';
+import { DrawInfo, Match, PageVariables, TeamData } from './definitions';
 import { getMinPointsForSpots, getQualificationStatus } from './qualification';
 import { constructTeamData, constructTeamStats, teamSortFunction } from './team-stats';
 import { NUMS } from './utils';
@@ -42,6 +43,132 @@ export function getRoundFixtures(
     }
 
     return liveFixtures;
+}
+
+/**
+ * Get a row in the ladder.
+ *
+ * @param {boolean} isInTopSection if the team is in the top x of the competition
+ * @param {Array<TeamData>} allTeams
+ * @param {boolean} byePoints
+ * @param {PageVariables} pageVariables
+ * @param {String} currentComp
+ * @param {boolean} isPredictorPage
+ * @returns {LadderRow} React object
+ */
+export function getLadderRow(
+    isInTopSection: boolean,
+    allTeams: Array<TeamData>,
+    byePoints: boolean,
+    pageVariables: PageVariables,
+    currentComp: string,
+    isPredictorPage: boolean,
+) {
+    const { FINALS_TEAMS } = NUMS[currentComp];
+
+    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
+    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+
+    return teamList.map((team: TeamData) => {
+        // Check if team is currently playing
+        let isPlaying = false;
+
+        const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
+        const { name, stats, theme } = team;
+        const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
+
+        if (liveMatches) {
+            for (const match of liveMatches) {
+                isPlaying = match.awayTeam.nickName === name || match.homeTeam.nickName === name;
+
+                if (isPlaying) {
+                    break;
+                }
+            }
+        }
+
+        // Get team's next fixture if there is one
+        // If team has played (or is playing) get fixture from next round, otherwise get one from current round
+        let filteredFixture = null;
+        let nextTeam = '';
+        let nextTeamTooltip = '';
+        let nextMatchUrl = '';
+
+        const ladderPos = teamList.indexOf(team) + indexAdd;
+
+        if (!isPredictorPage) {
+            const playedAndByes = stats.played + stats.byes;
+
+            if (playedAndByes < currentRoundNo) {
+                filteredFixture = fixtures.filter((fixture: Match) => {
+                    return (name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName) &&
+                        fixture.matchMode === 'Pre';
+                });
+            }
+            else if (nextRoundInfo) {
+                filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+                    return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
+                });
+            }
+
+            if (filteredFixture && filteredFixture.length) {
+                const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0];
+
+                if (name === homeTeam.nickName) {
+                    nextTeam = awayTeam.theme.key;
+                    nextTeamTooltip = awayTeam.nickName;
+                }
+                else {
+                    nextTeam = homeTeam.theme.key;
+                    nextTeamTooltip = homeTeam.nickName;
+                }
+
+                nextMatchUrl = matchCentreUrl;
+            }
+            else if (currentRoundNo < ROUNDS) {
+                nextTeam = 'BYE';
+            }
+            else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
+                let finalsOppLadderPos = ladderPos;
+
+                // Finals Week 1: 1v4, 2v3, 5v8, 6v7
+                switch (ladderPos) {
+                    case 1:
+                    case 5:
+                        finalsOppLadderPos += 3;
+                        break;
+                    case 4:
+                    case 8:
+                        finalsOppLadderPos -= 3;
+                        break;
+                    case 2:
+                    case 6:
+                        finalsOppLadderPos += 1;
+                        break;
+                    case 3:
+                    case 7:
+                        finalsOppLadderPos -= 1;
+                        break;
+                    default:
+                        break;
+                }
+
+                nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+            }
+        }
+
+        return <LadderRow
+            key={theme.key}
+            teamData={team}
+            position={ladderPos.toString()}
+            isPlaying={isPlaying}
+            byePoints={byePoints}
+            predictorPage={isPredictorPage}
+            nextTeam={nextTeam}
+            nextTeamTooltip={nextTeamTooltip}
+            nextMatchUrl={nextMatchUrl}
+        />;
+    });
 }
 
 /**

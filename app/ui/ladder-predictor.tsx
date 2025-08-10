@@ -1,8 +1,5 @@
-/* eslint-disable max-len */
-import LadderRow from './ladder/ladder-row';
-import { TeamData, DrawInfo, Match } from '../lib/definitions';
 import { COLOURCSSVARIANTS as CCV, NUMS } from '@/app/lib/utils';
-import { getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
+import { getLadderRow, getPageVariables, updateFixturesToShow } from '@/app/lib/nrl-draw-utils';
 import Fixtures from './fixture/fixtures';
 import { useEffect, useState } from 'react';
 import PageDescription from './page-desc';
@@ -12,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
 import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
 import { RootState } from '../state/store';
+import { DrawInfo } from '../lib/definitions';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -77,7 +75,10 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         let predictionsClearArg = '';
 
         // Delete the entry from localStorage if both values are empty (i.e the match is not predicted)
-        if (Object.values(predictions[roundKey + 1][slug]).filter(val => (val === '' || Number.isNaN(val))).length === 2) {
+        const matchNotPredicted = Object.values(predictions[roundKey + 1][slug])
+            .filter(val => (val === '' || Number.isNaN(val))).length === 2;
+
+        if (matchNotPredicted) {
             delete predictions[roundKey + 1][slug];
 
             if (Object.values(predictions[roundKey + 1]).length === 0) {
@@ -223,8 +224,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
-                topHalf={getLadderRow(true, teams, pageVariables.liveMatches, comp)}
-                bottomHalf={getLadderRow(false, teams, pageVariables.liveMatches, comp)}
+                topHalf={getLadderRow(true, teams, true, pageVariables, comp, true)}
+                bottomHalf={getLadderRow(false, teams, true, pageVariables, comp, true)}
                 predictorPage={true}
             />
             <div className="flex flex-row gap-3 self-end">
@@ -255,51 +256,4 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
             />
         </div>
     );
-}
-
-/**
- * Get a row in the ladder. TODO move this to lib function (duplicated w/ ladder fn)
- *
- * @param {boolean} isInTopSection if the team is in the top x of the competition
- * @param {Array<TeamData>} allTeams
- * @param {Array<Match>} liveMatches
- * @param {String} currentComp
- * @returns {LadderRow} React object
- */
-function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMatches: Array<Match>, currentComp: string) {
-    const { FINALS_TEAMS } = NUMS[currentComp];
-
-    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
-    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
-
-    return teamList.map((team: TeamData) => {
-        let isPlaying = false;
-
-        if (liveMatches) {
-            for (const match of liveMatches) {
-                isPlaying = match.awayTeam.nickName === team.name || match.homeTeam.nickName === team.name;
-
-                if (isPlaying) {
-                    break;
-                }
-            }
-        }
-
-        const nextTeam = '';
-        const nextMatchUrl = '';
-
-        const ladderPos = teamList.indexOf(team) + indexAdd;
-
-        return <LadderRow
-            key={team.theme.key}
-            teamData={team}
-            position={ladderPos.toString()}
-            isPlaying={isPlaying}
-            byePoints={true}
-            predictorPage={true}
-            nextTeam={nextTeam}
-            nextTeamTooltip={''}
-            nextMatchUrl={nextMatchUrl}
-        />;
-    });
 }

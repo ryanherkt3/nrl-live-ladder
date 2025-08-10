@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 'use client';
 
 import Ladder from './ladder/ladder';
@@ -33,6 +32,19 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     // Get the data
     const fetcher = (url: string) => axios.get(url).then(res => res.data);
     const { data: seasonDraw, error, isLoading } = useSWR(apiUrl, fetcher);
+
+    const depsArray = [
+        currentComp,
+        comp,
+        currentYear,
+        mainSiteColour,
+        mainSiteColour.colour,
+        error,
+        isLoading,
+        seasonDraw,
+        dispatch,
+        compId
+    ];
 
     useEffect(() => {
         if (!error && !isLoading) {
@@ -71,7 +83,7 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
                 );
             }
         }
-    }, [currentComp, comp, currentYear, mainSiteColour, mainSiteColour.colour, error, isLoading, seasonDraw, dispatch, compId]);
+    }, depsArray);
 
     // Loading states
     if (error) {
