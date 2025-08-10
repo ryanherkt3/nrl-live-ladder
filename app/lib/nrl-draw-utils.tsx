@@ -1,5 +1,6 @@
 import RoundFixture from '../ui/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
+import { getMinPointsForSpots, getQualificationStatus } from './qualification';
 import { constructTeamData, constructTeamStats, teamSortFunction } from './team-stats';
 import { NUMS } from './utils';
 
@@ -85,6 +86,12 @@ export function getPageVariables(
         .sort((a: TeamData, b: TeamData) => {
             return teamSortFunction(true, a, b);
         });
+
+    // Get each team's qualification status - TODO fix maxpoints and ladder pages to use this attribute
+    const minPointsForSpots = getMinPointsForSpots(teamList, currentComp);
+    for (const team of teamList) {
+        team.qualificationStatus = getQualificationStatus(team, teamList, minPointsForSpots, currentComp);
+    }
 
     return {
         currentRoundInfo, byes, fixtures, currentRoundNo, nextRoundInfo, liveMatches, allTeams

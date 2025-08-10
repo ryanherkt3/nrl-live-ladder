@@ -291,7 +291,7 @@ function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMa
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
-        // TODO check in last 3 rounds if quali statuses update properly
+        // TODO check in last 3 rounds if quali statuses update properly (after predicting some matches)
         const qualificationStatus = getQualificationStatus(
             team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
         );

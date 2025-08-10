@@ -6,6 +6,8 @@ import PageDescription from './page-desc';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
+import LadderOutcomes from './max-points/ladder-outcomes';
+import { checkQualificationOutcomes } from '../lib/qualification-scenarios';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -17,7 +19,9 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const { liveMatches, currentRoundNo, fixtures, allTeams } =
+        getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const { ROUNDS } = NUMS[comp];
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
@@ -55,6 +59,12 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     )
                 }
             </div>
+            {
+                // Only show possible outcomes if 70% of the rounds have been completed
+                currentRoundNo <= ROUNDS && ((currentRoundNo / ROUNDS) * 100 >= 70) ?
+                    <LadderOutcomes outcomes={checkQualificationOutcomes(allTeams, comp, currentRoundNo, fixtures)} /> :
+                    null
+            }
         </div>
     );
 }

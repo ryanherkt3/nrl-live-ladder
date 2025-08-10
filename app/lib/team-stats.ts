@@ -24,12 +24,14 @@ export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: getMaxPoints(0, 0, currentComp)
+                maxPoints: getMaxPoints(0, 0, currentComp, true),
+                noByeMaxPoints: getMaxPoints(0, 0, currentComp, false)
             },
             name: team.name,
             theme: {
                 key: team.theme.key
-            }
+            },
+            qualificationStatus: ''
         });
     }
 
@@ -42,16 +44,20 @@ export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
  * @param {number} losses
  * @param {number} draws
  * @param {string} currentComp
+ * @param {boolean} includeByes. TODO update test coverage for this param
  * @returns {number}
  */
-export function getMaxPoints(losses: number, draws: number, currentComp: string) {
+export function getMaxPoints(losses: number, draws: number, currentComp: string, includeByes: boolean) {
     const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[currentComp];
 
     const perfectSeasonPts = WIN_POINTS * MATCHES;
 
-    const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
+    let maxPoints = perfectSeasonPts - (WIN_POINTS * losses) - draws;
+    if (includeByes) {
+        maxPoints += WIN_POINTS * byes;
+    }
 
-    return pointsLost + (WIN_POINTS * byes);
+    return maxPoints;
 }
 
 /**
@@ -86,7 +92,8 @@ export function constructTeamStats(
         team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
             (WIN_POINTS * team.stats.byes);
         team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp);
+        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, true);
+        team.stats.noByeMaxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, false);
     };
 
     for (const round of seasonDraw) {
