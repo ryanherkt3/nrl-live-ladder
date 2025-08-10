@@ -64,7 +64,6 @@ export function checkQualificationOutcomes(
 
     const { eliminated, finalsQualification: qualified, topFour, topTwo} = getMinPointsForSpots(teamList, currentComp);
 
-    // return Dolphins ✅
     const eliminatedInfluencers = teamList.filter((team) => {
         const { noByePoints } = team.stats;
 
@@ -79,7 +78,6 @@ export function checkQualificationOutcomes(
         }
     });
 
-    // return Roosters & Manly ✅
     const qualificationInfluencers = teamList.filter((team) => {
         const { noByeMaxPoints } = team.stats;
 
@@ -87,7 +85,6 @@ export function checkQualificationOutcomes(
         return qualified - noByeMaxPoints <= WIN_POINTS && noByeMaxPoints < qualified;
     });
 
-    // return Panthers, Broncos and Sharks ✅
     const topFourInfluencers = teamList.filter((team) => {
         const { noByeMaxPoints } = team.stats;
 
@@ -95,7 +92,6 @@ export function checkQualificationOutcomes(
         return topFour - noByeMaxPoints <= WIN_POINTS && noByeMaxPoints < topFour;
     });
 
-    // // return Storm & Bulldogs ✅
     const topTwoInfluencers = teamList.filter((team) => {
         const { noByeMaxPoints } = team.stats;
 
@@ -634,7 +630,7 @@ function finalsMappingFunction(
                         return 1;
                     }
 
-                    // Sort by result (W > D > DW > DL > L)
+                    // Sort by result (W > D > L > DW > DL)
                     if (a.result === 'W' && b.result !== 'W') {
                         return -1;
                     }
@@ -645,6 +641,12 @@ function finalsMappingFunction(
                         return -1;
                     }
                     if (a.result !== 'D' && b.result === 'D') {
+                        return 1;
+                    }
+                    if (a.result === 'L' && b.result !== 'L') {
+                        return -1;
+                    }
+                    if (a.result !== 'L' && b.result === 'L') {
                         return 1;
                     }
                     if (a.result === 'DW' && b.result !== 'DW') {
