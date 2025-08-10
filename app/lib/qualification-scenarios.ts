@@ -122,7 +122,6 @@ export function checkQualificationOutcomes(
     });
 
     // Check if OTHER TEAMS individual results affect a team or not
-    // TODO fix to consider byes (e.g. Magpies on bye in NSW cup eliminated with Panthers win)
     // Elimination influencer
     const eliminationResultMatrix = generateResultMatrix(eliminatedInfluencers.length, currentComp);
     teamList.map((team) => {
@@ -142,6 +141,11 @@ export function checkQualificationOutcomes(
                         eliminatedInfluencers[i].stats.wins++;
                     }
                 }
+
+                // Check if the team is on the bye this round
+                const isOnBye = byes.filter((bye) => {
+                    return bye.teamNickName === team.name;
+                }).length;
 
                 const { eliminated: elimPoints } = getMinPointsForSpots(teamList, currentComp);
 
@@ -168,25 +172,32 @@ export function checkQualificationOutcomes(
                 })[0];
 
                 // Steps:
-                // 1. Check if team is eliminated via other results (they win in this scenario).
+                // 1. Check if team is eliminated via other results (they win, or took the bye, in this scenario).
                 // 2. Check if team is eliminated if they draw or lose. If not, team cannot be eliminated this week
                 if (noByeMaxPoints <= elimPoints) {
                     let teamResString = '';
 
+                    let resultCanBeDraw = false;
                     for (let i = 0; i < elimResult.length; i++) {
+                        resultCanBeDraw = elimResult[i] === DRAW_POINTS;
+
                         const teamName = eliminatedInfluencers[i].name.replace(' ', '-');
                         const result = elimResult[i] === DRAW_POINTS ? 'draw|win' : 'win';
+
                         teamResString += `${teamName}&${result},`;
                     }
 
-                    pushResult = existingElimTeam.resultSets.filter((resSet) => {
-                        return resSet.result === 'DW';
-                    }).length === 0;
+                    if (existingElimTeam && existingElimTeam.resultSets) {
+                        pushResult = existingElimTeam.resultSets.filter((resSet) => {
+                            return resSet.result === 'DW';
+                        }).length === 0;
+                    }
 
-                    resultSet.result = 'DW';
+                    resultSet.result = resultCanBeDraw ? 'DW' : 'W';
                     resultSet.teamName = teamResString;
                 }
-                else if (noByeMaxPoints - DRAW_POINTS <= elimPoints || noByeMaxPoints - WIN_POINTS <= elimPoints) {
+                else if (!isOnBye &&
+                        (noByeMaxPoints - DRAW_POINTS <= elimPoints || noByeMaxPoints - WIN_POINTS <= elimPoints)) {
                     const drawIsSufficient = noByeMaxPoints - DRAW_POINTS <= elimPoints;
 
                     resultSet.result = drawIsSufficient ? 'DL' : 'L';
@@ -324,12 +335,15 @@ export function checkQualificationOutcomes(
                                 }
 
                                 // All dependent results are satisfied if this result is true AND
-                                // any other depndent results are true
-                                resultSet.requirementSatisfied =
+                                // any other dependent results are true
+                                resultSet.requirementSatisfied = isOnBye ?
+                                    allRequirementsSatisfied :
                                     allRequirementsSatisfied && resultSet.requirementSatisfied;
                             }
                             else {
-                                resultSet.requirementSatisfied = resultSet.requirementSatisfied && 'TBC';
+                                resultSet.requirementSatisfied = isOnBye ?
+                                    resultSet.requirementSatisfied :
+                                    resultSet.requirementSatisfied && 'TBC';
                             }
                         }
                     }
