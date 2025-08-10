@@ -12,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
 import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
 import { RootState } from '../state/store';
-import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -291,11 +290,6 @@ function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMa
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
-        // TODO check in last 3 rounds if quali statuses update properly (after predicting some matches)
-        const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
-        );
-
         return <LadderRow
             key={team.theme.key}
             teamData={team}
@@ -306,7 +300,6 @@ function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMa
             nextTeam={nextTeam}
             nextTeamTooltip={''}
             nextMatchUrl={nextMatchUrl}
-            qualificationStatus={qualificationStatus}
         />;
     });
 }

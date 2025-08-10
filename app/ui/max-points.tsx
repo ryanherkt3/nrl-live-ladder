@@ -5,7 +5,6 @@ import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
 import PageDescription from './page-desc';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
-import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 import LadderOutcomes from './max-points/ladder-outcomes';
 import { checkQualificationOutcomes } from '../lib/qualification-scenarios';
 
@@ -95,7 +94,7 @@ function getTableRows(
     const teamList = topHalf ? topTeams : bottomTeams;
 
     return teamList.map((team: TeamData) => {
-        const { stats, name: nickname } = team;
+        const { stats, name: nickname, qualificationStatus } = team;
         const { points: currentPoints, maxPoints } = stats;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
@@ -107,9 +106,6 @@ function getTableRows(
             bgClassName += `-${currentComp}`;
         }
 
-        const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
-        );
         const isEliminated = qualificationStatus === '(E)';
 
         const pointValues: TeamPoints = {

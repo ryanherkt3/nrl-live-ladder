@@ -53,8 +53,6 @@ export function getQualificationStatus(
         qualificationStatus = '(Q)';
     }
 
-    team.qualificationStatus = qualificationStatus;
-    // TODO remove return, check
     return qualificationStatus;
 }
 

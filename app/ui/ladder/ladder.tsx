@@ -10,7 +10,6 @@ import Standings from './../ladder/standings';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { teamSortFunction } from '@/app/lib/team-stats';
-import { getMinPointsForSpots, getQualificationStatus } from '@/app/lib/qualification';
 
 export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -221,10 +220,6 @@ function getLadderRow(
             nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
         }
 
-        const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
-        );
-
         return <LadderRow
             key={theme.key}
             teamData={team}
@@ -235,7 +230,6 @@ function getLadderRow(
             nextTeam={nextTeam}
             nextTeamTooltip={nextTeamTooltip}
             nextMatchUrl={nextMatchUrl}
-            qualificationStatus={qualificationStatus}
         />;
     });
 }

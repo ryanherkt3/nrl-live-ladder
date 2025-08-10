@@ -1,5 +1,5 @@
 import { TeamData, TeamStatuses } from '../../app/lib/definitions';
-import { qualificationTestTeams } from '../qualificationObject';
+import { qualificationTestTeams } from '../mocks/mockTestTeamObjects';
 import { getMinPointsForSpots, getQualificationStatus } from '../../app/lib/qualification';
 
 describe('test suite qualification', () => {
@@ -12,10 +12,10 @@ describe('test suite qualification', () => {
     });
 
     it('Returns the correct points required to achieve a certain status', () => {
-        expect(minPointsForSpots.eliminated).toBe(25);
-        expect(minPointsForSpots.finalsQualification).toBe(33);
-        expect(minPointsForSpots.topFour).toBe(35);
-        expect(minPointsForSpots.topTwo).toBe(40);
+        expect(minPointsForSpots.eliminated).toBe(21);
+        expect(minPointsForSpots.finalsQualification).toBe(29);
+        expect(minPointsForSpots.topFour).toBe(31);
+        expect(minPointsForSpots.topTwo).toBe(36);
     });
 
     it('Assigns the correct qualification statuses', () => {

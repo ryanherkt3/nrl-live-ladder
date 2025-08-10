@@ -44,7 +44,7 @@ export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
  * @param {number} losses
  * @param {number} draws
  * @param {string} currentComp
- * @param {boolean} includeByes. TODO update test coverage for this param
+ * @param {boolean} includeByes
  * @returns {number}
  */
 export function getMaxPoints(losses: number, draws: number, currentComp: string, includeByes: boolean) {

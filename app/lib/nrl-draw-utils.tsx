@@ -87,7 +87,7 @@ export function getPageVariables(
             return teamSortFunction(true, a, b);
         });
 
-    // Get each team's qualification status - TODO fix maxpoints and ladder pages to use this attribute
+    // Get each team's qualification status
     const minPointsForSpots = getMinPointsForSpots(teamList, currentComp);
     for (const team of teamList) {
         team.qualificationStatus = getQualificationStatus(team, teamList, minPointsForSpots, currentComp);
