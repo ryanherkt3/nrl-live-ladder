@@ -1,4 +1,4 @@
-import { TeamData, Match, QualificationConditions, QualificationResultSets } from './definitions';
+import { TeamData, Match, QualificationConditions, QualificationResultSets, ByeTeam } from './definitions';
 import { getMinPointsForSpots, getQualificationStatus } from './qualification';
 import { getMaxPoints } from './team-stats';
 import { NUMS } from './utils';
@@ -11,32 +11,21 @@ import { NUMS } from './utils';
  * @param {string} currentComp
  * @param {number} currentRoundNo
  * @param {Array<Match>} fixtures
+ * @param {Array<ByeTeam>} byes
  * @returns {Object}
  */
 export function checkQualificationOutcomes(
     teamList: Array<TeamData>,
     currentComp: string,
-    currentRoundNo: number,
-    fixtures: Array<Match>
+    fixtures: Array<Match>,
+    byes: Array<ByeTeam>
 ) {
     const { WIN_POINTS, DRAW_POINTS } = NUMS[currentComp];
 
-    // If a team has played in this round, use the fixtures list to remove this round's result from their stats
-    teamList.map((team) => {
-        if (team.stats.played + team.stats.byes >= currentRoundNo) {
-            let isHomeTeam = false;
-            const teamFixture = fixtures.filter((fixture) => {
-                isHomeTeam = isHomeTeam || fixture.homeTeam.nickName === team.name;
-                return isHomeTeam || fixture.awayTeam.nickName === team.name;
-            });
-
-            if (teamFixture[0]) {
-                const fixtureTeam = isHomeTeam ? teamFixture[0].homeTeam : teamFixture[0].awayTeam;
-                const opponent = isHomeTeam ? teamFixture[0].awayTeam : teamFixture[0].homeTeam;
-
-                const teamScore = fixtureTeam.score;
-                const oppScore = opponent.score;
-
+    // Use the fixtures list to remove this round's result from their stats
+    fixtures.map((fixture) => {
+        if (fixture.matchMode !== 'Pre') {
+            const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
                 team.stats.played -= 1;
                 team.stats.wins -= teamScore > oppScore ? 1 : 0;
                 team.stats.drawn -= teamScore === oppScore ? 1 : 0;
@@ -49,12 +38,45 @@ export function checkQualificationOutcomes(
                 team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
                 team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, true);
                 team.stats.noByeMaxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, false);
+            };
 
-                team.qualificationStatus = getQualificationStatus(
-                    team, teamList, getMinPointsForSpots(teamList, currentComp), currentComp
-                );
+            const homeTeam = teamList.find((team) => {
+                return fixture.homeTeam.nickName === team.name;
+            });
+            const awayTeam = teamList.find((team) => {
+                return fixture.awayTeam.nickName === team.name;
+            });
+
+            if (homeTeam && awayTeam) {
+                updateStats(homeTeam, fixture.homeTeam.score as number, fixture.awayTeam.score as number);
+                updateStats(awayTeam, fixture.awayTeam.score as number, fixture.homeTeam.score as number);
             }
         }
+    });
+
+    // Remove the bye points from the team on the bye
+    byes.map((bye) => {
+        const updateStats = (team: TeamData) => {
+            team.stats.byes -= 1;
+            team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
+                (WIN_POINTS * team.stats.byes);
+            team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
+        };
+
+        const byeTeam = teamList.find((team) => {
+            return bye.teamNickName === team.name;
+        });
+
+        if (byeTeam) {
+            updateStats(byeTeam);
+        }
+    });
+
+    // Then reset the qualification statuses as appropriate
+    teamList.map((team) => {
+        team.qualificationStatus = getQualificationStatus(
+            team, teamList, getMinPointsForSpots(teamList, currentComp), currentComp
+        );
     });
 
     const eliminatedTeams: QualificationConditions[] = [];
@@ -100,6 +122,7 @@ export function checkQualificationOutcomes(
     });
 
     // Check if OTHER TEAMS individual results affect a team or not
+    // TODO fix to consider byes (e.g. Magpies on bye in NSW cup eliminated with Panthers win)
     // Elimination influencer
     const eliminationResultMatrix = generateResultMatrix(eliminatedInfluencers.length, currentComp);
     teamList.map((team) => {
@@ -215,6 +238,9 @@ export function checkQualificationOutcomes(
                             }
                             resultSet.requirementSatisfied = requirementSatisfied;
                         }
+                        else {
+                            resultSet.requirementSatisfied = 'TBC';
+                        }
 
                         // Check if dependent results have happened
                         let allDependentsSatisfied = true;
@@ -257,6 +283,10 @@ export function checkQualificationOutcomes(
                                         allDependentsSatisfied =
                                             allDependentsSatisfied && depResult.requirementSatisfied;
                                     }
+                                    else {
+                                        allDependentsSatisfied = false;
+                                        depResult.requirementSatisfied = depResult.requirementSatisfied && 'TBC';
+                                    }
                                 }
                             }
                             resultSet.requirementSatisfied = allDependentsSatisfied;
@@ -298,6 +328,9 @@ export function checkQualificationOutcomes(
                                 resultSet.requirementSatisfied =
                                     allRequirementsSatisfied && resultSet.requirementSatisfied;
                             }
+                            else {
+                                resultSet.requirementSatisfied = resultSet.requirementSatisfied && 'TBC';
+                            }
                         }
                     }
 
@@ -338,6 +371,61 @@ export function checkQualificationOutcomes(
     // Top two influencer
     const t2ResultMatrix = generateResultMatrix(topTwoInfluencers.length, currentComp);
     topTwoTeams = finalsMappingFunction(teamList, t2ResultMatrix, topTwoInfluencers, currentComp, '(T4)', fixtures);
+
+    // Update team stats to include the current round's fixtures and byes after calcuating qualifying scenarios
+    fixtures.map((fixture) => {
+        if (fixture.matchMode !== 'Pre') {
+            const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
+                team.stats.played += 1;
+                team.stats.wins += teamScore > oppScore ? 1 : 0;
+                team.stats.drawn += teamScore === oppScore ? 1 : 0;
+                team.stats.lost += teamScore < oppScore ? 1 : 0;
+                team.stats['points for'] += typeof teamScore === 'number' ? teamScore : 0;
+                team.stats['points against'] += typeof oppScore === 'number' ? oppScore : 0;
+                team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
+                team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
+                    (WIN_POINTS * team.stats.byes);
+                team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
+                team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, true);
+                team.stats.noByeMaxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, false);
+            };
+
+            const homeTeam = teamList.find((team) => {
+                return fixture.homeTeam.nickName === team.name;
+            });
+            const awayTeam = teamList.find((team) => {
+                return fixture.awayTeam.nickName === team.name;
+            });
+
+            if (homeTeam && awayTeam) {
+                updateStats(homeTeam, fixture.homeTeam.score as number, fixture.awayTeam.score as number);
+                updateStats(awayTeam, fixture.awayTeam.score as number, fixture.homeTeam.score as number);
+            }
+        }
+    });
+
+    byes.map((bye) => {
+        const updateStats = (team: TeamData) => {
+            team.stats.byes += 1;
+            team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
+                (WIN_POINTS * team.stats.byes);
+            team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
+        };
+
+        const byeTeam = teamList.find((team) => {
+            return bye.teamNickName === team.name;
+        });
+
+        if (byeTeam) {
+            updateStats(byeTeam);
+        }
+    });
+
+    teamList.map((team) => {
+        team.qualificationStatus = getQualificationStatus(
+            team, teamList, getMinPointsForSpots(teamList, currentComp), currentComp
+        );
+    });
 
     return {
         eliminatedTeams,
@@ -516,6 +604,9 @@ function finalsMappingFunction(
                             }
                             resultSet.requirementSatisfied = requirementSatisfied;
                         }
+                        else {
+                            resultSet.requirementSatisfied = 'TBC';
+                        }
 
                         // Check if dependent results have happened
                         if (resultSet.dependentResults && resultSet.dependentResults.length) {
@@ -555,7 +646,15 @@ function finalsMappingFunction(
                                         depResult.requirementSatisfied =
                                             depResult.requirementSatisfied && depRequirementSatisfied;
                                     }
+                                    else {
+                                        depResult.requirementSatisfied = depResult.requirementSatisfied && 'TBC';
+                                    }
                                 }
+
+                                // Update the overall requirementSatisfied flag of the result set
+                                // (team + deps is only true if both are true)
+                                resultSet.requirementSatisfied =
+                                    resultSet.requirementSatisfied && depResult.requirementSatisfied;
                             }
                         }
                     }
@@ -594,6 +693,9 @@ function finalsMappingFunction(
                                 // any other depndent results are true
                                 resultSet.requirementSatisfied =
                                     allRequirementsSatisfied && resultSet.requirementSatisfied;
+                            }
+                            else {
+                                resultSet.requirementSatisfied = resultSet.requirementSatisfied && 'TBC';
                             }
                         }
                     }

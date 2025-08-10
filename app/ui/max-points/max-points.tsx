@@ -18,7 +18,7 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { liveMatches, currentRoundNo, fixtures, allTeams } =
+    const { liveMatches, currentRoundNo, fixtures, allTeams, byes } =
         getPageVariables(Object.values(seasonDraw), false, comp, year);
     const { ROUNDS } = NUMS[comp];
 
@@ -61,7 +61,9 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
             {
                 // Only show possible outcomes if 70% of the rounds have been completed
                 currentRoundNo <= ROUNDS && ((currentRoundNo / ROUNDS) * 100 >= 70) ?
-                    <LadderOutcomes outcomes={checkQualificationOutcomes(allTeams, comp, currentRoundNo, fixtures)} /> :
+                    <LadderOutcomes
+                        outcomes={checkQualificationOutcomes(allTeams, comp, fixtures, byes)}
+                    /> :
                     null
             }
         </div>
@@ -95,7 +97,7 @@ function getTableRows(
 
     return teamList.map((team: TeamData) => {
         const { stats, name: nickname, qualificationStatus } = team;
-        const { points: currentPoints, maxPoints } = stats;
+        const { points: currentPoints, maxPoints, noByePoints, noByeMaxPoints } = stats;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
@@ -112,7 +114,9 @@ function getTableRows(
             lowestCurrentPoints: lastPlacePts,
             highestMaxPoints: highestMaxPts,
             currentPoints: currentPoints,
-            maxPoints: maxPoints
+            maxPoints: maxPoints,
+            currentNoByePoints: noByePoints,
+            maxNoByePoints: noByeMaxPoints
         };
 
         let isPlaying = false;
@@ -265,31 +269,28 @@ function getLadderStatus(
     teamInfo: TeamData,
     currentComp: string,
 ) {
-    const { currentPoints, maxPoints } = pointValues;
-    const isFinished = currentPoints === maxPoints;
-    const pointsWithByes = ((teamInfo.stats.wins + NUMS[currentComp].BYES) * 2) + teamInfo.stats.drawn;
+    const { currentPoints, maxPoints, currentNoByePoints, maxNoByePoints } = pointValues;
+    const isFinished = currentNoByePoints === maxNoByePoints;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
-        return filteredTeamPointsWithByes > maxPoints ||
+        return filteredTeamStats.noByePoints > maxNoByePoints ||
             (isFinished && team.name !== nickname &&
                 filteredTeamStats.played === NUMS[currentComp].MATCHES &&
-                filteredTeamPointsWithByes >= maxPoints &&
+                filteredTeamStats.noByePoints >= maxNoByePoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );
     }).length;
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         return team.name !== nickname && // not same team
             (
-                (pointsWithByes <= filteredTeamStats.maxPoints) ||
+                (teamInfo.stats.noByePoints <= filteredTeamStats.noByeMaxPoints) ||
                 (
-                    filteredTeamPointsWithByes === pointsWithByes &&
+                    filteredTeamStats.noByePoints === teamInfo.stats.noByePoints &&
                     filteredTeamStats['points difference'] > teamInfo.stats['points difference']
                 )
             );

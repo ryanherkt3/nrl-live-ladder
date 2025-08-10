@@ -105,6 +105,8 @@ export type TeamPoints = {
     highestMaxPoints: number,
     currentPoints: number,
     maxPoints: number,
+    currentNoByePoints: number,
+    maxNoByePoints: number,
 }
 
 export type PageVariables = {

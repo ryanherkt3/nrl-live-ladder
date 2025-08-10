@@ -67,7 +67,7 @@ export function getMinPointsForSpots(
         return b.stats.noByeMaxPoints - a.stats.noByeMaxPoints;
     });
 
-    const lowestPlacedFinalsTeam = teamsByMaxPoints[FINALS_TEAMS - 1];
+    const lowestPlacedFinalsTeam = allTeams[FINALS_TEAMS - 1];
     const { wins: lowestPlacedFinalsTeamWins, drawn: lowestPlacedFinalsTeamDraws } = lowestPlacedFinalsTeam.stats;
 
     const minPointsForSpots: TeamStatuses = {
