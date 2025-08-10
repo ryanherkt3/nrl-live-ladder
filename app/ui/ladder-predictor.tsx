@@ -4,7 +4,7 @@ import Fixtures from './fixture/fixtures';
 import { useEffect, useState } from 'react';
 import PageDescription from './page-desc';
 import Standings from './ladder/standings';
-import LadderPredictorButton from './ladder-predictor-button';
+import LadderPredictorButton from './buttons/ladder-predictor-button';
 import { useDispatch, useSelector } from 'react-redux';
 import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
 import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';

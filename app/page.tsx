@@ -1,7 +1,7 @@
 'use client';
 
 // import { Metadata } from 'next';
-import CompButton from './ui/comp-button';
+import CompButton from './ui/buttons/comp-button';
 import PageDescription from './ui/page-desc';
 
 // export const metadata: Metadata = {

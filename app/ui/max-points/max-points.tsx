@@ -1,12 +1,12 @@
-import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
-import { DrawInfo, Match, TeamData, TeamPoints } from '../lib/definitions';
+import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../../lib/utils';
+import { DrawInfo, Match, TeamData, TeamPoints } from '../../lib/definitions';
 import clsx from 'clsx';
-import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
-import PageDescription from './page-desc';
+import { getRoundFixtures, getPageVariables } from '../../lib/nrl-draw-utils';
+import PageDescription from '../page-desc';
 import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-import LadderOutcomes from './max-points/ladder-outcomes';
-import { checkQualificationOutcomes } from '../lib/qualification-scenarios';
+import { RootState } from '../../state/store';
+import LadderOutcomes from './ladder-outcomes';
+import { checkQualificationOutcomes } from '../../lib/qualification-scenarios';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);

@@ -6,7 +6,7 @@ import axios from 'axios';
 import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor';
-import MaxPoints from './max-points';
+import MaxPoints from './max-points/max-points';
 import { COMPID, NUMS } from '../lib/utils';
 import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';
 import { useDispatch, useSelector } from 'react-redux';
