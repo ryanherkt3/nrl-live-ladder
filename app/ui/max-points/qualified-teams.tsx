@@ -141,7 +141,6 @@ function getListOfResults(results: Array<QualificationDisplay>) {
         const { requirementString } = result;
 
         // If one result has been achieved, set all others to Not Applicable (N/A)
-        // TODO if a W/D/L result has been satisfied, set the DW/DL results to N/A
         let { requirementSatisfied } = result;
         requirementSatisfied = resultAchieved && requirementSatisfied !== true ? 'N/A' : requirementSatisfied;
 
