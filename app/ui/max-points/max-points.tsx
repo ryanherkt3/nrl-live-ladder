@@ -1,11 +1,12 @@
-import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
-import { DrawInfo, Match, TeamData, TeamPoints } from '../lib/definitions';
+import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../../lib/utils';
+import { DrawInfo, Match, TeamData, TeamPoints } from '../../lib/definitions';
 import clsx from 'clsx';
-import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
-import PageDescription from './page-desc';
+import { getRoundFixtures, getPageVariables } from '../../lib/nrl-draw-utils';
+import PageDescription from '../page-desc';
 import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
-import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
+import { RootState } from '../../state/store';
+import LadderOutcomes from './ladder-outcomes';
+import { checkQualificationOutcomes } from '../../lib/qualification-scenarios';
 
 export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -17,7 +18,9 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const { liveMatches, currentRoundNo, fixtures, allTeams, byes } =
+        getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const { ROUNDS } = NUMS[comp];
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
@@ -55,6 +58,14 @@ export default function MaxPoints({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                     )
                 }
             </div>
+            {
+                // Only show possible outcomes if 70% of the rounds have been completed
+                currentRoundNo <= ROUNDS && ((currentRoundNo / ROUNDS) * 100 >= 70) ?
+                    <LadderOutcomes
+                        outcomes={checkQualificationOutcomes(allTeams, comp, fixtures, byes)}
+                    /> :
+                    null
+            }
         </div>
     );
 }
@@ -85,8 +96,8 @@ function getTableRows(
     const teamList = topHalf ? topTeams : bottomTeams;
 
     return teamList.map((team: TeamData) => {
-        const { stats, name: nickname } = team;
-        const { points: currentPoints, maxPoints } = stats;
+        const { stats, name: nickname, qualificationStatus } = team;
+        const { points: currentPoints, maxPoints, noByePoints, noByeMaxPoints } = stats;
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
@@ -97,16 +108,15 @@ function getTableRows(
             bgClassName += `-${currentComp}`;
         }
 
-        const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
-        );
         const isEliminated = qualificationStatus === '(E)';
 
         const pointValues: TeamPoints = {
             lowestCurrentPoints: lastPlacePts,
             highestMaxPoints: highestMaxPts,
             currentPoints: currentPoints,
-            maxPoints: maxPoints
+            maxPoints: maxPoints,
+            currentNoByePoints: noByePoints,
+            maxNoByePoints: noByeMaxPoints
         };
 
         let isPlaying = false;
@@ -259,31 +269,28 @@ function getLadderStatus(
     teamInfo: TeamData,
     currentComp: string,
 ) {
-    const { currentPoints, maxPoints } = pointValues;
-    const isFinished = currentPoints === maxPoints;
-    const pointsWithByes = ((teamInfo.stats.wins + NUMS[currentComp].BYES) * 2) + teamInfo.stats.drawn;
+    const { currentPoints, maxPoints, currentNoByePoints, maxNoByePoints } = pointValues;
+    const isFinished = currentNoByePoints === maxNoByePoints;
 
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
-        return filteredTeamPointsWithByes > maxPoints ||
+        return filteredTeamStats.noByePoints > maxNoByePoints ||
             (isFinished && team.name !== nickname &&
                 filteredTeamStats.played === NUMS[currentComp].MATCHES &&
-                filteredTeamPointsWithByes >= maxPoints &&
+                filteredTeamStats.noByePoints >= maxNoByePoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );
     }).length;
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
 
         return team.name !== nickname && // not same team
             (
-                (pointsWithByes <= filteredTeamStats.maxPoints) ||
+                (teamInfo.stats.noByePoints <= filteredTeamStats.noByeMaxPoints) ||
                 (
-                    filteredTeamPointsWithByes === pointsWithByes &&
+                    filteredTeamStats.noByePoints === teamInfo.stats.noByePoints &&
                     filteredTeamStats['points difference'] > teamInfo.stats['points difference']
                 )
             );
