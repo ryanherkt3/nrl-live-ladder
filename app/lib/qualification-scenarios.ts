@@ -740,6 +740,16 @@ function finalsMappingFunction(
                     // Check if result is dependent on others.
                     let isDependent = false;
                     for (let i = 0; i < influencers.length; i++) {
+                        // Check if the influencer team is on the bye this round.
+                        // Move to next iteration of the loop if they are.
+                        const influencerOnBye = byes.filter((bye) => {
+                            return bye.teamNickName === influencers[i].name;
+                        }).length;
+
+                        if (influencerOnBye) {
+                            continue;
+                        }
+
                         const initMaxPoints = influencers[i].stats.noByeMaxPoints + WIN_POINTS - qualiResult[i];
                         const pointsIncrement = matchOutcome === 'W' ? WIN_POINTS : DRAW_POINTS;
 
