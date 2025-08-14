@@ -45,6 +45,7 @@ export type Match = {
 
 export type ByeTeam = {
     isCurrentRound: boolean;
+    roundTitle: string;
     teamNickName: string;
     theme: TeamTheme;
 }

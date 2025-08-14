@@ -185,11 +185,11 @@ export function checkQualificationOutcomes(
                     for (let i = 0; i < elimResult.length; i++) {
                         // Check if the influencer team is on the bye this round. If so, do not add
                         // them to the result
-                        const isOnBye = byes.filter((bye) => {
+                        const influencerOnBye = byes.filter((bye) => {
                             return bye.teamNickName === eliminatedInfluencers[i].name;
                         }).length;
 
-                        if (!isOnBye) {
+                        if (!influencerOnBye) {
                             resultCanBeDraw = elimResult[i] === DRAW_POINTS;
 
                             const teamName = eliminatedInfluencers[i].name.replace(' ', '-');
@@ -217,7 +217,7 @@ export function checkQualificationOutcomes(
                     // Check if result is dependent on others
                     let isDependent = false;
                     for (let i = 0; i < eliminatedInfluencers.length; i++) {
-                        const initNoByePoints = eliminatedInfluencers[i].stats.noByePoints - WIN_POINTS + elimResult[i];
+                        const initNoByePoints = eliminatedInfluencers[i].stats.noByePoints - elimResult[i];
                         const decrement = matchOutcome === 'DL' ? DRAW_POINTS : WIN_POINTS;
 
                         // A result is dependent if the max points after a team's result is greater than or equal to
@@ -232,11 +232,11 @@ export function checkQualificationOutcomes(
                             for (let i = 0; i < elimResult.length; i++) {
                                 // Check if the influencer team is on the bye this round. If so, do not add
                                 // them to the result
-                                const isOnBye = byes.filter((bye) => {
+                                const influencerOnBye = byes.filter((bye) => {
                                     return bye.teamNickName === eliminatedInfluencers[i].name;
                                 }).length;
 
-                                if (elimResult[i] > 0 && !isOnBye) {
+                                if (elimResult[i] > 0 && !influencerOnBye) {
                                     const teamName = eliminatedInfluencers[i].name.replace(' ', '-');
                                     const result = elimResult[i] === DRAW_POINTS ? 'draw|win' : 'win';
                                     teamResString += `${teamName}&${result},`;
@@ -490,11 +490,11 @@ export function checkQualificationOutcomes(
                 for (const influencer of influencerNames) {
                     // Check if the influencer team is on the bye this round. If so, do not add
                     // them to the catch all string
-                    const isOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes.filter((bye) => {
                         return bye.teamNickName === influencer;
                     }).length;
 
-                    if (!isOnBye) {
+                    if (!influencerOnBye) {
                         catchAllResultString += `${influencer}&draw|win,`;
                     }
                 }
@@ -644,16 +644,32 @@ function finalsMappingFunction(
     teamList.map((team) => {
         // Only check if the team's qualification status matches
         if (team.qualificationStatus === qualificationCriteria) {
-            const { noByePoints } = team.stats;
-
             for (const qualiResult of resultMatrix) {
-                // Assign points / max points to each team
+                // Assign points / max points to each team - but only if they are not on a bye
+                // this round (that assignment happens below)
                 for (let i = 0; i < influencers.length; i++) {
-                    influencers[i].stats.noByePoints += qualiResult[i];
-                    influencers[i].stats.noByeMaxPoints -= WIN_POINTS - qualiResult[i];
+                    const influencerOnBye = byes.filter((bye) => {
+                        return bye.teamNickName === influencers[i].name;
+                    }).length;
+
+                    if (!influencerOnBye) {
+                        influencers[i].stats.points += qualiResult[i];
+                        influencers[i].stats.noByePoints += qualiResult[i];
+                        influencers[i].stats.maxPoints += WIN_POINTS - qualiResult[i];
+                        influencers[i].stats.noByeMaxPoints -= WIN_POINTS - qualiResult[i];
+                    }
                 }
 
-                const { finalsQualification, topFour, topTwo } = getMinPointsForSpots(teamList, currentComp);
+                // Check if the team is on the bye this round. If so, assign bye points if not done already
+                const isOnBye = byes.filter((bye) => {
+                    return bye.teamNickName === team.name;
+                }).length;
+
+                const minPointsTeamList = [...teamList].sort((a: TeamData, b: TeamData) => {
+                    return teamSortFunction(true, a, b);
+                });
+
+                const { finalsQualification, topFour, topTwo } = getMinPointsForSpots(minPointsTeamList, currentComp);
 
                 let finalsPoints = finalsQualification;
                 if (qualificationCriteria === '(Q)') {
@@ -688,17 +704,17 @@ function finalsMappingFunction(
                 // Steps:
                 // 1. Check if team can get in on other results. If not,
                 // 2. Check if team can get in if they draw or win. If not, team cannot meet criteria this week
-                if (noByePoints >= finalsPoints) {
+                if (team.stats.noByePoints >= finalsPoints) {
                     let teamResString = '';
 
                     for (let i = 0; i < qualiResult.length; i++) {
                         // Check if the influencer team is on the bye this round. If so, do not add
                         // them to the result
-                        const isOnBye = byes.filter((bye) => {
+                        const influencerOnBye = byes.filter((bye) => {
                             return bye.teamNickName === influencers[i].name;
                         }).length;
 
-                        if (!isOnBye) {
+                        if (!influencerOnBye) {
                             const teamName = influencers[i].name.replace(' ', '-');
                             const result = qualiResult[i] === DRAW_POINTS ? 'draw|loss' : 'loss';
                             teamResString += `${teamName}&${result},`;
@@ -714,12 +730,14 @@ function finalsMappingFunction(
                     resultSet.result = 'DL';
                     resultSet.teamName = teamResString;
                 }
-                else if (noByePoints + DRAW_POINTS >= finalsPoints || noByePoints + WIN_POINTS >= finalsPoints) {
-                    const matchOutcome = noByePoints + DRAW_POINTS >= finalsPoints ? 'DW' : 'W';
+                else if (!isOnBye &&
+                        (team.stats.noByePoints + DRAW_POINTS >= finalsPoints ||
+                        team.stats.noByePoints + WIN_POINTS >= finalsPoints)) {
+                    const matchOutcome = team.stats.noByePoints + DRAW_POINTS >= finalsPoints ? 'DW' : 'W';
                     resultSet.result = matchOutcome;
                     resultSet.teamName = 'self';
 
-                    // Check if result is dependent on others. TODO for loop may be faulty - check later
+                    // Check if result is dependent on others.
                     let isDependent = false;
                     for (let i = 0; i < influencers.length; i++) {
                         const initMaxPoints = influencers[i].stats.noByeMaxPoints + WIN_POINTS - qualiResult[i];
@@ -727,7 +745,7 @@ function finalsMappingFunction(
 
                         // A result is dependent if the starting max points of at least one team is higher than
                         // the team's new points tally after the draw or win
-                        if (noByePoints + pointsIncrement <= initMaxPoints) {
+                        if (team.stats.noByePoints + pointsIncrement <= initMaxPoints) {
                             isDependent = true;
                         }
 
@@ -735,13 +753,13 @@ function finalsMappingFunction(
                             let teamResString = '';
 
                             for (let i = 0; i < qualiResult.length; i++) {
-                                // Check if the influencer team is on the bye this round. If so, do not add
-                                // them to the result
-                                const isOnBye = byes.filter((bye) => {
+                                // Check if the influencer team is on the bye this round.
+                                // Only add to result string if they are not.
+                                const influencerOnBye = byes.filter((bye) => {
                                     return bye.teamNickName === influencers[i].name;
                                 }).length;
 
-                                if (!isOnBye) {
+                                if (!influencerOnBye) {
                                     const teamName = influencers[i].name.replace(' ', '-');
                                     const result = qualiResult[i] === DRAW_POINTS ? 'draw|loss' : 'loss';
                                     teamResString += `${teamName}&${result},`;
@@ -913,10 +931,19 @@ function finalsMappingFunction(
                     }
                 }
 
-                // Unassign points / max points to each team (i.e. reset them)
+                // Unassign points / max points to each team (i.e. reset them) - but only if they are not on a bye
+                // this round (that unassignment happens below)
                 for (let j = 0; j < influencers.length; j++) {
-                    influencers[j].stats.noByePoints -= qualiResult[j];
-                    influencers[j].stats.noByeMaxPoints += WIN_POINTS - qualiResult[j];
+                    const influencerOnBye = byes.filter((bye) => {
+                        return bye.teamNickName === influencers[j].name;
+                    }).length;
+
+                    if (!influencerOnBye) {
+                        influencers[j].stats.points -= qualiResult[j];
+                        influencers[j].stats.noByePoints -= qualiResult[j];
+                        influencers[j].stats.maxPoints += WIN_POINTS - qualiResult[j];
+                        influencers[j].stats.noByeMaxPoints += WIN_POINTS - qualiResult[j];
+                    }
                 }
             }
 
@@ -979,11 +1006,11 @@ function finalsMappingFunction(
                 for (const influencer of influencerNames) {
                     // Check if the influencer team is on the bye this round. If so, do not add
                     // them to the catch all string
-                    const isOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes.filter((bye) => {
                         return bye.teamNickName === influencer;
                     }).length;
 
-                    if (!isOnBye) {
+                    if (!influencerOnBye) {
                         catchAllResultString += `${influencer}&draw|loss,`;
                     }
                 }
