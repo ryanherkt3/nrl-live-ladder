@@ -6,12 +6,14 @@ export default function TeamImage(
     {
         matchLink,
         teamKey,
-        tooltip
+        tooltip,
+        useLight,
     }:
     {
         matchLink: string,
         teamKey: string,
         tooltip: string
+        useLight: boolean
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -19,14 +21,18 @@ export default function TeamImage(
 
     let imageType = 'badge.png';
     if (comp.includes('nrl')) {
-        imageType = 'badge-basic24.svg';
+        const lightImageTeams = ['cowboys', 'dragons', 'rabbitohs', 'sharks', 'storm'];
+
+        imageType = `badge-basic24${useLight && lightImageTeams.includes(teamKey) ? '-light' : ''}.svg`;
     }
     else if (comp === 'nsw') {
         if (teamKey === 'jets' || teamKey === 'north-sydney-bears' || teamKey === 'western-suburbs-magpies') {
             imageType = 'badge.svg';
         }
         else {
-            imageType = 'badge-basic24.svg';
+            const lightImageTeams = ['dragons', 'rabbitohs'];
+
+            imageType = `badge-basic24${useLight && lightImageTeams.includes(teamKey) ? '-light' : ''}.svg`;
         }
     }
     else if (comp === 'qld') {

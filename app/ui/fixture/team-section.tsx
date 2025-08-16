@@ -51,7 +51,7 @@ export default function TeamSection(
                     }
                 )
             }>
-                <TeamImage matchLink='' teamKey={imgKey} tooltip={teamName} />
+                <TeamImage matchLink='' teamKey={imgKey} tooltip={teamName} useLight={false} />
             </div>
             {
                 getScoreSegment(

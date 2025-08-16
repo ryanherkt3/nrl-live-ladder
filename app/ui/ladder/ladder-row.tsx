@@ -34,22 +34,39 @@ export default function LadderRow(
 
     let bgClassName = name.toLowerCase().replace(' ', '');
 
-    if (name === 'Broncos' || name === 'Roosters') {
+    if (name === 'Roosters') { // NRL
         bgClassName += '-gradient';
     }
-    else if (name === 'Bears' || name === 'Jets' || name === 'Magpies') {
+    else if (name === 'Bears' || name === 'Jets' || name === 'Magpies') { // NSW & QLD
         bgClassName += `-${comp}`;
     }
 
     const qualifiedStatuses = ['(T2)', '(T4)', '(Q)'];
     const isQualified = qualifiedStatuses.includes(qualificationStatus);
+    const isEliminated = qualificationStatus === '(E)';
 
     // const redBgTeams = ['Dolphins', 'Dragons', 'Bears', 'Capras', 'Hunters'];
+
     const blackTextQualifiedTeams = [
         'Eels', 'Panthers', // NRL
-        'Bears', // NSW Cup
         'Clydesdales', 'Seagulls', 'Cutters', 'Tigers', 'WM Seagulls', 'Blackhawks' // QLD
     ];
+    if (comp === 'nsw') {
+        blackTextQualifiedTeams.push('Bears'); // NSW
+    }
+
+    const darkBgQualifiedTeams = [
+        'Warriors', 'Cowboys', 'Rabbitohs', 'Bulldogs', 'Broncos', 'Sea Eagles', 'Knights' // NRL
+    ];
+    if (comp === 'nsw') {
+        darkBgQualifiedTeams.push('Magpies'); // NSW
+    }
+
+    const lightImageTeams = ['Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
+
+    const useLightImageForNextGame = isQualified &&
+        lightImageTeams.includes(nextTeamTooltip) &&
+        darkBgQualifiedTeams.includes(name);
 
     return (
         <div
@@ -57,7 +74,7 @@ export default function LadderRow(
                 clsx(
                     'flex flex-row gap-2 py-1 items-center text-center text-lg',
                     {
-                        'bg-faded': qualificationStatus === '(E)',
+                        'bg-faded': isEliminated,
                         [`bg-${bgClassName} text-black`]: isQualified && blackTextQualifiedTeams.includes(name),
                         [`bg-${bgClassName} text-white`]: isQualified && !blackTextQualifiedTeams.includes(name),
                     }
@@ -81,7 +98,12 @@ export default function LadderRow(
                 )
             }>
                 <div className='max-xs:hidden xs:block'>
-                    <TeamImage matchLink='' teamKey={theme.key} tooltip={name} />
+                    <TeamImage
+                        matchLink=''
+                        teamKey={theme.key}
+                        tooltip={name}
+                        useLight={isQualified && lightImageTeams.includes(name)}
+                    />
                 </div>
                 <div className='max-xs:px-0 xs:px-3 text-left'>
                     <span className='max-md:hidden md:block'>{name}</span>
@@ -114,7 +136,7 @@ export default function LadderRow(
                 )
             }>
                 {
-                    getNextFixture(nextTeam, nextTeamTooltip, nextMatchUrl)
+                    getNextFixture(nextTeam, nextTeamTooltip, nextMatchUrl, useLightImageForNextGame)
                 }
             </div>
             <div className="w-[15%] sm:w-[6%] font-semibold">
@@ -130,15 +152,23 @@ export default function LadderRow(
  * @param {string} nextTeam
  * @param {string} nextTeamTooltip
  * @param {string} nextMatchUrl
+ * @param {boolean} useLightSVG
  * @returns {string | undefined | TeamImage}
  */
-function getNextFixture(nextTeam: string, nextTeamTooltip: string, nextMatchUrl: string) {
+function getNextFixture(nextTeam: string, nextTeamTooltip: string, nextMatchUrl: string, useLightSVG: boolean) {
     switch (nextTeam) {
         case 'BYE':
             return 'BYE';
         case '':
             return null;
         default:
-            return <TeamImage matchLink={nextMatchUrl} teamKey={nextTeam} tooltip={nextTeamTooltip} />;
+            return (
+                <TeamImage
+                    matchLink={nextMatchUrl}
+                    teamKey={nextTeam}
+                    tooltip={nextTeamTooltip}
+                    useLight={useLightSVG}
+                />
+            );
     }
 }
