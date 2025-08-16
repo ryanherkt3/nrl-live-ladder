@@ -58,7 +58,7 @@ export default function Standings(
                 <div className="w-[15%] sm:w-[6%]" title="Points">PTS</div>
             </div>
             {topHalf}
-            <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
+            <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]} mx-[-8px]`}></div>
             {bottomHalf}
         </div>
     );

@@ -92,7 +92,15 @@ export default function Fixtures(
                                         return team.theme.key === key;
                                     })[0].name;
 
-                                    return <TeamImage key={key} matchLink='' teamKey={key} tooltip={imageTooltip} />;
+                                    return (
+                                        <TeamImage
+                                            key={key}
+                                            matchLink=''
+                                            teamKey={key}
+                                            tooltip={imageTooltip}
+                                            useLight={false}
+                                        />
+                                    );
                                 })
                             }
                         </div>
