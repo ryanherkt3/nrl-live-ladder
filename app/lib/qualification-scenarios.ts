@@ -372,7 +372,7 @@ export function checkQualificationOutcomes(
 
                                 // Update the overall requirementSatisfied flag of the result set
                                 // (team + deps is only true if both are true)
-                                if (resultSet.requirementSatisfied !== 'TBC') {
+                                if (depResult.requirementSatisfied !== 'TBC') {
                                     resultSet.requirementSatisfied =
                                        resultSet.requirementSatisfied && depResult.requirementSatisfied;
                                 }
@@ -676,7 +676,7 @@ function finalsMappingFunction(
                     if (!influencerOnBye) {
                         influencers[i].stats.points += qualiResult[i];
                         influencers[i].stats.noByePoints += qualiResult[i];
-                        influencers[i].stats.maxPoints += WIN_POINTS - qualiResult[i];
+                        influencers[i].stats.maxPoints -= WIN_POINTS - qualiResult[i];
                         influencers[i].stats.noByeMaxPoints -= WIN_POINTS - qualiResult[i];
                     }
                 }
@@ -960,11 +960,10 @@ function finalsMappingFunction(
 
                                 // All dependent results are satisfied if this result is true AND
                                 // any other depndent results are true
-                                resultSet.requirementSatisfied =
-                                    allRequirementsSatisfied && resultSet.requirementSatisfied;
+                                resultSet.requirementSatisfied = allRequirementsSatisfied;
                             }
                             else {
-                                resultSet.requirementSatisfied = resultSet.requirementSatisfied && 'TBC';
+                                resultSet.requirementSatisfied = 'TBC';
                             }
                         }
                     }
