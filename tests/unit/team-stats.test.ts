@@ -2,81 +2,77 @@
  * @jest-environment jsdom
  */
 
-// TODO cover lines 95,124,162,180-188 from team-stats.ts
+// TODO cover the below lines from team-stats.ts (run jest --coverage for latest report)
+// 102,131 - expect teams object to be ...
+// 169 - localStorage.predictedMatches${currentYear}${currentComp}` to be ...
+// 187-195 - cleanUpPredictions function to return ...
 
 import { NUMS } from '../../app/lib/utils';
 import { TeamData } from '../../app/lib/definitions';
 import { constructTeamData, constructTeamStats, getMaxPoints, teamSortFunction } from '../../app/lib/team-stats';
-import localStorageMock from '../localStorageMock';
+import localStorageMock from '../mocks/localStorageMock';
+import { sampleTestTeams } from '../mocks/mockTestTeamObjects';
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 describe('test suite max points', () => {
+    it('Returns rounds times 2 (plus bye points) as max points for an unbeaten team', () => {
+        expect(getMaxPoints(0, 0, 'nrl', true)).toBe(54);
+        expect(getMaxPoints(0, 0, 'nrlw', true)).toBe(22);
+        expect(getMaxPoints(0, 0, 'nsw', true)).toBe(52);
+        expect(getMaxPoints(0, 0, 'qld', true)).toBe(46);
+    });
+
     it('Returns rounds times 2 as max points for an unbeaten team', () => {
-        expect(getMaxPoints(0, 0, 'nrl')).toBe(54);
-        expect(getMaxPoints(0, 0, 'nrlw')).toBe(22);
-        expect(getMaxPoints(0, 0, 'nsw')).toBe(52);
-        expect(getMaxPoints(0, 0, 'qld')).toBe(46);
+        expect(getMaxPoints(0, 0, 'nrl', false)).toBe(48);
+        expect(getMaxPoints(0, 0, 'nrlw', false)).toBe(22);
+        expect(getMaxPoints(0, 0, 'nsw', false)).toBe(48);
+        expect(getMaxPoints(0, 0, 'qld', false)).toBe(40);
+    });
+
+    it('Returns byes times 2 (plus bye points) as max points for a winless team', () => {
+        expect(getMaxPoints(NUMS['nrl'].MATCHES, 0, 'nrl', true)).toBe(6);
+        expect(getMaxPoints(NUMS['nrlw'].MATCHES, 0, 'nrlw', true)).toBe(0);
+        expect(getMaxPoints(NUMS['nsw'].MATCHES, 0, 'nsw', true)).toBe(4);
+        expect(getMaxPoints(NUMS['qld'].MATCHES, 0, 'qld', true)).toBe(6);
     });
 
     it('Returns byes times 2 as max points for a winless team', () => {
-        expect(getMaxPoints(NUMS['nrl'].MATCHES, 0, 'nrl')).toBe(6);
-        expect(getMaxPoints(NUMS['nrlw'].MATCHES, 0, 'nrlw')).toBe(0);
-        expect(getMaxPoints(NUMS['nsw'].MATCHES, 0, 'nsw')).toBe(4);
-        expect(getMaxPoints(NUMS['qld'].MATCHES, 0, 'qld')).toBe(6);
+        expect(getMaxPoints(NUMS['nrl'].MATCHES, 0, 'nrl', false)).toBe(0);
+        expect(getMaxPoints(NUMS['nrlw'].MATCHES, 0, 'nrlw', false)).toBe(0);
+        expect(getMaxPoints(NUMS['nsw'].MATCHES, 0, 'nsw', false)).toBe(0);
+        expect(getMaxPoints(NUMS['qld'].MATCHES, 0, 'qld', false)).toBe(0);
     });
 
-    it('Returns 33 as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
-        expect(getMaxPoints(10, 1, 'nrl')).toBe(33);
+    it('Returns 33 (inclusive of bye points) as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
+        expect(getMaxPoints(10, 1, 'nrl', true)).toBe(33);
     });
-    it('Returns 11 as max points for NRL team with 5 losses and 1 draw (5 wins)', () => {
-        expect(getMaxPoints(5, 1, 'nrlw')).toBe(11);
+    it('Returns 11 (inclusive of bye points) as max points for NRL team with 5 losses and 1 draw (5 wins)', () => {
+        expect(getMaxPoints(5, 1, 'nrlw', true)).toBe(11);
     });
-    it('Returns 31 as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
-        expect(getMaxPoints(10, 1, 'nsw')).toBe(31);
+    it('Returns 31 (inclusive of bye points) as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
+        expect(getMaxPoints(10, 1, 'nsw', true)).toBe(31);
     });
-    it('Returns 25 as max points for NRL team with 10 losses and 1 draw (9 wins)', () => {
-        expect(getMaxPoints(10, 1, 'qld')).toBe(25);
+    it('Returns 25 (inclusive of bye points) as max points for NRL team with 10 losses and 1 draw (9 wins)', () => {
+        expect(getMaxPoints(10, 1, 'qld', true)).toBe(25);
+    });
+
+    it('Returns 33 (exclusive of bye points) as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
+        expect(getMaxPoints(10, 1, 'nrl', false)).toBe(27);
+    });
+    it('Returns 11 (exclusive of bye points) as max points for NRL team with 5 losses and 1 draw (5 wins)', () => {
+        expect(getMaxPoints(5, 1, 'nrlw', false)).toBe(11);
+    });
+    it('Returns 31 (exclusive of bye points) as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
+        expect(getMaxPoints(10, 1, 'nsw', false)).toBe(27);
+    });
+    it('Returns 25 (exclusive of bye points) as max points for NRL team with 10 losses and 1 draw (9 wins)', () => {
+        expect(getMaxPoints(10, 1, 'qld', false)).toBe(19);
     });
 });
 
 describe('test suite team data construction', () => {
-    const sampleTeams = [
-        {
-            name: 'Team1',
-            theme: { key: 'theme1' },
-            stats: {
-                played: 0,
-                wins: 0,
-                drawn: 0,
-                lost: 0,
-                byes: 0,
-                'points for': 0,
-                'points against': 0,
-                'points difference': 0,
-                points: 0,
-                noByePoints: 0,
-                maxPoints: 54
-            }
-        },
-        {
-            name: 'Team2',
-            theme: { key: 'theme2' },
-            stats: {
-                played: 0,
-                wins: 0,
-                drawn: 0,
-                lost: 0,
-                byes: 0,
-                'points for': 0,
-                'points against': 0,
-                'points difference': 0,
-                points: 0,
-                noByePoints: 0,
-                maxPoints: 54
-            }
-        }
-    ];
+    const sampleTeams = sampleTestTeams;
 
     it('initialises empty team list', () => {
         const result = constructTeamData([], 'nrl');
@@ -87,7 +83,7 @@ describe('test suite team data construction', () => {
         const result = constructTeamData(sampleTeams, 'nrl');
         expect(result.length).toBe(2);
         expect(result[0].name).toBe('Team1');
-        expect(result[0].theme.key).toBe('theme1');
+        expect(result[0].theme.key).toBe('team1');
     });
 
     it('initialises all stats to zero', () => {
@@ -112,42 +108,7 @@ describe('test suite team stats construction', () => {
         // Clear localStorage before each test
         localStorage.clear();
 
-        sampleTeams = constructTeamData([
-            {
-                name: 'Home',
-                theme: { key: 'home' },
-                stats: {
-                    played: 0,
-                    wins: 0,
-                    drawn: 0,
-                    lost: 0,
-                    byes: 0,
-                    'points for': 0,
-                    'points against': 0,
-                    'points difference': 0,
-                    points: 0,
-                    noByePoints: 0,
-                    maxPoints: 54
-                }
-            },
-            {
-                name: 'Away',
-                theme: { key: 'away' },
-                stats: {
-                    played: 0,
-                    wins: 0,
-                    drawn: 0,
-                    lost: 0,
-                    byes: 0,
-                    'points for': 0,
-                    'points against': 0,
-                    'points difference': 0,
-                    points: 0,
-                    noByePoints: 0,
-                    maxPoints: 54
-                }
-            }
-        ], 'nrl');
+        sampleTeams = constructTeamData(sampleTestTeams, 'nrl');
     });
 
     const mockDraw = [{
@@ -158,10 +119,10 @@ describe('test suite team stats construction', () => {
         fixtures: [{
             matchMode: 'Post' as 'Post' | 'Pre' | 'Live',
             matchState: 'FullTime' as 'FullTime' | 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'ExtraTime',
-            matchCentreUrl: '/draw/nrl-premiership/2023/round-1/home-v-away/',
+            matchCentreUrl: '/draw/nrl-premiership/2023/round-1/team1-v-team2/',
             roundTitle: 'Round 1',
-            homeTeam: { nickName: 'Home', score: 20, theme: { key: 'home' } },
-            awayTeam: { nickName: 'Away', score: 10, theme: { key: 'away' } },
+            homeTeam: { nickName: 'Team1', score: 20, theme: { key: 'team1' } },
+            awayTeam: { nickName: 'Team2', score: 10, theme: { key: 'team2' } },
             clock: {
                 kickOffTimeLong: '2023-07-19T20:00:00Z',
                 gameTime: '80:00'
@@ -217,8 +178,10 @@ describe('test suite team stats construction', () => {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: 54
-            }
+                maxPoints: 54,
+                noByeMaxPoints: 48,
+            },
+            qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
         }], 'nrl');
         sampleTeams.push(byeTeam[0]);
 
@@ -245,9 +208,9 @@ describe('test suite team stats construction', () => {
     it('handles predicted matches from localStorage', () => {
         const predictedMatch = {
             '1': {
-                'home-v-away': {
-                    'home': 30,
-                    'away': 20
+                'team1-v-team2': {
+                    'team1': 30,
+                    'team2': 20
                 }
             }
         };
@@ -258,9 +221,9 @@ describe('test suite team stats construction', () => {
             fixtures: [{
                 ...mockDraw[0].fixtures[0],
                 matchMode: 'Pre' as 'Post' | 'Pre' | 'Live',
-                matchCentreUrl: '/draw/nrl-premiership/2023/round-1/home-v-away/',
-                homeTeam: { nickName: 'Home', score: '', theme: { key: 'home' } },
-                awayTeam: { nickName: 'Away', score: '', theme: { key: 'away' } },
+                matchCentreUrl: '/draw/nrl-premiership/2023/round-1/team1-v-team2/',
+                homeTeam: { nickName: 'Team1', score: '', theme: { key: 'team1' } },
+                awayTeam: { nickName: 'Team2', score: '', theme: { key: 'team2' } },
             }]
         }];
 
@@ -280,9 +243,9 @@ describe('test suite team stats construction', () => {
     it('cleans up invalid predictions from localStorage', () => {
         const invalidPrediction = {
             '1': {
-                'home-v-away': {
-                    'home': '',
-                    'away': ''
+                'team1-v-team2': {
+                    'team1': '',
+                    'team2': ''
                 }
             }
         };
@@ -293,9 +256,9 @@ describe('test suite team stats construction', () => {
             fixtures: [{
                 ...mockDraw[0].fixtures[0],
                 matchMode: 'Pre' as 'Post' | 'Pre' | 'Live',
-                matchCentreUrl: '/draw/nrl-premiership/2023/round-1/home-v-away/',
-                homeTeam: { nickName: 'Home', score: '', theme: { key: 'home' } },
-                awayTeam: { nickName: 'Away', score: '', theme: { key: 'away' } },
+                matchCentreUrl: '/draw/nrl-premiership/2023/round-1/team1-v-team2/',
+                homeTeam: { nickName: 'Team1', score: '', theme: { key: 'team1' } },
+                awayTeam: { nickName: 'Team1', score: '', theme: { key: 'team2' } },
             }]
         }];
 
@@ -308,7 +271,7 @@ describe('test suite team stats construction', () => {
 describe('test suite team sort function', () => {
     const team1: TeamData = {
         name: 'Team1',
-        theme: { key: 'theme1' },
+        theme: { key: 'team1' },
         stats: {
             points: 10,
             noByePoints: 8,
@@ -320,13 +283,15 @@ describe('test suite team sort function', () => {
             drawn: 0,
             lost: 15,
             byes: 1,
-            maxPoints: 54
-        }
+            maxPoints: 54,
+            noByeMaxPoints: 48,
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     };
 
     const team2: TeamData = {
         name: 'Team2',
-        theme: { key: 'theme2' },
+        theme: { key: 'team2' },
         stats: {
             points: 8,
             noByePoints: 8,
@@ -338,8 +303,10 @@ describe('test suite team sort function', () => {
             drawn: 0,
             lost: 16,
             byes: 0,
-            maxPoints: 54
-        }
+            maxPoints: 54,
+            noByeMaxPoints: 48,
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     };
 
     it('sorts by points when showByes is true', () => {

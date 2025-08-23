@@ -194,6 +194,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
         TEAMS: 17,
         FINALS_TEAMS: 8,
         WIN_POINTS: 2,
+        DRAW_POINTS: 1,
     },
     nrlw: {
         ROUNDS: 11,
@@ -203,6 +204,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
         TEAMS: 12,
         FINALS_TEAMS: 6,
         WIN_POINTS: 2,
+        DRAW_POINTS: 1,
     },
     nsw: {
         ROUNDS: 26,
@@ -212,6 +214,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
         TEAMS: 13,
         FINALS_TEAMS: 5,
         WIN_POINTS: 2,
+        DRAW_POINTS: 1,
     },
     qld: {
         ROUNDS: 23,
@@ -221,5 +224,6 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
         TEAMS: 15,
         FINALS_TEAMS: 8,
         WIN_POINTS: 2,
+        DRAW_POINTS: 1,
     },
 });
