@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
+import { COLOURCSSVARIANTS, COMPID } from '../../lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { update as compUpdate } from '../state/current-comp/currentComp';
-import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
-import { RootState } from '../state/store';
+import { update as compUpdate } from '../../state/current-comp/currentComp';
+import { update as mainColourUpdate } from '../../state/main-site-colour/mainSiteColour';
+import { RootState } from '../../state/store';
 
 export default function CompButton({compKey}: {compKey: string}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);

@@ -14,8 +14,7 @@ export default function LadderRow(
         predictorPage,
         nextTeam,
         nextTeamTooltip,
-        nextMatchUrl,
-        qualificationStatus
+        nextMatchUrl
     }: {
         teamData: TeamData;
         position: String;
@@ -25,13 +24,12 @@ export default function LadderRow(
         nextTeam: string;
         nextTeamTooltip: string;
         nextMatchUrl: string;
-        qualificationStatus: string;
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
-    const { stats: statsData, theme, name } = teamData;
+    const { stats: statsData, theme, name, qualificationStatus } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
 
     let bgClassName = name.toLowerCase().replace(' ', '');

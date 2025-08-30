@@ -1,3 +1,44 @@
+export const sampleTestTeams = [
+    {
+        name: 'Team1',
+        theme: { key: 'team1' },
+        stats: {
+            played: 0,
+            wins: 0,
+            drawn: 0,
+            lost: 0,
+            byes: 0,
+            'points for': 0,
+            'points against': 0,
+            'points difference': 0,
+            points: 0,
+            noByePoints: 0,
+            maxPoints: 54,
+            noByeMaxPoints: 48,
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
+    },
+    {
+        name: 'Team2',
+        theme: { key: 'team2' },
+        stats: {
+            played: 0,
+            wins: 0,
+            drawn: 0,
+            lost: 0,
+            byes: 0,
+            'points for': 0,
+            'points against': 0,
+            'points difference': 0,
+            points: 0,
+            noByePoints: 0,
+            maxPoints: 54,
+            noByeMaxPoints: 48,
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
+    }
+];
+
 export const qualificationTestTeams = [
     // Warriors (T2)
     {
@@ -12,12 +53,14 @@ export const qualificationTestTeams = [
             'points difference': 351,
             'points': 41,
             'noByePoints': 37,
-            'maxPoints': 49
+            'maxPoints': 49,
+            'noByeMaxPoints': 43,
         },
         'name': 'Warriors',
         'theme': {
             'key': 'warriors'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Dragons (T4)
     {
@@ -32,12 +75,14 @@ export const qualificationTestTeams = [
             'points difference': 194,
             'points': 36,
             'noByePoints': 32,
-            'maxPoints': 42
+            'maxPoints': 42,
+            'noByeMaxPoints': 38,
         },
         'name': 'Dragons',
         'theme': {
             'key': 'dragons'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Eels (Q)
     {
@@ -52,12 +97,14 @@ export const qualificationTestTeams = [
             'points difference': 114,
             'points': 33,
             'noByePoints': 29,
-            'maxPoints': 39
+            'maxPoints': 39,
+            'noByeMaxPoints': 35,
         },
         'name': 'Eels',
         'theme': {
             'key': 'eels'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Jets
     {
@@ -72,12 +119,14 @@ export const qualificationTestTeams = [
             'points difference': 135,
             'points': 29,
             'noByePoints': 27,
-            'maxPoints': 37
+            'maxPoints': 37,
+            'noByeMaxPoints': 35,
         },
         'name': 'Jets',
         'theme': {
             'key': 'jets'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Panthers
     {
@@ -92,12 +141,14 @@ export const qualificationTestTeams = [
             'points difference': 92,
             'points': 26,
             'noByePoints': 22,
-            'maxPoints': 34
+            'maxPoints': 34,
+            'noByeMaxPoints': 30,
         },
         'name': 'Panthers',
         'theme': {
             'key': 'panthers'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Roosters
     {
@@ -112,12 +163,14 @@ export const qualificationTestTeams = [
             'points difference': -99,
             'points': 24,
             'noByePoints': 20,
-            'maxPoints': 32
+            'maxPoints': 32,
+            'noByeMaxPoints': 28,
         },
         'name': 'Roosters',
         'theme': {
             'key': 'roosters'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Raiders
     {
@@ -132,12 +185,14 @@ export const qualificationTestTeams = [
             'points difference': 46,
             'points': 22,
             'noByePoints': 18,
-            'maxPoints': 28
+            'maxPoints': 28,
+            'noByeMaxPoints': 24,
         },
         'name': 'Raiders',
         'theme': {
             'key': 'raiders'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Bulldogs
     {
@@ -152,12 +207,14 @@ export const qualificationTestTeams = [
             'points difference': -7,
             'points': 22,
             'noByePoints': 18,
-            'maxPoints': 30
+            'maxPoints': 30,
+            'noByeMaxPoints': 26,
         },
         'name': 'Bulldogs',
         'theme': {
             'key': 'bulldogs'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Bears
     {
@@ -172,12 +229,14 @@ export const qualificationTestTeams = [
             'points difference': -68,
             'points': 20,
             'noByePoints': 16,
-            'maxPoints': 26
+            'maxPoints': 26,
+            'noByeMaxPoints': 22,
         },
         'name': 'Bears',
         'theme': {
             'key': 'north-sydney-bears'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Magpies
     {
@@ -192,12 +251,14 @@ export const qualificationTestTeams = [
             'points difference': -136,
             'points': 19,
             'noByePoints': 17,
-            'maxPoints': 27
+            'maxPoints': 27,
+            'noByeMaxPoints': 25,
         },
         'name': 'Magpies',
         'theme': {
             'key': 'western-suburbs-magpies'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Knights (E)
     {
@@ -212,12 +273,14 @@ export const qualificationTestTeams = [
             'points difference': -121,
             'points': 14,
             'noByePoints': 10,
-            'maxPoints': 22
+            'maxPoints': 22,
+            'noByeMaxPoints': 18,
         },
         'name': 'Knights',
         'theme': {
             'key': 'knights'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Sea Eagles (E)
     {
@@ -232,12 +295,14 @@ export const qualificationTestTeams = [
             'points difference': -195,
             'points': 14,
             'noByePoints': 12,
-            'maxPoints': 22
+            'maxPoints': 22,
+            'noByeMaxPoints': 20,
         },
         'name': 'Sea Eagles',
         'theme': {
             'key': 'sea-eagles'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     },
     // Rabbitohs (E)
     {
@@ -252,11 +317,13 @@ export const qualificationTestTeams = [
             'points difference': -306,
             'points': 12,
             'noByePoints': 10,
-            'maxPoints': 20
+            'maxPoints': 20,
+            'noByeMaxPoints': 18,
         },
         'name': 'Rabbitohs',
         'theme': {
             'key': 'rabbitohs'
-        }
+        },
+        qualificationStatus: '' as '' | '(Q)' | '(E)' | '(T4)' | '(T2)'
     }
 ];

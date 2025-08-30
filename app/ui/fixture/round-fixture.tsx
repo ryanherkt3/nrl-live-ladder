@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 'use client';
 
 import clsx from 'clsx';
@@ -185,7 +184,8 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
         const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
         const mobileString = isFullTime ? 'FT' : 'PRED';
 
-        const trueClasses = `${COLOURCSSVARIANTS[`${mainSiteColour}-bg`]} ${COLOURCSSVARIANTS[`${mainSiteColour}-border`]}`;
+        const trueClasses =
+            `${COLOURCSSVARIANTS[`${mainSiteColour}-bg`]} ${COLOURCSSVARIANTS[`${mainSiteColour}-border`]}`;
 
         return (
             <div className={

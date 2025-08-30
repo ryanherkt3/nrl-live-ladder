@@ -14,8 +14,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Make nrl.com think I am not a bot
-    // eslint-disable-next-line max-len
-    const uaString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
+    const uaString =
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537';
 
     const rounds = [];
 

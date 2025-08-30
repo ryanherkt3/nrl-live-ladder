@@ -3,6 +3,7 @@ export type TeamData = {
     stats: TeamStats;
     name: string;
     theme: TeamTheme;
+    qualificationStatus: '' | '(Q)' | '(E)' | '(T4)' | '(T2)';
 };
 
 export type NextTeam = {
@@ -24,6 +25,7 @@ export type TeamStats = {
     points: number;
     noByePoints: number;
     maxPoints: number;
+    noByeMaxPoints: number;
 };
 
 export type TeamTheme = {
@@ -43,6 +45,7 @@ export type Match = {
 
 export type ByeTeam = {
     isCurrentRound: boolean;
+    roundTitle: string;
     teamNickName: string;
     theme: TeamTheme;
 }
@@ -73,11 +76,38 @@ export type TeamStatuses = {
     eliminated: number,
 }
 
+export type QualificationConditions = {
+    teamName: string,
+    resultSets: Array<QualificationResultSets>
+}
+
+export type QualificationDisplay = {
+    teamName: string,
+    requirementString: string,
+    requirementSatisfied: boolean | 'TBC' | 'N/A'
+}
+
+export type QualificationResultSets = {
+    result: 'W' | 'D' | 'L' | 'DL' | 'DW' | '',
+    teamName: string | 'self',
+    dependentResults: Array<QualificationResultSets> | null
+    requirementSatisfied: boolean | 'TBC'
+}
+
+export type QualificationScenarios = {
+    eliminatedTeams: Array<QualificationConditions>,
+    qualifiedTeams: Array<QualificationConditions>,
+    topFourTeams: Array<QualificationConditions>,
+    topTwoTeams: Array<QualificationConditions>
+}
+
 export type TeamPoints = {
     lowestCurrentPoints: number,
     highestMaxPoints: number,
     currentPoints: number,
     maxPoints: number,
+    currentNoByePoints: number,
+    maxNoByePoints: number,
 }
 
 export type PageVariables = {
@@ -91,6 +121,7 @@ export type PageVariables = {
 }
 
 export type CompInfo = {
+    DRAW_POINTS: number;
     ROUNDS: number,
     FINALS_WEEKS: number,
     WEEK_ONE_FINALS_FORMAT: Array<Array<number>>,
@@ -100,7 +131,6 @@ export type CompInfo = {
     FINALS_TEAMS: number,
     WIN_POINTS: number,
 }
-
 
 export type MainSiteColour = {
     colour: string,
