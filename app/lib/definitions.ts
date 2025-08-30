@@ -124,6 +124,7 @@ export type CompInfo = {
     DRAW_POINTS: number;
     ROUNDS: number,
     FINALS_WEEKS: number,
+    WEEK_ONE_FINALS_FORMAT: Array<Array<number>>,
     BYES: number,
     MATCHES: number,
     TEAMS: number,
