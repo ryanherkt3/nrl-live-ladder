@@ -8,15 +8,13 @@ export function getQualificationStatus(
     minPointsForSpots: TeamStatuses,
     currentComp: string
 ) {
-    const { FINALS_TEAMS, MATCHES, BYES } = NUMS[currentComp];
+    const { FINALS_TEAMS, MATCHES, BYES, TEAMS } = NUMS[currentComp];
 
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(FINALS_TEAMS);
 
     const lastFinalist = topTeams[topTeams.length - 1];
     const { stats: lfStats } = lastFinalist;
-    const firstOutsideFinals = bottomTeams[0];
-    const { stats: foStats } = firstOutsideFinals;
 
     const { wins, drawn, maxPoints, played } = team.stats;
     const { eliminated, topTwo, topFour, finalsQualification } = minPointsForSpots;
@@ -25,6 +23,24 @@ export function getQualificationStatus(
     // though their worst finish is one place above the cut off, but are actually
     // qualified if bye points are counted
     const pointsWithByes = ((wins + BYES) * 2) + drawn;
+
+    const bottomTeamsCanFinishAbove = bottomTeams.filter((bottomTeam: TeamData) => {
+        const filteredTeamStats = bottomTeam.stats;
+        const filteredTeamPointsWithByes =
+            ((bottomTeam.stats.wins + NUMS[currentComp].BYES) * 2) + bottomTeam.stats.drawn;
+
+        const filteredTeamHasLessPoints = filteredTeamStats.maxPoints < pointsWithByes;
+
+        if (bottomTeam.name !== team.name) {
+            return filteredTeamHasLessPoints ||
+                (
+                    filteredTeamPointsWithByes === pointsWithByes &&
+                    filteredTeamStats['points difference'] < team.stats['points difference']
+                );
+        }
+
+        return false;
+    });
 
     // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
     let qualificationStatus = '';
@@ -46,15 +62,7 @@ export function getQualificationStatus(
     else if (pointsWithByes >= topFour) {
         qualificationStatus = '(T4)';
     }
-    else if (pointsWithByes >= finalsQualification  ||
-        (
-            // Is also qualified if top placed bottom team has worse points differential
-            // when tied on points at end of season
-            foStats.played === MATCHES &&
-            foStats.points <= pointsWithByes &&
-            foStats['points difference'] < team.stats['points difference']
-        )
-    ) {
+    else if (pointsWithByes >= finalsQualification || bottomTeamsCanFinishAbove.length >= TEAMS - FINALS_TEAMS) {
         qualificationStatus = '(Q)';
     }
 
