@@ -276,32 +276,54 @@ function getLadderStatus(
         const filteredTeamStats = team.stats;
 
         return filteredTeamStats.noByePoints > maxNoByePoints ||
-            (isFinished && team.name !== nickname &&
+            (
+                isFinished && team.name !== nickname &&
                 filteredTeamStats.played === NUMS[currentComp].MATCHES &&
                 filteredTeamStats.noByePoints >= maxNoByePoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );
-    }).length;
+    });
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
+        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
+        const filteredTeamHasFinished = filteredTeamStats.played === NUMS[currentComp].MATCHES;
 
-        return team.name !== nickname && // not same team
-            (
-                (teamInfo.stats.noByePoints <= filteredTeamStats.noByeMaxPoints) ||
-                (
-                    filteredTeamStats.noByePoints === teamInfo.stats.noByePoints &&
-                    filteredTeamStats['points difference'] > teamInfo.stats['points difference']
-                )
-            );
-    }).length;
+        if (team.name !== nickname) {
+            if (filteredTeamStats.maxPoints > currentPoints) {
+                return true;
+            }
+            if (filteredTeamStats.maxPoints < currentPoints) {
+                return false;
+            }
+
+            // If maxPoints is equal to a team's current points, check if the teams have finished or not:
+            // 1. Both finished > check points difference
+            // 2. Non-filtered team finished > check filtered team can go past them
+            // 3. Filtered team finished > check filtered team's points is greater than team's max points
+            // 4. If both still playing then return true
+            if (filteredTeamHasFinished && isFinished) {
+                return filteredTeamStats['points difference'] > teamInfo.stats['points difference'];
+            }
+            else if (isFinished) {
+                return filteredTeamStats.maxPoints >= currentPoints;
+            }
+            else if (filteredTeamHasFinished) {
+                return filteredTeamPointsWithByes > maxPoints;
+            }
+
+            return true;
+        }
+
+        return false;
+    });
 
     return (
         <div className="w-full md:hidden max-md:flex flex-row items-center">
             <div className="w-[25%] py-1">{currentPoints}</div>
             <div className="w-[25%]">{maxPoints}</div>
-            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishAbove + 1)}</div>
-            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishBelow + 1)}</div>
+            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishAbove.length + 1)}</div>
+            <div className="w-[25%]">{getOrdinalNumber(teamsCanFinishBelow.length + 1)}</div>
         </div>
     );
 }

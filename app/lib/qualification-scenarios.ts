@@ -57,22 +57,24 @@ export function checkQualificationOutcomes(
     });
 
     // Remove the bye points from the team on the bye
-    byes.map((bye) => {
-        const updateStats = (team: TeamData) => {
-            team.stats.byes -= 1;
-            team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
-                (WIN_POINTS * team.stats.byes);
-            team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        };
+    if (byes && byes.length) {
+        byes.map((bye) => {
+            const updateStats = (team: TeamData) => {
+                team.stats.byes -= 1;
+                team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
+                    (WIN_POINTS * team.stats.byes);
+                team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
+            };
 
-        const byeTeam = teamList.find((team) => {
-            return bye.teamNickName === team.name;
+            const byeTeam = teamList.find((team) => {
+                return bye.teamNickName === team.name;
+            });
+
+            if (byeTeam) {
+                updateStats(byeTeam);
+            }
         });
-
-        if (byeTeam) {
-            updateStats(byeTeam);
-        }
-    });
+    }
 
     // Then reset the qualification statuses as appropriate
     teamList.map((team) => {
@@ -144,7 +146,7 @@ export function checkQualificationOutcomes(
                 }
 
                 // Check if the team is on the bye this round
-                const isOnBye = byes.filter((bye) => {
+                const isOnBye = byes && byes.filter((bye) => {
                     return bye.teamNickName === team.name;
                 }).length;
 
@@ -186,7 +188,7 @@ export function checkQualificationOutcomes(
                     for (let i = 0; i < elimResult.length; i++) {
                         // Check if the influencer team is on the bye this round. If so, do not add
                         // them to the result
-                        const influencerOnBye = byes.filter((bye) => {
+                        const influencerOnBye = byes && byes.filter((bye) => {
                             return bye.teamNickName === eliminatedInfluencers[i].name;
                         }).length;
 
@@ -248,7 +250,7 @@ export function checkQualificationOutcomes(
                                 for (let i = 0; i < elimResult.length; i++) {
                                     // Check if the influencer team is on the bye this round. If so, do not add
                                     // them to the result
-                                    const influencerOnBye = byes.filter((bye) => {
+                                    const influencerOnBye = byes && byes.filter((bye) => {
                                         return bye.teamNickName === eliminatedInfluencers[i].name;
                                     }).length;
 
@@ -511,7 +513,7 @@ export function checkQualificationOutcomes(
                 for (const influencer of influencerNames) {
                     // Check if the influencer team is on the bye this round. If so, do not add
                     // them to the catch all string
-                    const influencerOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes && byes.filter((bye) => {
                         return bye.teamNickName === influencer;
                     }).length;
 
@@ -607,22 +609,24 @@ export function checkQualificationOutcomes(
         }
     });
 
-    byes.map((bye) => {
-        const updateStats = (team: TeamData) => {
-            team.stats.byes += 1;
-            team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
+    if (byes && byes.length) {
+        byes.map((bye) => {
+            const updateStats = (team: TeamData) => {
+                team.stats.byes += 1;
+                team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
                 (WIN_POINTS * team.stats.byes);
-            team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        };
+                team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
+            };
 
-        const byeTeam = teamList.find((team) => {
-            return bye.teamNickName === team.name;
+            const byeTeam = teamList.find((team) => {
+                return bye.teamNickName === team.name;
+            });
+
+            if (byeTeam) {
+                updateStats(byeTeam);
+            }
         });
-
-        if (byeTeam) {
-            updateStats(byeTeam);
-        }
-    });
+    }
 
     teamList.map((team) => {
         team.qualificationStatus = getQualificationStatus(
@@ -669,7 +673,7 @@ function finalsMappingFunction(
                 // Assign points / max points to each team - but only if they are not on a bye
                 // this round (that assignment happens below)
                 for (let i = 0; i < influencers.length; i++) {
-                    const influencerOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes && byes.filter((bye) => {
                         return bye.teamNickName === influencers[i].name;
                     }).length;
 
@@ -682,7 +686,7 @@ function finalsMappingFunction(
                 }
 
                 // Check if the team is on the bye this round. If so, assign bye points if not done already
-                const isOnBye = byes.filter((bye) => {
+                const isOnBye = byes && byes.filter((bye) => {
                     return bye.teamNickName === team.name;
                 }).length;
 
@@ -731,7 +735,7 @@ function finalsMappingFunction(
                     for (let i = 0; i < qualiResult.length; i++) {
                         // Check if the influencer team is on the bye this round. If so, do not add
                         // them to the result
-                        const influencerOnBye = byes.filter((bye) => {
+                        const influencerOnBye = byes && byes.filter((bye) => {
                             return bye.teamNickName === influencers[i].name;
                         }).length;
 
@@ -778,7 +782,7 @@ function finalsMappingFunction(
                         for (let i = 0; i < influencers.length; i++) {
                             // Check if the influencer team is on the bye this round.
                             // Move to next iteration of the loop if they are.
-                            const influencerOnBye = byes.filter((bye) => {
+                            const influencerOnBye = byes && byes.filter((bye) => {
                                 return bye.teamNickName === influencers[i].name;
                             }).length;
 
@@ -801,7 +805,7 @@ function finalsMappingFunction(
                                 for (let i = 0; i < qualiResult.length; i++) {
                                     // Check if the influencer team is on the bye this round.
                                     // Only add to result string if they are not.
-                                    const influencerOnBye = byes.filter((bye) => {
+                                    const influencerOnBye = byes && byes.filter((bye) => {
                                         return bye.teamNickName === influencers[i].name;
                                     }).length;
 
@@ -982,7 +986,7 @@ function finalsMappingFunction(
                 // Unassign points / max points to each team (i.e. reset them) - but only if they are not on a bye
                 // this round (that unassignment happens below)
                 for (let j = 0; j < influencers.length; j++) {
-                    const influencerOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes && byes.filter((bye) => {
                         return bye.teamNickName === influencers[j].name;
                     }).length;
 
@@ -1054,7 +1058,7 @@ function finalsMappingFunction(
                 for (const influencer of influencerNames) {
                     // Check if the influencer team is on the bye this round. If so, do not add
                     // them to the catch all string
-                    const influencerOnBye = byes.filter((bye) => {
+                    const influencerOnBye = byes && byes.filter((bye) => {
                         return bye.teamNickName === influencer;
                     }).length;
 
