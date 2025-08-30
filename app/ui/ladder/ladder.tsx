@@ -130,7 +130,7 @@ function getLadderRow(
     pageVariables: PageVariables,
     currentComp: string,
 ) {
-    const { FINALS_TEAMS } = NUMS[currentComp];
+    const { FINALS_TEAMS, WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
 
     const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
     const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
@@ -194,31 +194,27 @@ function getLadderRow(
             nextTeam = 'BYE';
         }
         else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
-            let finalsOppLadderPos = ladderPos;
+            let finalsOppLadderPos;
 
-            // Finals Week 1: 1v4, 2v3, 5v8, 6v7
-            switch (ladderPos) {
-                case 1:
-                case 5:
-                    finalsOppLadderPos += 3;
+            // Get week 1 finals matchup for a team if possible
+            let matchUpFound = false;
+            for (const weekOneMatchup of WEEK_ONE_FINALS_FORMAT) {
+                if (matchUpFound) {
                     break;
-                case 4:
-                case 8:
-                    finalsOppLadderPos -= 3;
-                    break;
-                case 2:
-                case 6:
-                    finalsOppLadderPos += 1;
-                    break;
-                case 3:
-                case 7:
-                    finalsOppLadderPos -= 1;
-                    break;
-                default:
-                    break;
+                }
+
+                if (weekOneMatchup.includes(ladderPos)) {
+                    finalsOppLadderPos = weekOneMatchup.filter((position: number) => {
+                        return position !== ladderPos;
+                    })[0];
+
+                    matchUpFound = true;
+                }
             }
 
-            nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+            if (finalsOppLadderPos) {
+                nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+            }
         }
 
         const qualificationStatus = getQualificationStatus(

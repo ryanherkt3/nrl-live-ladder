@@ -189,6 +189,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
     nrl: {
         ROUNDS: 27,
         FINALS_WEEKS: 4,
+        WEEK_ONE_FINALS_FORMAT: [[1, 4], [2, 3], [5, 8], [6, 7]],
         BYES: 3,
         MATCHES: 24,
         TEAMS: 17,
@@ -198,6 +199,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
     nrlw: {
         ROUNDS: 11,
         FINALS_WEEKS: 3,
+        WEEK_ONE_FINALS_FORMAT: [[3, 6], [4, 5]],
         BYES: 0,
         MATCHES: 11,
         TEAMS: 12,
@@ -207,6 +209,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
     nsw: {
         ROUNDS: 26,
         FINALS_WEEKS: 4,
+        WEEK_ONE_FINALS_FORMAT: [[2, 3], [4, 5]],
         BYES: 2,
         MATCHES: 24,
         TEAMS: 13,
@@ -216,6 +219,7 @@ export const NUMS : { [key: string]: CompInfo } = Object.freeze({
     qld: {
         ROUNDS: 23,
         FINALS_WEEKS: 4,
+        WEEK_ONE_FINALS_FORMAT: [[1, 4], [2, 3], [5, 8], [6, 7]],
         BYES: 3,
         MATCHES: 20,
         TEAMS: 15,
