@@ -277,7 +277,6 @@ function getLadderStatus(
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
         const filteredTeamHasFinished = filteredTeamStats.played === NUMS[currentComp].MATCHES;
 
         if (team.name !== nickname) {
@@ -290,17 +289,13 @@ function getLadderStatus(
 
             // If maxPoints is equal to a team's current points, check if the teams have finished or not:
             // 1. Both finished > check points difference
-            // 2. Non-filtered team finished > check filtered team can go past them
-            // 3. Filtered team finished > check filtered team's points is greater than team's max points
-            // 4. If both still playing then return true
+            // 2. Only one has finished > check filtered team's points is greater than team's max points
+            // 3. If both still playing then return true
             if (filteredTeamHasFinished && isFinished) {
                 return filteredTeamStats['points difference'] > teamInfo.stats['points difference'];
             }
-            else if (isFinished) {
+            else if (isFinished || filteredTeamHasFinished) {
                 return filteredTeamStats.maxPoints >= currentPoints;
-            }
-            else if (filteredTeamHasFinished) {
-                return filteredTeamPointsWithByes > maxPoints;
             }
 
             return true;
