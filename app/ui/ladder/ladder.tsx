@@ -168,7 +168,7 @@ function getLadderRow(
                     fixture.matchMode === 'Pre';
             });
         }
-        else if (nextRoundInfo) {
+        else if (nextRoundInfo && nextRoundInfo.selectedRoundId !== currentRoundNo) {
             filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
                 return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
             });

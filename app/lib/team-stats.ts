@@ -73,7 +73,7 @@ export function constructTeamStats(
     currentComp: string,
     currentYear: number,
 ) {
-    const { WIN_POINTS } = NUMS[currentComp];
+    const { WIN_POINTS, ROUNDS } = NUMS[currentComp];
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -89,9 +89,10 @@ export function constructTeamStats(
         team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp);
     };
 
+    let roundsCalculated = 1;
     for (const round of seasonDraw) {
         // Do not count stats for games not started or finals games (unless on the predictor page)
-        if (!modifiable && round.selectedRoundId > currentRoundNo) {
+        if (!modifiable && (roundsCalculated > currentRoundNo || roundsCalculated > ROUNDS)) {
             break;
         }
 
@@ -201,6 +202,8 @@ export function constructTeamStats(
                 updateStats(awayFixtureTeam, awayScore, homeScore);
             }
         }
+
+        roundsCalculated++;
     }
 
     return teams;
