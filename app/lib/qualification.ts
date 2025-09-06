@@ -44,7 +44,7 @@ export function getQualificationStatus(
 
     // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
     let qualificationStatus = '';
-    const isEliminated = maxPoints <= eliminated ||
+    const isEliminated = maxPoints < eliminated ||
         (
             // Is also eliminated if last placed finals team has better points differential
             // when tied on points at end of season

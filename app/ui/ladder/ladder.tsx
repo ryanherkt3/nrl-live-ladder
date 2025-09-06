@@ -214,6 +214,7 @@ function getLadderRow(
 
             if (finalsOppLadderPos) {
                 nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+                nextTeamTooltip = teamList[finalsOppLadderPos - 1].name;
             }
         }
 
