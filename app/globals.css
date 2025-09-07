@@ -159,6 +159,9 @@ input[type=number] {
 .bg-warriors-gradient {
     background: linear-gradient(to left, #008540 50%, #151F6D 50%);
 }
+.bg-warriors-alt {
+    background: #008540;
+}
 .bg-weststigers {
     background: #DF6A03;
 }

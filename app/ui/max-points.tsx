@@ -90,10 +90,10 @@ function getTableRows(
 
         let bgClassName = nickname.toLowerCase().replace(' ', '');
 
-        if (nickname === 'Broncos' || nickname === 'Roosters') {
+        if (['Roosters', 'Broncos', 'Warriors'].includes(nickname)) {
             bgClassName += '-gradient';
         }
-        else if (nickname === 'Bears' || nickname === 'Jets' || nickname === 'Magpies') {
+        else if (['Bears', 'Jets', 'Magpies'].includes(nickname)) {
             bgClassName += `-${currentComp}`;
         }
 
@@ -124,7 +124,7 @@ function getTableRows(
 
         const eelsOrPanthersPlaying = nickname === 'Panthers' || nickname === 'Eels';
         const clsxMatrix = {
-            [`bg-${bgClassName}`]: isPlaying && !isEliminated,
+            [`bg-${bgClassName.replace('-gradient', '')}`]: isPlaying && !isEliminated,
             'bg-faded': isPlaying && isEliminated,
             'text-white': isPlaying && !isEliminated && !eelsOrPanthersPlaying,
             'text-black': isPlaying && eelsOrPanthersPlaying,
@@ -192,11 +192,12 @@ function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: 
     for (let i = lowestCurrentPoints; i <= highestMaxPoints; i++) {
         if (i >= currentPoints && i <= maxPoints) {
             const useGradientBg = !isEliminated && i === altBgMidPoint &&
-                (nickname === 'roosters' || nickname === 'broncos');
+                ['roosters', 'broncos', 'warriors'].includes(nickname);
             const useAltBg = !isEliminated && i > altBgMidPoint &&
                 (
                     nickname === 'roosters' && maxPoints - i <= i - currentPoints ||
-                    nickname === 'broncos' && maxPoints - i <= i - currentPoints
+                    nickname === 'broncos' && maxPoints - i <= i - currentPoints ||
+                    nickname === 'warriors' && maxPoints - i <= i - currentPoints
                 );
             const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
                 (!isEliminated && useAltBg && nickname === 'broncos');
