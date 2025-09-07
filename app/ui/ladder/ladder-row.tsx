@@ -10,6 +10,7 @@ export default function LadderRow(
         teamData,
         position,
         isPlaying,
+        highlightRow,
         byePoints,
         predictorPage,
         nextTeam,
@@ -19,6 +20,7 @@ export default function LadderRow(
         teamData: TeamData;
         position: String;
         isPlaying: boolean;
+        highlightRow: boolean;
         byePoints: boolean;
         predictorPage: boolean;
         nextTeam: string;
@@ -34,7 +36,7 @@ export default function LadderRow(
 
     let bgClassName = name.toLowerCase().replace(' ', '');
 
-    if (name === 'Roosters') { // NRL
+    if (name === 'Roosters' || name === 'Warriors') { // NRL & NSW
         bgClassName += '-gradient';
     }
     else if (name === 'Bears' || name === 'Jets' || name === 'Magpies') { // NSW & QLD
@@ -64,7 +66,7 @@ export default function LadderRow(
 
     const lightImageTeams = ['Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
 
-    const useLightImageForNextGame = isQualified &&
+    const useLightImageForNextGame = highlightRow && isQualified &&
         lightImageTeams.includes(nextTeamTooltip) &&
         darkBgQualifiedTeams.includes(name);
 
@@ -74,9 +76,11 @@ export default function LadderRow(
                 clsx(
                     'flex flex-row gap-2 py-1 items-center text-center text-lg',
                     {
-                        'bg-faded': isEliminated,
-                        [`bg-${bgClassName} text-black`]: isQualified && blackTextQualifiedTeams.includes(name),
-                        [`bg-${bgClassName} text-white`]: isQualified && !blackTextQualifiedTeams.includes(name),
+                        'bg-faded': highlightRow && isEliminated,
+                        [`bg-${bgClassName} text-black`]:
+                            highlightRow && isQualified && blackTextQualifiedTeams.includes(name),
+                        [`bg-${bgClassName} text-white`]:
+                            highlightRow && isQualified && !blackTextQualifiedTeams.includes(name),
                     }
                 )
             }
@@ -102,7 +106,7 @@ export default function LadderRow(
                         matchLink=''
                         teamKey={theme.key}
                         tooltip={name}
-                        useLight={isQualified && lightImageTeams.includes(name)}
+                        useLight={highlightRow && isQualified && lightImageTeams.includes(name)}
                     />
                 </div>
                 <div className='max-xs:px-0 xs:px-3 text-left'>

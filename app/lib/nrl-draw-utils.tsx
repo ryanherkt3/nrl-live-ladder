@@ -64,10 +64,14 @@ export function getLadderRow(
     currentComp: string,
     isPredictorPage: boolean,
 ) {
-    const { FINALS_TEAMS, WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
+    const { TEAMS, FINALS_TEAMS, WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
 
     const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
     const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+
+    const highlightRow = allTeams.filter((team) => {
+        return team.qualificationStatus === '(E)';
+    }).length < TEAMS - FINALS_TEAMS;
 
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
@@ -105,7 +109,7 @@ export function getLadderRow(
                         fixture.matchMode === 'Pre';
                 });
             }
-            else if (nextRoundInfo) {
+            else if (nextRoundInfo && nextRoundInfo.selectedRoundId !== currentRoundNo) {
                 filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
                     return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
                 });
@@ -149,6 +153,7 @@ export function getLadderRow(
 
                 if (finalsOppLadderPos) {
                     nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
+                    nextTeamTooltip = teamList[finalsOppLadderPos - 1].name;
                 }
             }
         }
@@ -158,6 +163,7 @@ export function getLadderRow(
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}
+            highlightRow={highlightRow}
             byePoints={byePoints}
             predictorPage={isPredictorPage}
             nextTeam={nextTeam}
