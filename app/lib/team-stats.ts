@@ -91,8 +91,8 @@ export function constructTeamStats(
 
     let roundsCalculated = 1;
     for (const round of seasonDraw) {
-        // Do not count stats for games not started or finals games (unless on the predictor page)
-        if (!modifiable && (roundsCalculated > currentRoundNo || roundsCalculated > ROUNDS)) {
+        // Do not count stats for finals games
+        if (roundsCalculated > ROUNDS) {
             break;
         }
 

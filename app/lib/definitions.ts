@@ -101,7 +101,6 @@ export type CompInfo = {
     WIN_POINTS: number,
 }
 
-
 export type MainSiteColour = {
     colour: string,
     updateStatus: ReduxUpdateFlags

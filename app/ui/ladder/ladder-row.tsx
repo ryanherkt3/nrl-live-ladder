@@ -36,7 +36,7 @@ export default function LadderRow(
 
     let bgClassName = name.toLowerCase().replace(' ', '');
 
-    if (name === 'Roosters') { // NRL
+    if (name === 'Roosters' || name === 'Warriors') { // NRL & NSW
         bgClassName += '-gradient';
     }
     else if (name === 'Bears' || name === 'Jets' || name === 'Magpies') { // NSW & QLD

@@ -222,6 +222,7 @@ function getLadderRow(
             team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
         );
 
+        // TODO add highlightRow arg - if finals spots filled up do not add bg's to ladder rows
         return <LadderRow
             key={theme.key}
             teamData={team}

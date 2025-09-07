@@ -148,13 +148,16 @@ input[type=number] {
     background: #061E45;
 }
 .bg-roosters-gradient {
-    background: linear-gradient(to left, #E82C2E 50%, #061E45 50%);    
+    background: linear-gradient(to left, #E82C2E 50%, #061E45 50%);
 }
 .bg-roosters-alt {
     background: #E82C2E;
 }
 .bg-warriors {
-    background: #000000;
+    background: #151F6D;
+}
+.bg-warriors-gradient {
+    background: linear-gradient(to left, #008540 50%, #151F6D 50%);
 }
 .bg-weststigers {
     background: #DF6A03;
