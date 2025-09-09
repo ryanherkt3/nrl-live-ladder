@@ -6,10 +6,9 @@ updates:
   # Keep npm dependencies up to date
   - package-ecosystem: "npm"
     directory: "/"
-    # Check the npm registry every week on Monday at 14:00 NZ Time
+    # Check the npm registry on the 1st of every month at 14:00 NZ Time
     schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: "monthly"
       time: "14:00"
       timezone: "Pacific/Auckland"
     groups:

@@ -13,6 +13,7 @@ import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRou
 import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
+import clsx from 'clsx';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -37,7 +38,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
-    const currentFixtureRound = inFinalsFootball ? ROUNDS : currentRoundNo;
+    const currentFixtureRound = inFinalsFootball ? currentRoundNo : ROUNDS;
 
     const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
         const roundKey = round - 1;
@@ -228,7 +229,16 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 bottomHalf={getLadderRow(false, teams, pageVariables.liveMatches, comp)}
                 predictorPage={true}
             />
-            <div className="flex flex-row gap-3 self-end">
+            <div
+                className={
+                    clsx(
+                        'flex flex-row gap-3 self-end',
+                        {
+                            'hidden': inFinalsFootball
+                        }
+                    )
+                }
+            >
                 <LadderPredictorButton
                     text={'Clear Round'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
@@ -250,8 +260,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 fixtures={roundIndex === currentFixtureRound ? fixtures : fixturesToShow}
                 teamList={teams}
                 updateCallback={updateFixturesCb}
-                lastRoundNo={ROUNDS}
-                modifiable={true}
+                lastRoundNo={currentFixtureRound}
+                modifiable={!inFinalsFootball}
                 modifiedFixtureCb={updateAllTeams}
             />
         </div>
