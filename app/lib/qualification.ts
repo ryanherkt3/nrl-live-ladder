@@ -8,15 +8,12 @@ export function getQualificationStatus(
     minPointsForSpots: TeamStatuses,
     currentComp: string
 ) {
-    const { FINALS_TEAMS, MATCHES, BYES, TEAMS } = NUMS[currentComp];
+    const { FINALS_TEAMS, BYES, TEAMS } = NUMS[currentComp];
 
     const topTeams = [...allTeams];
     const bottomTeams = topTeams.splice(FINALS_TEAMS);
 
-    const lastFinalist = topTeams[topTeams.length - 1];
-    const { stats: lfStats } = lastFinalist;
-
-    const { noByePoints, noByeMaxPoints, played } = team.stats;
+    const { noByePoints, noByeMaxPoints } = team.stats;
     const { eliminated, topTwo, topFour, finalsQualification } = minPointsForSpots;
 
     // Include bye points in the calculations, as sometimes a team may look as
@@ -44,14 +41,7 @@ export function getQualificationStatus(
 
     // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
     let qualificationStatus: TeamData['qualificationStatus'] = '';
-    const isEliminated = noByeMaxPoints < eliminated ||
-        (
-            // Is also eliminated if last placed finals team has better points differential
-            // when tied on points at end of season
-            played === MATCHES &&
-            lfStats.noByePoints >= noByePoints &&
-            lfStats['points difference'] > team.stats['points difference']
-        );
+    const isEliminated = noByeMaxPoints < eliminated || bottomTeamsCanFinishAbove.length < TEAMS - FINALS_TEAMS;
 
     if (isEliminated) {
         qualificationStatus = '(E)';
