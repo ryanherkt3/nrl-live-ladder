@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import DrawFetcher from '../ui/draw-fetcher';
+import DrawFetcher from '../../ui/draw-fetcher';
 
 export const metadata: Metadata = {
     title: 'Ladder Predictor',

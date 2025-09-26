@@ -1,12 +1,12 @@
 'use client';
 
 import { Inter } from 'next/font/google';
-import NavBar from './ui/nav-bar';
+import NavBar from '../ui/nav-bar';
 import './globals.css';
 import { Suspense } from 'react';
-import SkeletonNavBar from './ui/skeletons/skeleton-nav-bar';
+import SkeletonNavBar from '../ui/skeletons/skeleton-nav-bar';
 import { Provider } from 'react-redux';
-import { store } from './state/store';
+import { store } from '../state/store';
 
 const inter = Inter({ subsets: ['latin'] });
 

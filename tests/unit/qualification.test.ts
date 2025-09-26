@@ -1,6 +1,6 @@
-import { TeamData, TeamStatuses } from '../../app/lib/definitions';
+import { TeamData, TeamStatuses } from '../../lib/definitions';
 import { qualificationTestTeams } from '../qualificationObject';
-import { getMinPointsForSpots, getQualificationStatus } from '../../app/lib/qualification';
+import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualification';
 
 describe('test suite qualification', () => {
     let sampleTeams: TeamData[];
