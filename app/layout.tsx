@@ -1,10 +1,10 @@
 'use client';
 
 import { Inter } from 'next/font/google';
-import NavBar from '../ui/nav-bar';
+import Header from '../components/header';
 import './globals.css';
 import { Suspense } from 'react';
-import SkeletonNavBar from '../ui/skeletons/skeleton-nav-bar';
+import SkeletonHeader from '../components/skeletons/skeleton-header';
 import { Provider } from 'react-redux';
 import { store } from '../state/store';
 
@@ -20,8 +20,8 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
         <Provider store={store}>
             <html lang="en">
                 <body className={`${inter.className} antialiased`}>
-                    <Suspense fallback={<SkeletonNavBar />}>
-                        <NavBar />
+                    <Suspense fallback={<SkeletonHeader />}>
+                        <Header />
                     </Suspense>
                     {children}
                     <footer

@@ -1,4 +1,4 @@
-import RoundFixture from '../ui/fixture/round-fixture';
+import RoundFixture from '../components/fixture/round-fixture';
 import { DrawInfo, Match, TeamData } from './definitions';
 import { constructTeamData, constructTeamStats, teamSortFunction } from './team-stats';
 import { NUMS } from './utils';

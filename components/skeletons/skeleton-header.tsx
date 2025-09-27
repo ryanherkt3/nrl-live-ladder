@@ -3,7 +3,7 @@
 import { LINKS } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 
-export default function SkeletonNavBar() {
+export default function SkeletonHeader() {
     const pathname = usePathname();
 
     const activeLink = LINKS.filter((links) => links.url === pathname)[0];

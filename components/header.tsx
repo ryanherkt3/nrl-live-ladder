@@ -11,7 +11,7 @@ import { update as compUpdate } from '../state/current-comp/currentComp';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { RootState } from '../state/store';
 
-export default function NavBar() {
+export default function Header() {
     // Get the user's chosen competition, if one exists.
     // Also set the main colour used for the finalists bar, completed games etc
     const currentComp = useSelector((state: RootState) => state.currentComp.value);

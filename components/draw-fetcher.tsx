@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
-import LadderPredictor from './ladder-predictor';
+import LadderPredictor from './ladder-predictor/ladder-predictor';
 import FinalsRace from './finals-race';
 import { COMPID, NUMS } from '../lib/utils';
 import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';

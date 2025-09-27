@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import CompButton from '../ui/comp-button';
-import PageDescription from '../ui/page-desc';
+import CompButton from '../components/comp-button';
+import PageDescription from '../components/page-desc';
 
 export const metadata: Metadata = {
     title: 'Home | NRL Live Ladder',

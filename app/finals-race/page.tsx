@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import DrawFetcher from '../../ui/draw-fetcher';
+import DrawFetcher from '../../components/draw-fetcher';
 
 export const metadata: Metadata = {
     title: 'Finals Race | NRL Live Ladder',

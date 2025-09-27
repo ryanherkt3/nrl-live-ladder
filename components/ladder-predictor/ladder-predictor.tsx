@@ -1,18 +1,18 @@
 /* eslint-disable max-len */
-import LadderRow from './ladder/ladder-row';
-import { TeamData, DrawInfo, Match } from '../lib/definitions';
+import LadderRow from '../ladder/ladder-row';
+import { TeamData, DrawInfo, Match } from '../../lib/definitions';
 import { COLOURCSSVARIANTS as CCV, NUMS } from '@/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/lib/nrl-draw-utils';
-import Fixtures from './fixture/fixtures';
+import Fixtures from '../fixture/fixtures';
 import { useEffect, useState } from 'react';
-import PageDescription from './page-desc';
-import Standings from './ladder/standings';
+import PageDescription from '../page-desc';
+import Standings from '../ladder/standings';
 import LadderPredictorButton from './ladder-predictor-button';
 import { useDispatch, useSelector } from 'react-redux';
-import { update as clearRdBtnUpdate } from '../state/clear-round-button/clearRoundButton';
-import { update as resetAllBtnUpdate } from '../state/reset-all-button/resetAllButton';
-import { RootState } from '../state/store';
-import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
+import { update as clearRdBtnUpdate } from '../../state/clear-round-button/clearRoundButton';
+import { update as resetAllBtnUpdate } from '../../state/reset-all-button/resetAllButton';
+import { RootState } from '../../state/store';
+import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualification';
 import clsx from 'clsx';
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
