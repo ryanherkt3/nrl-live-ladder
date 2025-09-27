@@ -4,9 +4,9 @@
 
 // TODO cover lines 95,124,162,180-188 from team-stats.ts
 
-import { NUMS } from '../../app/lib/utils';
-import { TeamData } from '../../app/lib/definitions';
-import { constructTeamData, constructTeamStats, getMaxPoints, teamSortFunction } from '../../app/lib/team-stats';
+import { NUMS } from '../../lib/utils';
+import { TeamData } from '../../lib/definitions';
+import { constructTeamData, constructTeamStats, getMaxPoints, teamSortFunction } from '../../lib/team-stats';
 import localStorageMock from '../localStorageMock';
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
