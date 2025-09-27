@@ -269,7 +269,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 }
 
 /**
- * Get a row in the ladder. TODO move this to lib function (duplicated w/ ladder fn)
+ * Get a row in the ladder.
  *
  * @param {boolean} isInTopSection if the team is in the top x of the competition
  * @param {Array<TeamData>} allTeams
@@ -301,7 +301,6 @@ function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMa
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
-        // TODO check in last 3 rounds if quali statuses update properly
         const qualificationStatus = getQualificationStatus(
             team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
         );

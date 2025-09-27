@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable max-len */
 import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
 import { DrawInfo, Match, TeamData, TeamPoints } from '../lib/definitions';
 import clsx from 'clsx';
@@ -132,7 +134,7 @@ function getTableRows(
         };
 
         return (
-            <div key={nickname} className="flex flex-row text-md text-center">
+            <div key={nickname} className="flex flex-row text-md text-center md:space-between md:h-10">
                 <div className="text-left flex items-center font-semibold w-[15%] mr-4">
                     <span
                         className={
@@ -157,11 +159,9 @@ function getTableRows(
                         {getShortCode(nickname, currentComp)} {qualificationStatus}
                     </span>
                 </div>
-                <div className="w-full max-md:hidden md:flex flex-row items-center">
-                    {
-                        getPointCells(pointValues, nickname.toLowerCase().replace(' ', ''), isEliminated, currentComp)
-                    }
-                </div>
+                {
+                    getLadderWorms(pointValues, nickname.toLowerCase().replace(' ', ''), isEliminated, currentComp)
+                }
                 {
                     getLadderStatus(allTeams, pointValues, nickname, team, currentComp)
                 }
@@ -171,9 +171,8 @@ function getTableRows(
 }
 
 /**
- * Get the individual point cells for display on the desktop page.
- * Show the point value if a cell value is equal to either the team's current
- * or max points values.
+ * Get the ladder worm for display on the desktop page.
+ * Show the team's current and max points values on the worm.
  *
  * @param {TeamPoints} pointValues
  * @param {string} nickname
@@ -181,65 +180,58 @@ function getTableRows(
  * @param {string} currentComp
  * @returns {Array<Object>} HTML objects representing the point cells
  */
-function getPointCells(pointValues: TeamPoints, nickname: string, isEliminated: boolean, currentComp: string) {
-    const pointCells = [];
-    const commonClasses = 'flex-1 py-2 h-full';
-
+function getLadderWorms(pointValues: TeamPoints, nickname: string, isEliminated: boolean, currentComp: string) {
     const { lowestCurrentPoints, highestMaxPoints, currentPoints, maxPoints } = pointValues;
 
-    const altBgMidPoint = maxPoints === currentPoints ? 0 : (maxPoints + currentPoints) / 2;
+    const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels';
 
-    for (let i = lowestCurrentPoints; i <= highestMaxPoints; i++) {
-        if (i >= currentPoints && i <= maxPoints) {
-            const useGradientBg = !isEliminated && i === altBgMidPoint &&
-                ['roosters', 'broncos', 'warriors'].includes(nickname);
-            const useAltBg = !isEliminated && i > altBgMidPoint &&
-                (
-                    nickname === 'roosters' && maxPoints - i <= i - currentPoints ||
-                    nickname === 'broncos' && maxPoints - i <= i - currentPoints ||
-                    nickname === 'warriors' && maxPoints - i <= i - currentPoints
-                );
-            const blackTextBg = isEliminated || nickname === 'panthers' || nickname === 'eels' ||
-                (!isEliminated && useAltBg && nickname === 'broncos');
-
-            let bgName = `bg-${nickname}`;
-            if (nickname === 'bears' || nickname === 'jets' || nickname === 'magpies') {
-                bgName += `-${currentComp}`;
-            }
-            if (useGradientBg || useAltBg) {
-                bgName += useGradientBg ? '-gradient' : '-alt';
-            }
-
-            pointCells.push(
-                <div
-                    key={`${nickname}-${i}`}
-                    className={
-                        clsx(
-                            `${commonClasses} relative font-semibold`,
-                            {
-                                'bg-faded': isEliminated,
-                                [bgName]: !isEliminated,
-                                'text-black': blackTextBg,
-                                'text-white': !blackTextBg,
-                            }
-                        )
-                    }
-                >
-                    {i === currentPoints || i === maxPoints
-                        ? <span>{i}</span>
-                        : null
-                    }
-                </div>
-            );
-        }
-        else {
-            pointCells.push(
-                <div key={`${nickname}-${i}`}className={commonClasses}></div>
-            );
-        }
+    let bgName = isEliminated ? 'bg-faded' : `bg-${nickname}`;
+    if (nickname === 'bears' || nickname === 'jets' || nickname === 'magpies') {
+        bgName += `-${currentComp}`;
     }
 
-    return pointCells;
+    const useGradientBg = !isEliminated && ['roosters', 'warriors'].includes(nickname);
+    if (useGradientBg) {
+        bgName += '-gradient';
+    }
+
+    // Calculate the total number of columns, how many the "worm" should take up, and the start column for the worm
+    const columns = (highestMaxPoints - lowestCurrentPoints) + 1;
+    const startCol = currentPoints - lowestCurrentPoints;
+    const colSpan = maxPoints - currentPoints + 1;
+
+    return (
+        <div
+            className='h-10 grid w-full max-md:hidden'
+            style={{
+                gridTemplateColumns: `repeat(${columns}, 1fr)`,
+            }}
+        >
+            <div
+                key={nickname}
+                className={
+                    clsx(
+                        `relative col-start-[var(--start)] col-span-[var(--span)] py-2 ${bgName} flex flex-row justify-between`,
+                        {
+                            'text-black': blackTextBg,
+                            'text-white': !blackTextBg,
+                        }
+                    )
+                }
+                style={
+                    {
+                        '--start': startCol,
+                        '--span': colSpan
+                    } as React.CSSProperties & Record<string, any>
+                }
+            >
+                <span className='font-semibold absolute left-2'>{currentPoints}</span>
+                {
+                    currentPoints === maxPoints ? null : <span className='font-semibold absolute right-2'>{maxPoints}</span>
+                }
+            </div>
+        </div>
+    );
 }
 
 /**

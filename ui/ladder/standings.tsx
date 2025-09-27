@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { COLOURCSSVARIANTS } from '@/lib/utils';
 import { RootState } from '@/state/store';
 import clsx from 'clsx';
@@ -60,6 +61,9 @@ export default function Standings(
             {topHalf}
             <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]} mx-[-8px]`}></div>
             {bottomHalf}
+            <div className='text-lg text-center pt-6'>
+                Coloured rows indicate a team who has qualified for finals, while a grayed out row indicates a team which can not make finals
+            </div>
         </div>
     );
 }

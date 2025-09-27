@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import LadderRow from './ladder-row';
 import { TeamData, Match, DrawInfo, PageVariables } from '../../lib/definitions';
 import Fixtures from '../fixture/fixtures';
@@ -100,9 +99,6 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
                 bottomHalf={bottomTeams}
                 predictorPage={false}
             />
-            <div className='text-lg text-center'>
-                Coloured rows indicate a team who has qualified for finals, while a grayed out row indicates a team which can not make finals
-            </div>
             <Fixtures
                 roundNum={roundIndex}
                 byes={byeTeams}
@@ -118,7 +114,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
 }
 
 /**
- * Get a row in the ladder. TODO move this to lib function (duplicated w/ ladder predictor fn)
+ * Get a row in the ladder.
  *
  * @param {boolean} isInTopSection if the team is in the top x of the competition
  * @param {Array<TeamData>} allTeams
@@ -226,7 +222,6 @@ function getLadderRow(
             team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
         );
 
-        // TODO add highlightRow arg - if finals spots filled up do not add bg's to ladder rows
         return <LadderRow
             key={theme.key}
             teamData={team}
