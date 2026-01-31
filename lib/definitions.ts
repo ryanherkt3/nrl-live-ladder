@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-vars */
-export type TeamData = {
+export interface TeamData {
     stats: TeamStats;
     name: string;
     theme: TeamTheme;
-};
+}
 
-export type NextTeam = {
+export interface NextTeam {
     nickname: string;
     theme: TeamTheme;
     matchCentreUrl: string;
     isBye: boolean;
-};
+}
 
-export type TeamStats = {
+export interface TeamStats {
     played: number;
     wins: number;
     drawn: number;
@@ -24,13 +24,13 @@ export type TeamStats = {
     points: number;
     noByePoints: number;
     maxPoints: number;
-};
+}
 
-export type TeamTheme = {
+export interface TeamTheme {
     key: string;
-};
+}
 
-export type Match = {
+export interface Match {
     matchMode: 'Pre' | 'Post' | 'Live';
     matchState: 'Upcoming' | 'FirstHalf' | 'HalfTime' | 'SecondHalf' | 'FullTime' | 'ExtraTime';
     matchCentreUrl: string;
@@ -39,26 +39,26 @@ export type Match = {
     awayTeam: FixtureTeam;
     clock: MatchTime;
     isCurrentRound: boolean;
-};
+}
 
-export type ByeTeam = {
+export interface ByeTeam {
     isCurrentRound: boolean;
     teamNickName: string;
     theme: TeamTheme;
 }
 
-export type MatchTime = {
+export interface MatchTime {
     kickOffTimeLong: string;
     gameTime: string;
 }
 
-export type FixtureTeam = {
+export interface FixtureTeam {
     nickName: string;
     score: number | string;
     theme: TeamTheme;
 }
 
-export type DrawInfo = {
+export interface DrawInfo {
     fixtures: Match[];
     byes: ByeTeam[];
     selectedRoundId: number;
@@ -66,21 +66,21 @@ export type DrawInfo = {
     filterTeams: TeamData[];
 }
 
-export type TeamStatuses = {
+export interface TeamStatuses {
     topTwo: number,
     topFour: number,
     finalsQualification: number,
     eliminated: number,
 }
 
-export type TeamPoints = {
+export interface TeamPoints {
     lowestCurrentPoints: number,
     highestMaxPoints: number,
     currentPoints: number,
     maxPoints: number,
 }
 
-export type PageVariables = {
+export interface PageVariables {
     currentRoundInfo: DrawInfo[],
     byes: ByeTeam[]
     fixtures: Match[],
@@ -90,10 +90,10 @@ export type PageVariables = {
     allTeams: TeamData[]
 }
 
-export type CompInfo = {
+export interface CompInfo {
     ROUNDS: number,
     FINALS_WEEKS: number,
-    WEEK_ONE_FINALS_FORMAT: Array<Array<number>>,
+    WEEK_ONE_FINALS_FORMAT: number[][],
     BYES: number,
     MATCHES: number,
     TEAMS: number,
@@ -101,17 +101,17 @@ export type CompInfo = {
     WIN_POINTS: number,
 }
 
-export type MainSiteColour = {
+export interface MainSiteColour {
     colour: string,
     updateStatus: ReduxUpdateFlags
 }
 
-export type CurrentComp = {
+export interface CurrentComp {
     comp: string,
     updateStatus: ReduxUpdateFlags
 }
 
-export type CurrentYear = {
+export interface CurrentYear {
     year: number,
     updateStatus: ReduxUpdateFlags
 }

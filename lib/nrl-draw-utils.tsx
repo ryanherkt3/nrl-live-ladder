@@ -14,8 +14,8 @@ import { NUMS } from './utils';
  * @returns {Array<RoundFixture>}
  */
 export function getRoundFixtures(
-    fixtures: Array<Match>,
-    ladder: Array<TeamData>,
+    fixtures: Match[],
+    ladder: TeamData[],
     isFinalsFootball: boolean,
     modifiable: boolean,
     modifiedFixtureCb: Function | undefined
@@ -53,16 +53,16 @@ export function getRoundFixtures(
  * @returns {PageVariables}
  */
 export function getPageVariables(
-    seasonDraw: Array<DrawInfo>,
+    seasonDraw: DrawInfo[],
     modifiable: boolean,
     currentComp: string,
     currentYear: number
 ) {
     // Construct list of teams manually
-    const teamList: Array<TeamData> = constructTeamData(seasonDraw[0].filterTeams, currentComp);
+    const teamList: TeamData[] = constructTeamData(seasonDraw[0].filterTeams, currentComp);
 
     // Get current round number
-    const currentRoundInfo: Array<DrawInfo> = seasonDraw.filter((round: DrawInfo) => {
+    const currentRoundInfo: DrawInfo[] = seasonDraw.filter((round: DrawInfo) => {
         if (round.byes) {
             return round.byes[0].isCurrentRound;
         }
@@ -104,7 +104,7 @@ export function getPageVariables(
 export function updateFixturesToShow(
     showPreviousRound: boolean,
     roundIndex: number,
-    seasonDraw: Array<DrawInfo>,
+    seasonDraw: DrawInfo[],
     setRoundIndex: Function,
     setFixturesToShow: Function,
     setByeTeams: Function,

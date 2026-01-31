@@ -16,7 +16,7 @@ import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
 import { useEffect } from 'react';
 
-export default function DrawFetcher({pageName}: {pageName: String}) {
+export default function DrawFetcher({pageName}: {pageName: string}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -39,8 +39,8 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             const seasonData = seasonDraw.data;
 
             // Set the main colour used for the finalists bar, completed games etc
-            const seasonDrawValues: Array<DrawInfo> = Object.values(seasonData);
-            const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
+            const seasonDrawValues: DrawInfo[] = Object.values(seasonData);
+            const currentRound: DrawInfo[] = seasonDrawValues.filter((round: DrawInfo) => {
                 if (round.byes) {
                     return round.byes[0].isCurrentRound;
                 }

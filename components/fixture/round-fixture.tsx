@@ -21,7 +21,7 @@ export default function RoundFixture(
     {
         data: Match,
         winningTeam: string,
-        ladder: Array<TeamData>
+        ladder: TeamData[]
         isFinalsFootball: boolean,
         modifiable: boolean,
         modifiedFixtureCb: Function | undefined
@@ -64,7 +64,7 @@ export default function RoundFixture(
                         'text-center text-lg text-white font-semibold',
                         {
                             'bg-indigo-400': modifiable && matchMode === 'Pre',
-                            [`${COLOURCSSVARIANTS[`${colour}-bg`]}`]: isFullTime,
+                            [COLOURCSSVARIANTS[`${colour}-bg`]]: isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
                             'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
@@ -192,7 +192,7 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
                 clsx(
                     'border rounded-md px-2 py-1 w-[60px] sm:w-[90px] md:w-[140px] text-white',
                     {
-                        [`${trueClasses}`]: isFullTime,
+                        [trueClasses]: isFullTime,
                         'border-indigo-400 bg-indigo-400': !isFullTime
                     }
                 )

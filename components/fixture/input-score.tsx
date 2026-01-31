@@ -38,7 +38,7 @@ export default function InputScore(
     let predictedTeamScore: number | undefined;
     if (localStorage[`predictedMatches${year}${comp}`]) {
         predictions = JSON.parse(localStorage[`predictedMatches${year}${comp}`]);
-        if (predictions[round] && predictions[round][slug]) {
+        if (predictions[round]?.[slug]) {
             const score = predictions[round][slug][team];
             predictedTeamScore = score ?? '';
         }

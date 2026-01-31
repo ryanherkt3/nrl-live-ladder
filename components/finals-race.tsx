@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 
-export default function FinalsRace({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
+export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -73,11 +73,11 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: Array<DrawInfo>}) 
  * @returns
  */
 function getTableRows(
-    allTeams: Array<TeamData>,
+    allTeams: TeamData[],
     topHalf: boolean,
     highestMaxPts: number,
     lastPlacePts: number,
-    liveMatches: Array<Match>,
+    liveMatches: Match[],
     currentComp: string
 ) {
     const { FINALS_TEAMS } = NUMS[currentComp];
@@ -246,9 +246,9 @@ function getLadderWorms(pointValues: TeamPoints, nickname: string, isEliminated:
  * @returns HTML object
  */
 function getLadderStatus(
-    teamList: Array<TeamData>,
+    teamList: TeamData[],
     pointValues: TeamPoints,
-    nickname: String,
+    nickname: string,
     teamInfo: TeamData,
     currentComp: string,
 ) {
@@ -314,7 +314,7 @@ function getLadderStatus(
  * @param {Array<TeamData>} teamList list of teams
  * @returns HTML object or null if no live matches exist
  */
-function getRoundFixturesSection(liveMatches: Array<Match>, teamList: Array<TeamData>) {
+function getRoundFixturesSection(liveMatches: Match[], teamList: TeamData[]) {
     if (liveMatches.length) {
         return (
             <div className="flex flex-col gap-4">

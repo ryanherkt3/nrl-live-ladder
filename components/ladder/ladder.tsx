@@ -12,7 +12,7 @@ import { RootState } from '../../state/store';
 import { teamSortFunction } from '@/lib/team-stats';
 import { getMinPointsForSpots, getQualificationStatus } from '@/lib/qualification';
 
-export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
+export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -125,7 +125,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
  */
 function getLadderRow(
     isInTopSection: boolean,
-    allTeams: Array<TeamData>,
+    allTeams: TeamData[],
     byePoints: boolean,
     pageVariables: PageVariables,
     currentComp: string,

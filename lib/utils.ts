@@ -101,7 +101,7 @@ export function getOrdinalNumber(cardinalNo: number) {
     return `${cardinalNo}th`;
 }
 
-export const COMPID : { [key: string]: number } = Object.freeze({
+export const COMPID : Record<string, number> = Object.freeze({
     NRL: 111,
     NRLW: 161,
     NSW: 113,
@@ -111,7 +111,7 @@ export const COMPID : { [key: string]: number } = Object.freeze({
 // TODO
 // 1. Is there a more efficient way to do this?
 // 2. Move colours code to new file (lib/colours.ts)
-export const COLOURCSSVARIANTS : { [key: string]: string } = Object.freeze({
+export const COLOURCSSVARIANTS : Record<string, string> = Object.freeze({
     'nrl-bg': 'bg-nrl',
     'nrl-border': 'border-nrl',
     'nrl-text': 'text-nrl',
@@ -185,7 +185,7 @@ export const COLOURCSSVARIANTS : { [key: string]: string } = Object.freeze({
     'nrlw-ctry-hover-text': 'hover:text-nrlw-ctry',
 });
 
-export const NUMS : { [key: string]: CompInfo } = Object.freeze({
+export const NUMS : Record<string, CompInfo> = Object.freeze({
     nrl: {
         ROUNDS: 27,
         FINALS_WEEKS: 4,

@@ -15,7 +15,7 @@ import { RootState } from '../../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualification';
 import clsx from 'clsx';
 
-export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
+export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -71,8 +71,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         // Set the predictions array to update, then update it
         predictions[roundKey + 1] = predictions[roundKey + 1] || {};
         predictions[roundKey + 1][slug] = {
-            [`${homeTeamSlug}`]: isAwayTeamUpdated ? opponentScore : teamToUpdate.score,
-            [`${awayTeamSlug}`]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
+            [homeTeamSlug]: isAwayTeamUpdated ? opponentScore : teamToUpdate.score,
+            [awayTeamSlug]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
         };
 
         let clearRoundOrAll = false;
@@ -127,7 +127,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const [byeTeams, setByeTeams] = useState(byes);
 
     // Update predictions stored in localStorage
-    const updatePredictions = (predictions: Object | String, roundNum: number) => {
+    const updatePredictions = (predictions: object | string, roundNum: number) => {
         const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
             JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
             {};
@@ -244,14 +244,18 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={`${CCV[`${colour}-border`]} ${CCV[`${colour}-hover-bg`]} hover:text-white`}
                     disabled={clearRoundButtonDisabled}
-                    clickCallback={() => updatePredictions('clear-round', roundIndex)}
+                    clickCallback={() => {
+                        updatePredictions('clear-round', roundIndex);
+                    }}
                 />
                 <LadderPredictorButton
                     text={'Reset All'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={'border-red-400 hover:bg-red-400 hover:text-white'}
                     disabled={resetAllButtonDisabled}
-                    clickCallback={() => updatePredictions('clear-all', 0)}
+                    clickCallback={() => {
+                        updatePredictions('clear-all', 0);
+                    }}
                 />
             </div>
             <Fixtures
@@ -277,7 +281,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
  * @param {String} currentComp
  * @returns {LadderRow} React object
  */
-function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMatches: Array<Match>, currentComp: string) {
+function getLadderRow(isInTopSection: boolean, allTeams: TeamData[], liveMatches: Match[], currentComp: string) {
     const { FINALS_TEAMS } = NUMS[currentComp];
 
     const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);

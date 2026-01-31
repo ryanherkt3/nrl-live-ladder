@@ -8,8 +8,8 @@ import { NUMS } from './utils';
  * @param {string} currentComp
  * @returns {Array<TeamData>} the list of teams
  */
-export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
-    const teamList: Array<TeamData> = [];
+export function constructTeamData(teams: TeamData[], currentComp: string) {
+    const teamList: TeamData[] = [];
 
     for (const team of teams) {
         teamList.push({
@@ -66,9 +66,9 @@ export function getMaxPoints(losses: number, draws: number, currentComp: string)
  * @returns {Array<TeamData>} the list of teams
  */
 export function constructTeamStats(
-    seasonDraw: Array<DrawInfo>,
+    seasonDraw: DrawInfo[],
     currentRoundNo: number,
-    teams: Array<TeamData>,
+    teams: TeamData[],
     modifiable: boolean,
     currentComp: string,
     currentYear: number,
@@ -142,7 +142,7 @@ export function constructTeamStats(
                 const round = parseInt(roundTitle.split(' ')[1]);
                 const predictions = JSON.parse(prediction);
 
-                if (predictions[round] && predictions[round][slug]) {
+                if (predictions[round]?.[slug]) {
                     const prediction = predictions[round][slug];
 
                     const homeScore = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];

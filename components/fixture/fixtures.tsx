@@ -19,9 +19,9 @@ export default function Fixtures(
     }:
     {
         roundNum: number,
-        byes: Array<ByeTeam>,
-        fixtures: Array<Match>,
-        teamList: Array<TeamData>,
+        byes: ByeTeam[],
+        fixtures: Match[],
+        teamList: TeamData[],
         updateCallback: Function
         lastRoundNo: number,
         modifiable: boolean,

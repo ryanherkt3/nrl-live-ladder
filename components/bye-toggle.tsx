@@ -37,7 +37,7 @@ function ByeToggle(
                     clsx(
                         [`border ${COLOURCSSVARIANTS[`${colour}-border`]} w-7 rounded-full`],
                         {
-                            [`${COLOURCSSVARIANTS[`${colour}-bg`]}`]: byeValue === setByeValue
+                            [COLOURCSSVARIANTS[`${colour}-bg`]]: byeValue === setByeValue
                         }
                     )
                 }

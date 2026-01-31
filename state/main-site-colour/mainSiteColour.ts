@@ -33,7 +33,7 @@ const MainSiteColourSlice = createSlice({
             const { NSW, NRLW, NRL, QLD } = COMPID;
 
             if (comp === NRLW) {
-                const NRLWROUNDID : { [key: number]: string } = Object.freeze({
+                const NRLWROUNDID : Record<number, string> = Object.freeze({
                     6: 'ind',
                     7: 'ind',
                     8: 'ctry'
@@ -45,7 +45,7 @@ const MainSiteColourSlice = createSlice({
                 }
             }
             else if (comp === NRL) {
-                const NRLROUNDID : { [key: number]: string } = Object.freeze({
+                const NRLROUNDID : Record<number, string> = Object.freeze({
                     5: 'mclt',
                     9: 'magic',
                     10: 'wil',
