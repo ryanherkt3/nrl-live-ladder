@@ -35,7 +35,9 @@ export function getRoundFixtures(
                 ladder={ladder}
                 isFinalsFootball={isFinalsFootball}
                 modifiable={modifiable && fixture.matchMode === 'Pre'}
-                modifiedFixtureCb={modifiedFixtureCb}
+                modifiedFixtureCb={
+                    modifiedFixtureCb as (_slug: string, _round: number, _team: string, _score: number) => void
+                }
             />
         );
     }

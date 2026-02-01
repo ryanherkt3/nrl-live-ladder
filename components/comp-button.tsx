@@ -21,7 +21,7 @@ export default function CompButton({compKey}: {compKey: string}) {
             dispatch(
                 mainColourUpdate(
                     {
-                        comp: compKey,
+                        comp: COMPID[compKey],
                         currentRoundNo: -1,
                         finalUpdate: false,
                     }
