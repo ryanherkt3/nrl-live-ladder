@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export interface TeamData {
     stats: TeamStats;
     name: string;
@@ -60,7 +59,7 @@ export interface FixtureTeam {
 
 export interface DrawInfo {
     fixtures: Match[];
-    byes: ByeTeam[];
+    byes: ByeTeam[] | undefined;
     selectedRoundId: number;
     selectedSeasonId: number;
     filterTeams: TeamData[];

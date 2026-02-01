@@ -2,15 +2,17 @@ const localStorageMock = (() => {
     let store = {} as Storage;
 
     return {
-        getItem: (key: string) => store[key],
+        getItem: (key: string): string | null => {
+            return Object.prototype.hasOwnProperty.call(store, key) ? (store[key] as string) : null;
+        },
         setItem: (key: string, value: string) => {
-            store[key] = value.toString();
+            store[key] = value;
         },
         clear: () => {
             store = {} as Storage;
         },
         removeItem: (key: string) => {
-            delete store[key];
+            store[key] = undefined as unknown as string;
         }
     };
 })();

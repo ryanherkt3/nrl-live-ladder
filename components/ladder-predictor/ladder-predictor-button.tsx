@@ -13,7 +13,7 @@ export default function LadderPredictorButton(
         activeClasses: string,
         disabledClasses: string,
         disabled: boolean,
-        clickCallback: Function
+        clickCallback: () => void
     }
 ) {
     return (

@@ -89,11 +89,13 @@ const reactConfig = defineConfig([
             'no-negated-condition': 2,
             'no-trailing-spaces': 2,
             'no-unused-expressions': 2,
-            'no-unused-vars': [2, {'vars': 'local', 'args': 'after-used'}],
+            // 'no-unused-vars': [2, {'vars': 'local', 'args': 'after-used'}],
+            'no-unused-vars': 'off',
             'prefer-const': [2, {'destructuring': 'all'}],
             'prefer-destructuring': [1, {'object': true, 'array': false}],
             'quotes': [2, 'single', { 'avoidEscape': true }],
             'semi': [2, 'always'],
+            '@typescript-eslint/no-dynamic-delete': 'off' // TODO remove
         },
         settings: {
             react: {

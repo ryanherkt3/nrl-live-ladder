@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 export default function SkeletonHeader() {
     const pathname = usePathname();
 
-    const activeLink = LINKS.filter((links) => links.url === pathname)[0];
+    const activeLink = LINKS.find((links) => links.url === pathname);
 
     const colourClasses = 'text-black border-gray-400 bg-white';
     const textClasses = 'text-2xl md:text-4xl font-semibold';

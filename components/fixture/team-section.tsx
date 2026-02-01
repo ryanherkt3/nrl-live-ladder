@@ -26,7 +26,7 @@ export default function TeamSection(
         isHomeTeam: boolean
         isWinning: boolean
         modifiable: boolean,
-        modifiedFixtureCb: Function | undefined
+        modifiedFixtureCb: undefined | (() => void)
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -84,7 +84,7 @@ function getScoreSegment(
     isHomeTeam: boolean,
     winCondition: boolean,
     modifiable: boolean,
-    modifiedFixtureCb: Function | undefined,
+    modifiedFixtureCb: undefined | (() => void),
     matchSlug: string
 ) {
     const { matchState, matchMode } = matchData;

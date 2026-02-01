@@ -1,5 +1,5 @@
 import RoundFixture from '../components/fixture/round-fixture';
-import { DrawInfo, Match, TeamData } from './definitions';
+import { DrawInfo, Match, TeamData, ByeTeam } from './definitions';
 import { constructTeamData, constructTeamStats, teamSortFunction } from './team-stats';
 import { NUMS } from './utils';
 
@@ -18,7 +18,7 @@ export function getRoundFixtures(
     ladder: TeamData[],
     isFinalsFootball: boolean,
     modifiable: boolean,
-    modifiedFixtureCb: Function | undefined
+    modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void)
 ) {
     const liveFixtures = [];
 
@@ -63,7 +63,7 @@ export function getPageVariables(
 
     // Get current round number
     const currentRoundInfo: DrawInfo[] = seasonDraw.filter((round: DrawInfo) => {
-        if (round.byes) {
+        if (round.byes !== undefined) {
             return round.byes[0].isCurrentRound;
         }
 
@@ -105,24 +105,22 @@ export function updateFixturesToShow(
     showPreviousRound: boolean,
     roundIndex: number,
     seasonDraw: DrawInfo[],
-    setRoundIndex: Function,
-    setFixturesToShow: Function,
-    setByeTeams: Function,
+    setRoundIndex: (newRoundIndex: number) => void,
+    setFixturesToShow: (fixtures: Match[]) => void,
+    setByeTeams: (byes: ByeTeam[]) => void,
 ) {
     const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
 
-    const newRoundInfo = seasonDraw.filter((rounds: DrawInfo) => {
-        return rounds.selectedRoundId === newRoundIndex;
-    });
+    const newRoundInfo = seasonDraw.find((rounds: DrawInfo) => rounds.selectedRoundId === newRoundIndex);
 
     // Fixtures don't exist so return early
     if (!newRoundInfo) {
         return false;
     }
 
-    const { fixtures, byes } = newRoundInfo[0];
+    const { fixtures, byes } = newRoundInfo;
 
     setRoundIndex(newRoundIndex);
     setFixturesToShow(fixtures);
-    setByeTeams(byes);
+    setByeTeams(byes ?? []);
 }

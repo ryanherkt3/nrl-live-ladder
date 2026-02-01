@@ -113,7 +113,7 @@ function getTableRows(
 
         let isPlaying = false;
 
-        if (liveMatches) {
+        if (liveMatches.length) {
             for (const match of liveMatches) {
                 isPlaying = match.awayTeam.nickName === nickname ||
                     match.homeTeam.nickName === nickname;
@@ -204,14 +204,14 @@ function getLadderWorms(pointValues: TeamPoints, nickname: string, isEliminated:
         <div
             className='h-10 grid w-full max-md:hidden'
             style={{
-                gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                gridTemplateColumns: `repeat(${String(columns)}, 1fr)`,
             }}
         >
             <div
                 key={nickname}
                 className={
                     clsx(
-                        `relative col-start-[var(--start)] col-span-[var(--span)] py-2 ${bgName} flex flex-row justify-between`,
+                        `relative col-start-(--start) col-span-(--span) py-2 ${bgName} flex flex-row justify-between`,
                         {
                             'text-black': blackTextBg,
                             'text-white': !blackTextBg,

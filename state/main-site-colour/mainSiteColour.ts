@@ -17,7 +17,7 @@ const MainSiteColourSlice = createSlice({
     name: 'MainSiteColour',
     initialState,
     reducers: {
-        update: (state, action) => {
+        update: (state, action: { payload: { comp: number, currentRoundNo: number, finalUpdate: boolean } }) => {
             let mainSiteColour = '';
 
             const { comp, currentRoundNo, finalUpdate } = action.payload;

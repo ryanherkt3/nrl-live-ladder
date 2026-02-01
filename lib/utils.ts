@@ -89,16 +89,16 @@ export function getShortCode(name: string, currentComp: string) {
  */
 export function getOrdinalNumber(cardinalNo: number) {
     if (cardinalNo % 10 === 1 && cardinalNo !== 11) {
-        return `${cardinalNo}st`;
+        return `${String(cardinalNo)}st`;
     }
     if (cardinalNo % 10 === 2 && cardinalNo !== 12) {
-        return `${cardinalNo}nd`;
+        return `${String(cardinalNo)}nd`;
     }
     if (cardinalNo % 10 === 3 && cardinalNo !== 13) {
-        return `${cardinalNo}rd`;
+        return `${String(cardinalNo)}rd`;
     }
 
-    return `${cardinalNo}th`;
+    return `${String(cardinalNo)}th`;
 }
 
 export const COMPID : Record<string, number> = Object.freeze({

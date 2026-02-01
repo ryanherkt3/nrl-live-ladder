@@ -19,7 +19,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
 
-    const pageVariables = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    // Ensure byes is always an array
+    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const pageVariables = { ...pageVariablesRaw, byes: pageVariablesRaw.byes ?? [] };
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
     const [byePoints, setByePoints] = useState(true);
@@ -60,7 +62,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         }));
         setRoundIndex(currentRoundNo);
         setFixturesToShow(fixtures);
-        if (byes) {
+        if (Object.values(byes).length) {
             setByeTeams(byes);
         }
     }, [currentComp]);
@@ -137,25 +139,16 @@ function getLadderRow(
 
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
-        let isPlaying = false;
-
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const { name, stats, theme } = team;
         const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
 
-        if (liveMatches) {
-            for (const match of liveMatches) {
-                isPlaying = match.awayTeam.nickName === name || match.homeTeam.nickName === name;
-
-                if (isPlaying) {
-                    break;
-                }
-            }
-        }
+        const isPlaying = Array.isArray(liveMatches) &&
+            liveMatches.some((match: Match) => match.awayTeam.nickName === name || match.homeTeam.nickName === name);
 
         // Get team's next fixture if there is one
         // If team has played (or is playing) get fixture from next round, otherwise get one from current round
-        let filteredFixture = null;
+        let filteredFixture: Match[] = [];
         let nextTeam = '';
         let nextTeamTooltip = '';
         let nextMatchUrl = '';
@@ -163,21 +156,27 @@ function getLadderRow(
         const playedAndByes = stats.played + stats.byes;
 
         if (playedAndByes < currentRoundNo) {
-            filteredFixture = fixtures.filter((fixture: Match) => {
+            const foundFixture = fixtures.find((fixture: Match) => {
                 return (name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName) &&
                     fixture.matchMode === 'Pre';
             });
+            if (foundFixture) {
+                filteredFixture = [foundFixture];
+            }
         }
-        else if (nextRoundInfo && nextRoundInfo.selectedRoundId !== currentRoundNo) {
-            filteredFixture = nextRoundInfo.fixtures.filter((fixture: Match) => {
+        else if (nextRoundInfo?.selectedRoundId !== undefined && nextRoundInfo.selectedRoundId !== currentRoundNo) {
+            const foundFixture = nextRoundInfo.fixtures.find((fixture: Match) => {
                 return name === fixture.homeTeam.nickName || name === fixture.awayTeam.nickName;
             });
+            if (foundFixture) {
+                filteredFixture = [foundFixture];
+            }
         }
 
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
-        if (filteredFixture && filteredFixture.length) {
-            const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0];
+        if (filteredFixture.length) {
+            const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0] ?? {};
 
             if (name === homeTeam.nickName) {
                 nextTeam = awayTeam.theme.key;
@@ -194,27 +193,15 @@ function getLadderRow(
             nextTeam = 'BYE';
         }
         else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
-            let finalsOppLadderPos;
-
+            let finalsOppLadderPos: number | undefined;
             // Get week 1 finals matchup for a team if possible
-            let matchUpFound = false;
-            for (const weekOneMatchup of WEEK_ONE_FINALS_FORMAT) {
-                if (matchUpFound) {
-                    break;
-                }
-
-                if (weekOneMatchup.includes(ladderPos)) {
-                    finalsOppLadderPos = weekOneMatchup.filter((position: number) => {
-                        return position !== ladderPos;
-                    })[0];
-
-                    matchUpFound = true;
-                }
+            const weekOneMatchup = WEEK_ONE_FINALS_FORMAT.find((matchup: number[]) => matchup.includes(ladderPos));
+            if (weekOneMatchup) {
+                finalsOppLadderPos = weekOneMatchup.find((position: number) => position !== ladderPos);
             }
-
-            if (finalsOppLadderPos) {
-                nextTeam = teamList[finalsOppLadderPos - 1].theme.key;
-                nextTeamTooltip = teamList[finalsOppLadderPos - 1].name;
+            if (finalsOppLadderPos !== undefined && teamList[finalsOppLadderPos - 1]) {
+                nextTeam = teamList[finalsOppLadderPos - 1]?.theme?.key ?? '';
+                nextTeamTooltip = teamList[finalsOppLadderPos - 1]?.name ?? '';
             }
         }
 

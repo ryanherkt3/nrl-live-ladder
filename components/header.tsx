@@ -23,7 +23,7 @@ export default function Header() {
     const dispatch = useDispatch();
 
     // Default to NRL if comp param is not provided or is invalid
-    let initCompParam = useSearchParams().get('comp')?.toLowerCase() || 'nrl';
+    let initCompParam = useSearchParams().get('comp')?.toLowerCase() ?? 'nrl';
     initCompParam = Object.keys(COMPID).includes(initCompParam.toUpperCase()) ? initCompParam : 'nrl';
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default function Header() {
 
     const pathname = usePathname();
 
-    const activeLink = LINKS.filter((links) => links.url === pathname)[0];
+    const activeLink = LINKS.find((links) => links.url === pathname);
     const links = LINKS.filter((links) => links.url !== pathname);
 
     const colourClasses = 'text-black border-gray-400 bg-white';

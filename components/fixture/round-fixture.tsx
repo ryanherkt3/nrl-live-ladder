@@ -24,7 +24,7 @@ export default function RoundFixture(
         ladder: TeamData[]
         isFinalsFootball: boolean,
         modifiable: boolean,
-        modifiedFixtureCb: Function | undefined
+        modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void)
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -152,7 +152,7 @@ function getMatchState(
         commonClasses += ' pt-2';
 
         return (
-            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-[60px]`}>
+            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-15`}>
                 {
                     getMatchContext(matchData, modifiable, mainSiteColour)
                 }
@@ -163,7 +163,7 @@ function getMatchState(
     const kickoffTime = moment(clock.kickOffTimeLong).format('LT');
 
     return (
-        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-[60px]`}>
+        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-15`}>
             <div>{kickoffTime}</div>
         </div>
     );
@@ -190,7 +190,7 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
         return (
             <div className={
                 clsx(
-                    'border rounded-md px-2 py-1 w-[60px] sm:w-[90px] md:w-[140px] text-white',
+                    'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35 text-white',
                     {
                         [trueClasses]: isFullTime,
                         'border-indigo-400 bg-indigo-400': !isFullTime
