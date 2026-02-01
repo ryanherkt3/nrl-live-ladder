@@ -22,10 +22,10 @@ export default function Fixtures(
         byes: ByeTeam[] | undefined,
         fixtures: Match[],
         teamList: TeamData[],
-        updateCallback: (arg0: boolean) => void
+        updateCallback: (_showPreviousRound: boolean) => void
         lastRoundNo: number,
         modifiable: boolean,
-        modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void)
+        modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);

@@ -6,7 +6,7 @@ import { NUMS } from './utils';
 /**
  * Get all the fixtures for a particular round
  *
- * @param {boolean} fixtures the fixtures for the round
+ * @param {Match[]} fixtures the fixtures for the round
  * @param {Array<TeamData>} ladder ladder data
  * @param {boolean} isFinalsFootball if we are in finals football or not
  * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
@@ -18,7 +18,7 @@ export function getRoundFixtures(
     ladder: TeamData[],
     isFinalsFootball: boolean,
     modifiable: boolean,
-    modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void)
+    modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
 ) {
     const liveFixtures = [];
 
@@ -105,9 +105,9 @@ export function updateFixturesToShow(
     showPreviousRound: boolean,
     roundIndex: number,
     seasonDraw: DrawInfo[],
-    setRoundIndex: (newRoundIndex: number) => void,
-    setFixturesToShow: (fixtures: Match[]) => void,
-    setByeTeams: (byes: ByeTeam[]) => void,
+    setRoundIndex: (_newRoundIndex: number) => void,
+    setFixturesToShow: (_fixtures: Match[]) => void,
+    setByeTeams: (_byes: ByeTeam[]) => void,
 ) {
     const newRoundIndex = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
 

@@ -13,7 +13,7 @@ export default function InputScore(
         isHomeTeam
     }:
     {
-        modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void),
+        modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void),
         matchSlug: string,
         team: string
         isHomeTeam: boolean

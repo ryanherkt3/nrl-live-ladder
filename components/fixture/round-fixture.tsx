@@ -24,7 +24,7 @@ export default function RoundFixture(
         ladder: TeamData[]
         isFinalsFootball: boolean,
         modifiable: boolean,
-        modifiedFixtureCb: undefined | ((slug: string, round: number, team: string, score: number) => void)
+        modifiedFixtureCb: (_slug: string, _round: number, _team: string, _score: number) => void
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -85,7 +85,7 @@ export default function RoundFixture(
                     isHomeTeam={true}
                     isWinning={winningTeam === 'homeTeam'}
                     modifiable={modifiable}
-                    modifiedFixtureCb={modifiedFixtureCb}
+                    modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
                 {
                     getMatchState(data, modifiable, colour)
@@ -98,7 +98,7 @@ export default function RoundFixture(
                     isHomeTeam={false}
                     isWinning={winningTeam === 'awayTeam'}
                     modifiable={modifiable}
-                    modifiedFixtureCb={modifiedFixtureCb}
+                    modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
             </div>
         </div>

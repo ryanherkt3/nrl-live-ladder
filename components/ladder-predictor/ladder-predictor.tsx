@@ -269,7 +269,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
                 updateCallback={updateFixturesCb}
                 lastRoundNo={inFinalsFootball ? currentRoundNo : ROUNDS}
                 modifiable={!inFinalsFootball}
-                modifiedFixtureCb={updateAllTeams as (slug: string, round: number, team: string, score: number) => void}
+                modifiedFixtureCb={updateAllTeams as (_slug: string, _round: number, _team: string, _score: number) => void}
             />
         </div>
     );

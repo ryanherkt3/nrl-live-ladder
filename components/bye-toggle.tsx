@@ -10,7 +10,7 @@ export default function ByeToggleSection(
     } :
     {
         setByeValue: boolean,
-        byeValueCb: (newValue: boolean) => void
+        byeValueCb: (_newValue: boolean) => void
     }
 ) {
     return (
@@ -27,7 +27,7 @@ function ByeToggle(
     }:
     {
         setByeValue: boolean,
-        byeValueCb: (newValue: boolean) => void
+        byeValueCb: (_newValue: boolean) => void
     }
 ) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
