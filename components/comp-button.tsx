@@ -21,7 +21,7 @@ export default function CompButton({compKey}: {compKey: string}) {
             dispatch(
                 mainColourUpdate(
                     {
-                        comp: compKey,
+                        comp: COMPID[compKey],
                         currentRoundNo: -1,
                         finalUpdate: false,
                     }
@@ -56,7 +56,9 @@ export default function CompButton({compKey}: {compKey: string}) {
         <Link
             key={compKey}
             href={{ pathname: '/ladder', query: {['comp']: compKey}}}
-            onClick={() => resetStates(compKey)}
+            onClick={() => {
+                resetStates(compKey);
+            }}
             className={`p-6 cursor-pointer font-bold ${borderClasses} ${textClasses} ${hoverBgStyle}`}
         >
             {buttonTitle}

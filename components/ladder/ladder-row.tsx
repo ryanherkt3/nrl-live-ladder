@@ -18,7 +18,7 @@ export default function LadderRow(
         qualificationStatus
     }: {
         teamData: TeamData;
-        position: String;
+        position: string;
         isPlaying: boolean;
         byePoints: boolean;
         predictorPage: boolean;

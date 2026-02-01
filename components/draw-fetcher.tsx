@@ -16,7 +16,7 @@ import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
 import { useEffect } from 'react';
 
-export default function DrawFetcher({pageName}: {pageName: String}) {
+export default function DrawFetcher({pageName}: {pageName: string}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -28,20 +28,26 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
     const { ROUNDS, FINALS_WEEKS } = NUMS[comp];
     const compRounds = ROUNDS + FINALS_WEEKS + 1;
     const compId = COMPID[comp.toUpperCase()];
-    const apiUrl = `/api/seasondraw?comp=${compId}&rounds=${compRounds}`;
+    const apiUrl = `/api/seasondraw?comp=${String(compId)}&rounds=${String(compRounds)}`;
 
     // Get the data
-    const fetcher = (url: string) => axios.get(url).then(res => res.data);
-    const { data: seasonDraw, error, isLoading } = useSWR(apiUrl, fetcher);
+    const fetcher = async (url: string): Promise<{ success: boolean; data: DrawInfo[]; error: Error }> =>
+        axios.get(url).then(res => res.data as { success: boolean; data: DrawInfo[]; error: Error });
+    const swrResult = useSWR<{ success: boolean; data: DrawInfo[]; error: Error }>(apiUrl, fetcher);
+    const { data: seasonDraw, error, isLoading } = swrResult as {
+        data: { success: boolean; data: DrawInfo[]; error: Error } | undefined;
+        error: Error | undefined;
+        isLoading: boolean;
+    };
 
     useEffect(() => {
         if (!error && !isLoading) {
-            const seasonData = seasonDraw.data;
+            const { data: seasonData } = seasonDraw as { success: boolean, data: DrawInfo[]};
 
             // Set the main colour used for the finalists bar, completed games etc
-            const seasonDrawValues: Array<DrawInfo> = Object.values(seasonData);
-            const currentRound: Array<DrawInfo> = seasonDrawValues.filter((round: DrawInfo) => {
-                if (round.byes) {
+            const seasonDrawValues: DrawInfo[] = Object.values(seasonData);
+            const currentRound: DrawInfo[] = seasonDrawValues.filter((round: DrawInfo) => {
+                if (round.byes !== undefined) {
                     return round.byes[0].isCurrentRound;
                 }
 
@@ -51,7 +57,7 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             // Set the current year to be the year of the draw if it is not matching
             const seasonId = seasonData[1].selectedSeasonId;
             if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
-                dispatch(currentYearUpdate(seasonData[1].selectedSeasonId));
+                dispatch(currentYearUpdate(seasonId));
             }
 
             const { colour } = mainSiteColour;
@@ -83,7 +89,7 @@ export default function DrawFetcher({pageName}: {pageName: String}) {
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
-    const seasonData = seasonDraw.data;
+    const { data: seasonData } = seasonDraw as { success: boolean, data: DrawInfo[]};
 
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {

@@ -4,7 +4,7 @@ import { NUMS } from './utils';
 // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
 export function getQualificationStatus(
     team: TeamData,
-    allTeams: Array<TeamData>,
+    allTeams: TeamData[],
     minPointsForSpots: TeamStatuses,
     currentComp: string
 ) {
@@ -71,7 +71,7 @@ export function getQualificationStatus(
 
 // Get the lowest amount of points to qualify for a given position (top 2/4/8, elimination)
 export function getMinPointsForSpots(
-    allTeams: Array<TeamData>,
+    allTeams: TeamData[],
     currentComp: string
 ) {
     const { FINALS_TEAMS, BYES } = NUMS[currentComp];

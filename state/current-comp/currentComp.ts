@@ -17,9 +17,8 @@ const CurrentCompSlice = createSlice({
     name: 'CurrentComp',
     initialState,
     reducers: {
-        update: (state, action) => {
+        update: (state, action: { payload: string }) => {
             const comp = Object.keys(COMPID).includes(action.payload.toUpperCase()) ? action.payload : 'nrl';
-
             state.value = { comp: comp, updateStatus: ReduxUpdateFlags.FinalUpdate };
         }
     }

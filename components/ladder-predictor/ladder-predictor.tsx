@@ -15,7 +15,9 @@ import { RootState } from '../../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualification';
 import clsx from 'clsx';
 
-export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInfo>}) {
+type Prediction = Record<string, Record<string, string>>;
+
+export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
     const { comp } = currentComp;
 
@@ -38,7 +40,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > ROUNDS;
-    const currentFixtureRound = inFinalsFootball ? currentRoundNo : ROUNDS;
+    const currentFixtureRound = inFinalsFootball ? ROUNDS : currentRoundNo;
 
     const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
         const roundKey = round - 1;
@@ -64,26 +66,27 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
-        const predictions = localStorage[`predictedMatches${year}${comp}`] ?
-            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
-            {};
+        const predictions: Prediction = localStorage[`predictedMatches${String(year)}${comp}`]
+            ? JSON.parse(String(localStorage[`predictedMatches${String(year)}${comp}`])) as Prediction
+            : {};
 
         // Set the predictions array to update, then update it
-        predictions[roundKey + 1] = predictions[roundKey + 1] || {};
-        predictions[roundKey + 1][slug] = {
-            [`${homeTeamSlug}`]: isAwayTeamUpdated ? opponentScore : teamToUpdate.score,
-            [`${awayTeamSlug}`]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
-        };
+        predictions[roundKey + 1] = predictions[roundKey + 1];
+        predictions[String(roundKey + 1)] = predictions[String(roundKey + 1)] ?? {};
+        predictions[String(roundKey + 1)][slug] = JSON.stringify({
+            [homeTeamSlug]: isAwayTeamUpdated ? opponentScore : teamToUpdate.score,
+            [awayTeamSlug]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
+        });
 
         let clearRoundOrAll = false;
         let predictionsClearArg = '';
 
         // Delete the entry from localStorage if both values are empty (i.e the match is not predicted)
         if (Object.values(predictions[roundKey + 1][slug]).filter(val => (val === '' || Number.isNaN(val))).length === 2) {
-            delete predictions[roundKey + 1][slug];
+            delete predictions[String(roundKey + 1)][slug];
 
-            if (Object.values(predictions[roundKey + 1]).length === 0) {
-                delete predictions[roundKey + 1];
+            if (Object.values(predictions[String(roundKey + 1)]).length === 0) {
+                delete predictions[String(roundKey + 1)];
 
                 clearRoundOrAll = true;
                 predictionsClearArg = 'clear-round';
@@ -109,14 +112,14 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         );
 
         // Update the disabled clear round button
-        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
-            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
+        const predictedMatches: Prediction = localStorage[`predictedMatches${String(year)}${comp}`] ?
+            JSON.parse(String(localStorage[`predictedMatches${String(year)}${comp}`])) as Prediction :
             {};
         const index = showPreviousRound ? roundIndex - 1 : roundIndex + 1;
 
         // Update the button states if they are different
-        if (predictedMatches && clearRoundButtonDisabled !== !predictedMatches[index]) {
-            dispatch(clearRdBtnUpdate(!predictedMatches[index]));
+        if (Object.keys(predictedMatches).length && clearRoundButtonDisabled !== !predictedMatches[index]) {
+            dispatch(clearRdBtnUpdate(!predictedMatches[String(index)]));
         }
         if (resetAllButtonDisabled !== !Object.entries(predictedMatches).length) {
             dispatch(resetAllBtnUpdate(!Object.entries(predictedMatches).length));
@@ -127,9 +130,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     const [byeTeams, setByeTeams] = useState(byes);
 
     // Update predictions stored in localStorage
-    const updatePredictions = (predictions: Object | String, roundNum: number) => {
-        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
-            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
+    const updatePredictions = (predictions: object | string, roundNum: number) => {
+        const predictedMatches: Prediction = localStorage[`predictedMatches${String(year)}${comp}`] ?
+            JSON.parse(String(localStorage[`predictedMatches${String(year)}${comp}`])) as Prediction :
             {};
 
         const updatePredictions = typeof predictions === 'object';
@@ -137,7 +140,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
         let clearAll = typeof predictions === 'string' && predictions === 'clear-all';
 
         if (updatePredictions) {
-            localStorage[`predictedMatches${year}${comp}`] = JSON.stringify(predictions);
+            localStorage[`predictedMatches${String(year)}${comp}`] = JSON.stringify(predictions);
         }
         else if (clearRound) {
             // Reset the scores for every predicted fixture for the chosen round and
@@ -151,7 +154,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
 
             delete predictedMatches[roundNum];
 
-            localStorage[`predictedMatches${year}${comp}`] = JSON.stringify(predictedMatches);
+            localStorage[`predictedMatches${String(year)}${comp}`] = JSON.stringify(predictedMatches);
 
             // Set clearAll to true if clearing the round predictions also clears all the predictions
             if (['null', '""', '{}'].includes(JSON.stringify(predictedMatches))) {
@@ -173,7 +176,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     }
                 }
             }
-            delete localStorage[`predictedMatches${year}${comp}`];
+            delete localStorage[`predictedMatches${String(year)}${comp}`];
         }
 
         // Update the button states if they are different
@@ -203,11 +206,11 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
     }, [allTeams]);
 
     useEffect(() => {
-        const predictedMatches = localStorage[`predictedMatches${year}${comp}`] ?
-            JSON.parse(localStorage[`predictedMatches${year}${comp}`]) :
+        const predictedMatches: Prediction = localStorage[`predictedMatches${String(year)}${comp}`] ?
+            JSON.parse(String(localStorage[`predictedMatches${String(year)}${comp}`])) as Prediction :
             {};
 
-        const clearRdBtnValue = inFinalsFootball || !predictedMatches ? true : !predictedMatches[roundIndex];
+        const clearRdBtnValue = inFinalsFootball || !Object.keys(predictedMatches).length ? true : !predictedMatches[roundIndex];
         if (clearRoundButtonDisabled !== clearRdBtnValue) {
             dispatch(clearRdBtnUpdate(clearRdBtnValue));
         }
@@ -244,14 +247,18 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={`${CCV[`${colour}-border`]} ${CCV[`${colour}-hover-bg`]} hover:text-white`}
                     disabled={clearRoundButtonDisabled}
-                    clickCallback={() => updatePredictions('clear-round', roundIndex)}
+                    clickCallback={() => {
+                        updatePredictions('clear-round', roundIndex);
+                    }}
                 />
                 <LadderPredictorButton
                     text={'Reset All'}
                     activeClasses={'border-gray-400 bg-gray-400 text-gray-100'}
                     disabledClasses={'border-red-400 hover:bg-red-400 hover:text-white'}
                     disabled={resetAllButtonDisabled}
-                    clickCallback={() => updatePredictions('clear-all', 0)}
+                    clickCallback={() => {
+                        updatePredictions('clear-all', 0);
+                    }}
                 />
             </div>
             <Fixtures
@@ -260,9 +267,9 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
                 fixtures={roundIndex === currentFixtureRound ? fixtures : fixturesToShow}
                 teamList={teams}
                 updateCallback={updateFixturesCb}
-                lastRoundNo={currentFixtureRound}
+                lastRoundNo={inFinalsFootball ? currentRoundNo : ROUNDS}
                 modifiable={!inFinalsFootball}
-                modifiedFixtureCb={updateAllTeams}
+                modifiedFixtureCb={updateAllTeams as (_slug: string, _round: number, _team: string, _score: number) => void}
             />
         </div>
     );
@@ -277,7 +284,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: Array<DrawInf
  * @param {String} currentComp
  * @returns {LadderRow} React object
  */
-function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMatches: Array<Match>, currentComp: string) {
+function getLadderRow(isInTopSection: boolean, allTeams: TeamData[], liveMatches: Match[], currentComp: string) {
     const { FINALS_TEAMS } = NUMS[currentComp];
 
     const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
@@ -286,7 +293,7 @@ function getLadderRow(isInTopSection: boolean, allTeams: Array<TeamData>, liveMa
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
 
-        if (liveMatches) {
+        if (liveMatches.length) {
             for (const match of liveMatches) {
                 isPlaying = match.awayTeam.nickName === team.name || match.homeTeam.nickName === team.name;
 

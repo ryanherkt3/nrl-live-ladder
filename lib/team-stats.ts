@@ -8,8 +8,8 @@ import { NUMS } from './utils';
  * @param {string} currentComp
  * @returns {Array<TeamData>} the list of teams
  */
-export function constructTeamData(teams: Array<TeamData>, currentComp: string) {
-    const teamList: Array<TeamData> = [];
+export function constructTeamData(teams: TeamData[], currentComp: string) {
+    const teamList: TeamData[] = [];
 
     for (const team of teams) {
         teamList.push({
@@ -66,9 +66,9 @@ export function getMaxPoints(losses: number, draws: number, currentComp: string)
  * @returns {Array<TeamData>} the list of teams
  */
 export function constructTeamStats(
-    seasonDraw: Array<DrawInfo>,
+    seasonDraw: DrawInfo[],
     currentRoundNo: number,
-    teams: Array<TeamData>,
+    teams: TeamData[],
     modifiable: boolean,
     currentComp: string,
     currentYear: number,
@@ -96,11 +96,9 @@ export function constructTeamStats(
             break;
         }
 
-        if (round.byes) {
+        if (round.byes !== undefined) {
             for (const bye of round.byes) {
-                const byeTeam = teams.filter((team: TeamData) => {
-                    return bye.teamNickName === team.name;
-                })[0];
+                const byeTeam = teams.find((team: TeamData) => bye.teamNickName === team.name);
 
                 const playedRoundFixtures = round.fixtures.filter((fixture) => {
                     return fixture.matchMode !== 'Pre';
@@ -108,7 +106,7 @@ export function constructTeamStats(
 
                 // If a fixture has been played (or is being played) for a particular round,
                 // give the bye team their points
-                if (playedRoundFixtures.length) {
+                if (playedRoundFixtures.length && byeTeam) {
                     byeTeam.stats.byes += 1;
                     byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
                         (WIN_POINTS * byeTeam.stats.byes);
@@ -125,28 +123,42 @@ export function constructTeamStats(
                 break;
             }
 
-            const homeFixtureTeam = teams.filter((team: TeamData) => {
-                return homeTeam.nickName === team.name;
-            })[0];
-
-            const awayFixtureTeam = teams.filter((team: TeamData) => {
-                return awayTeam.nickName === team.name;
-            })[0];
+            const homeFixtureTeam = teams.find((team: TeamData) => homeTeam.nickName === team.name);
+            const awayFixtureTeam = teams.find((team: TeamData) => awayTeam.nickName === team.name);
 
             // Update score from localStorage (if possible) if on ladder predictor page
-            const prediction = localStorage.getItem(`predictedMatches${currentYear}${currentComp}`);
+            const prediction = localStorage.getItem(`predictedMatches${String(currentYear)}${currentComp}`);
             if (modifiable && prediction) {
                 const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
                 const slug = matchCentreUrl.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
 
                 const round = parseInt(roundTitle.split(' ')[1]);
-                const predictions = JSON.parse(prediction);
+                const predictions =
+                    JSON.parse(prediction) as Record<number, Record<string, string>> | undefined;
 
-                if (predictions[round] && predictions[round][slug]) {
-                    const prediction = predictions[round][slug];
+                if (!predictions) {
+                    continue;
+                }
 
-                    const homeScore = prediction[homeTeam.nickName.toLowerCase().replace(' ', '-')];
-                    const awayScore = prediction[awayTeam.nickName.toLowerCase().replace(' ', '-')];
+                const roundPredictions = predictions[round] as Record<string, string> | undefined;
+
+                if (!roundPredictions) {
+                    continue;
+                }
+
+                const gamePrediction = roundPredictions[slug] ? roundPredictions[slug] : '';
+
+                const gamePredictionJson =
+                    gamePrediction === '' ? undefined :
+                        (
+                            typeof gamePrediction === 'string' ?
+                            JSON.parse(gamePrediction)  as Record<string, number> :
+                                gamePrediction
+                        );
+
+                if (gamePredictionJson !== undefined) {
+                    const homeScore = gamePredictionJson[homeTeam.nickName.toLowerCase().replace(' ', '-')];
+                    const awayScore = gamePredictionJson[awayTeam.nickName.toLowerCase().replace(' ', '-')];
 
                     const cleanUpPredictions = () => {
                         delete predictions[round][slug];
@@ -156,17 +168,18 @@ export function constructTeamStats(
 
                         // If no predictions, delete the localStorage entry,
                         // otherwise update it with the new predictions
-                        if (['null', '""', '{}'].includes(JSON.stringify(predictions))) {
-                            localStorage.removeItem(`predictedMatches${currentYear}${currentComp}`);
+                        if (['null', '', '{}'].includes(JSON.stringify(predictions))) {
+                            localStorage.removeItem(`predictedMatches${String(currentYear)}${currentComp}`);
                         }
                         else {
                             localStorage.setItem(
-                                `predictedMatches${currentYear}${currentComp}`, JSON.stringify(predictions)
+                                `predictedMatches${String(currentYear)}${currentComp}`, JSON.stringify(predictions)
                             );
                         }
                     };
 
-                    const bothScoresInvalid = [null, ''].includes(homeScore) && [null, ''].includes(awayScore);
+                    const bothScoresInvalid =
+                        [null, ''].includes(String(homeScore)) && [null, ''].includes(String(awayScore));
 
                     // Update score only if the predicted match has not begun and both scores are valid
                     if (fixture.matchMode === 'Pre') {
@@ -195,8 +208,8 @@ export function constructTeamStats(
             const { score: awayScore } = awayTeam;
 
             // Only update team stats if both scores are numeric and non-NaN
-            const isValidHomeScore = typeof homeScore === 'number' && !isNaN(homeScore);
-            const isValidAwayScore = typeof awayScore === 'number' && !isNaN(awayScore);
+            const isValidHomeScore = homeFixtureTeam && typeof homeScore === 'number' && !isNaN(homeScore);
+            const isValidAwayScore = awayFixtureTeam && typeof awayScore === 'number' && !isNaN(awayScore);
             if (isValidHomeScore && isValidAwayScore) {
                 updateStats(homeFixtureTeam, homeScore, awayScore);
                 updateStats(awayFixtureTeam, awayScore, homeScore);

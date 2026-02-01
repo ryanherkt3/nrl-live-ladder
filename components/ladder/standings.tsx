@@ -12,9 +12,9 @@ export default function Standings(
         predictorPage
     }:
     {
-        topHalf: Array<ReactElement>,
-        bottomHalf: Array<ReactElement>,
-        predictorPage: Boolean
+        topHalf: ReactElement[],
+        bottomHalf: ReactElement[],
+        predictorPage: boolean
     }
 ) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const rounds = [];
 
     for (let i = 1; i < parseInt(compRounds); i++) {
-        const apiUrl = `https://www.nrl.com/draw/data?competition=${comp}&round=${i}`;
+        const apiUrl = `https://www.nrl.com/draw/data?competition=${comp}&round=${String(i)}`;
 
         const roundData = await fetch(apiUrl, {
             method: 'GET',
@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
                 'user-agent': uaString,
             }
         });
-        const roundDataResult = await roundData.json();
+
+        const roundDataResult: unknown = await roundData.json();
 
         rounds.push(roundDataResult);
     }

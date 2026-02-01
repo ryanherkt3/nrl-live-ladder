@@ -19,13 +19,13 @@ export default function Fixtures(
     }:
     {
         roundNum: number,
-        byes: Array<ByeTeam>,
-        fixtures: Array<Match>,
-        teamList: Array<TeamData>,
-        updateCallback: Function
+        byes: ByeTeam[] | undefined,
+        fixtures: Match[],
+        teamList: TeamData[],
+        updateCallback: (_showPreviousRound: boolean) => void
         lastRoundNo: number,
         modifiable: boolean,
-        modifiedFixtureCb: Function | undefined
+        modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -39,9 +39,9 @@ export default function Fixtures(
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
 
-    let roundHeading = `Round ${roundNum} Fixtures`;
+    let roundHeading = `Round ${String(roundNum)} Fixtures`;
     if (inFinalsFootball && roundNum <= grandFinalRoundNum - 1) {
-        roundHeading = `Finals Week ${roundNum - lastRoundNum} Fixtures`;
+        roundHeading = `Finals Week ${String(roundNum - lastRoundNum)} Fixtures`;
     }
     else if (roundNum === grandFinalRoundNum) {
         roundHeading = 'GRAND FINAL';
@@ -82,7 +82,7 @@ export default function Fixtures(
                 getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
             }
             {
-                inFinalsFootball || !byes ?
+                inFinalsFootball || byes === undefined ?
                     null :
                     <div className="flex flex-col">
                         <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>
@@ -91,9 +91,10 @@ export default function Fixtures(
                                 byes.map((byeTeam: ByeTeam) => {
                                     const { key } = byeTeam.theme;
 
-                                    const imageTooltip = teamList.filter((team: TeamData) => {
+                                    const foundTeam = teamList.find((team: TeamData) => {
                                         return team.theme.key === key;
-                                    })[0].name;
+                                    });
+                                    const imageTooltip = foundTeam ? foundTeam.name : '';
 
                                     return (
                                         <TeamImage

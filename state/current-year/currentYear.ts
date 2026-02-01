@@ -16,8 +16,11 @@ const CurrentYearSlice = createSlice({
     name: 'CurrentYear',
     initialState,
     reducers: {
-        update: (state, action) => {
-            state.value = { year: action.payload, updateStatus: ReduxUpdateFlags.FinalUpdate };
+        update: (state, action: { payload: number }) => {
+            state.value = {
+                year: action.payload,
+                updateStatus: ReduxUpdateFlags.FinalUpdate
+            };
         }
     }
 });

@@ -20,10 +20,10 @@ describe('test suite max points', () => {
     });
 
     it('Returns byes times 2 as max points for a winless team', () => {
-        expect(getMaxPoints(NUMS['nrl'].MATCHES, 0, 'nrl')).toBe(6);
-        expect(getMaxPoints(NUMS['nrlw'].MATCHES, 0, 'nrlw')).toBe(0);
-        expect(getMaxPoints(NUMS['nsw'].MATCHES, 0, 'nsw')).toBe(4);
-        expect(getMaxPoints(NUMS['qld'].MATCHES, 0, 'qld')).toBe(6);
+        expect(getMaxPoints(NUMS.nrl.MATCHES, 0, 'nrl')).toBe(6);
+        expect(getMaxPoints(NUMS.nrlw.MATCHES, 0, 'nrlw')).toBe(0);
+        expect(getMaxPoints(NUMS.nsw.MATCHES, 0, 'nsw')).toBe(4);
+        expect(getMaxPoints(NUMS.qld.MATCHES, 0, 'qld')).toBe(6);
     });
 
     it('Returns 33 as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {

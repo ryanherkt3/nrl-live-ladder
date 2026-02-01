@@ -13,7 +13,7 @@ export default function LadderPredictorButton(
         activeClasses: string,
         disabledClasses: string,
         disabled: boolean,
-        clickCallback: Function
+        clickCallback: () => void
     }
 ) {
     return (
@@ -22,7 +22,7 @@ export default function LadderPredictorButton(
                 clsx(
                     'rounded-lg border font-semibold text-lg w-fit h-fit p-2',
                     {
-                        [`${activeClasses}`]: disabled,
+                        [activeClasses]: disabled,
                         [`${disabledClasses} cursor-pointer`]: !disabled,
                     }
                 )

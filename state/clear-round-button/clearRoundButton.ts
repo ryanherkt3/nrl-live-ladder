@@ -12,7 +12,7 @@ const ClearRoundButtonSlice = createSlice({
     name: 'ClearRoundButton',
     initialState,
     reducers: {
-        update: (state, action) => {
+        update: (state, action: { payload: boolean }) => {
             state.value = action.payload;
         }
     }

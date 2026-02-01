@@ -21,10 +21,10 @@ export default function RoundFixture(
     {
         data: Match,
         winningTeam: string,
-        ladder: Array<TeamData>
+        ladder: TeamData[]
         isFinalsFootball: boolean,
         modifiable: boolean,
-        modifiedFixtureCb: Function | undefined
+        modifiedFixtureCb: (_slug: string, _round: number, _team: string, _score: number) => void
     }
 ) {
     const currentComp = useSelector((state: RootState) => state.currentComp.value);
@@ -64,7 +64,7 @@ export default function RoundFixture(
                         'text-center text-lg text-white font-semibold',
                         {
                             'bg-indigo-400': modifiable && matchMode === 'Pre',
-                            [`${COLOURCSSVARIANTS[`${colour}-bg`]}`]: isFullTime,
+                            [COLOURCSSVARIANTS[`${colour}-bg`]]: isFullTime,
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
                             'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
@@ -85,7 +85,7 @@ export default function RoundFixture(
                     isHomeTeam={true}
                     isWinning={winningTeam === 'homeTeam'}
                     modifiable={modifiable}
-                    modifiedFixtureCb={modifiedFixtureCb}
+                    modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
                 {
                     getMatchState(data, modifiable, colour)
@@ -98,7 +98,7 @@ export default function RoundFixture(
                     isHomeTeam={false}
                     isWinning={winningTeam === 'awayTeam'}
                     modifiable={modifiable}
-                    modifiedFixtureCb={modifiedFixtureCb}
+                    modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
             </div>
         </div>
@@ -152,7 +152,7 @@ function getMatchState(
         commonClasses += ' pt-2';
 
         return (
-            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-[60px]`}>
+            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-15`}>
                 {
                     getMatchContext(matchData, modifiable, mainSiteColour)
                 }
@@ -163,7 +163,7 @@ function getMatchState(
     const kickoffTime = moment(clock.kickOffTimeLong).format('LT');
 
     return (
-        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-[60px]`}>
+        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-15`}>
             <div>{kickoffTime}</div>
         </div>
     );
@@ -190,9 +190,9 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
         return (
             <div className={
                 clsx(
-                    'border rounded-md px-2 py-1 w-[60px] sm:w-[90px] md:w-[140px] text-white',
+                    'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35 text-white',
                     {
-                        [`${trueClasses}`]: isFullTime,
+                        [trueClasses]: isFullTime,
                         'border-indigo-400 bg-indigo-400': !isFullTime
                     }
                 )

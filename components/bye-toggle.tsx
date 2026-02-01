@@ -3,11 +3,19 @@ import { COLOURCSSVARIANTS } from '../lib/utils';
 import { RootState } from '../state/store';
 import { useSelector } from 'react-redux';
 
-export default function ByeToggleSection({setByeValue, byeValueCb}: {setByeValue: boolean, byeValueCb: Function}) {
+export default function ByeToggleSection(
+    {
+        setByeValue,
+        byeValueCb
+    } :
+    {
+        setByeValue: boolean,
+        byeValueCb: (_newValue: boolean) => void
+    }
+) {
     return (
         <div className="flex flex-col xs:flex-row gap-4 items-end xs:justify-end">
-            <ByeToggle setByeValue={setByeValue} byeValue={true} byeValueCb={byeValueCb} />
-            <ByeToggle setByeValue={setByeValue} byeValue={false} byeValueCb={byeValueCb} />
+            <ByeToggle setByeValue={setByeValue} byeValueCb={byeValueCb} />
         </div>
     );
 }
@@ -15,13 +23,11 @@ export default function ByeToggleSection({setByeValue, byeValueCb}: {setByeValue
 function ByeToggle(
     {
         setByeValue,
-        byeValue,
         byeValueCb
     }:
     {
         setByeValue: boolean,
-        byeValue: boolean,
-        byeValueCb: Function
+        byeValueCb: (_newValue: boolean) => void
     }
 ) {
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
@@ -30,19 +36,21 @@ function ByeToggle(
     return (
         <div
             className="flex flex-row gap-3 font-semibold text-xl cursor-pointer"
-            onClick={() => byeValueCb(byeValue)}
+            onClick={() => {
+                byeValueCb(!setByeValue);
+            }}
         >
             <div
                 className={
                     clsx(
                         [`border ${COLOURCSSVARIANTS[`${colour}-border`]} w-7 rounded-full`],
                         {
-                            [`${COLOURCSSVARIANTS[`${colour}-bg`]}`]: byeValue === setByeValue
+                            [COLOURCSSVARIANTS[`${colour}-bg`]]: true
                         }
                     )
                 }
             ></div>
-            <div>{byeValue ? 'Byes' : 'No Byes'}</div>
+            <div>{setByeValue ? 'Byes' : 'No Byes'}</div>
         </div>
     );
 }
