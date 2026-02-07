@@ -96,8 +96,8 @@ export function constructTeamStats(
 
     let roundsCalculated = 1;
     for (const round of seasonDraw) {
-        // Do not count stats for finals games
-        if (roundsCalculated > rounds) {
+        // Do not count stats for finals games, or those that haven't started
+        if (roundsCalculated > rounds || roundsCalculated > currentRoundNo + 1) {
             break;
         }
 

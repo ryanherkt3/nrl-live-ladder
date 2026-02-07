@@ -26,6 +26,9 @@ export default function Header() {
     // Empty string means the current year will be fetched
     const season = useSearchParams().get('season');
 
+    // Empty string means ladder data up to the latest round will count
+    const round = useSearchParams().get('round');
+
     useEffect(() => {
         const compsNotMatching = initCompParam !== comp;
 
@@ -103,6 +106,9 @@ export default function Header() {
     }
     if (season) {
         query.season = season;
+    }
+    if (round) {
+        query.round = round;
     }
 
     return (

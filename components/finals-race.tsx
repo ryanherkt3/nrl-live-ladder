@@ -14,13 +14,16 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
+    // Empty string means ladder data up to the latest round will count
+    const lastRound = parseInt(useSearchParams().get('round') ?? '-1');
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year, lastRound);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;

@@ -15,7 +15,8 @@ export default function ByeToggleSection(
 ) {
     return (
         <div className="flex flex-col xs:flex-row gap-4 items-end xs:justify-end">
-            <ByeToggle setByeValue={setByeValue} byeValueCb={byeValueCb} />
+            <ByeToggle setByeValue={setByeValue} byeValue={true} byeValueCb={byeValueCb} />
+            <ByeToggle setByeValue={setByeValue} byeValue={false} byeValueCb={byeValueCb} />
         </div>
     );
 }
@@ -23,10 +24,12 @@ export default function ByeToggleSection(
 function ByeToggle(
     {
         setByeValue,
+        byeValue,
         byeValueCb
     }:
     {
         setByeValue: boolean,
+        byeValue: boolean,
         byeValueCb: (_newValue: boolean) => void
     }
 ) {
@@ -37,7 +40,7 @@ function ByeToggle(
         <div
             className="flex flex-row gap-3 font-semibold text-xl cursor-pointer"
             onClick={() => {
-                byeValueCb(!setByeValue);
+                byeValueCb(byeValue);
             }}
         >
             <div
@@ -45,12 +48,12 @@ function ByeToggle(
                     clsx(
                         [`border ${COLOURCSSVARIANTS[`${colour}-border`]} w-7 rounded-full`],
                         {
-                            [COLOURCSSVARIANTS[`${colour}-bg`]]: true
+                            [COLOURCSSVARIANTS[`${colour}-bg`]]: byeValue === setByeValue
                         }
                     )
                 }
             ></div>
-            <div>{setByeValue ? 'Byes' : 'No Byes'}</div>
+            <div>{byeValue ? 'Byes' : 'No Byes'}</div>
         </div>
     );
 }

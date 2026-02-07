@@ -96,8 +96,11 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
     useEffect(() => {
         void fetchData();
 
+        // Only re-fetch if in current season
         const intervalId = setInterval(() => {
-            void fetchData();
+            if (drawSeason === new Date().getFullYear()) {
+                void fetchData();
+            }
         }, 60000);
 
         return () => {

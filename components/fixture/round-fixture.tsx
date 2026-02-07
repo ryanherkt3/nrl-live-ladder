@@ -34,10 +34,21 @@ export default function RoundFixture(
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { matchMode, matchState, homeTeam, awayTeam, clock } = data;
+    const round = parseInt(useSearchParams().get('round') ?? '');
+    const fixtureRound = parseInt(data.roundTitle.split(' ')[1]);
+
+    const { homeTeam, awayTeam, clock } = data;
+    let { matchMode, matchState } = data;
     let { matchCentreUrl } = data;
+
     const { nickName: homeTeamName, theme: homeTeamTheme } = homeTeam;
     const { nickName: awayTeamName, theme: awayTeamTheme } = awayTeam;
+
+    // Override matchMode and matchState if viewing up to a certain round
+    if (round && round < fixtureRound) {
+        matchMode = 'Pre';
+        matchState = 'Upcoming';
+    }
 
     const isLiveMatch = matchMode === 'Live';
     const isFullTime = matchState === 'FullTime';
@@ -55,6 +66,13 @@ export default function RoundFixture(
     if (comp.includes('nrl')) {
         matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
     }
+
+    const teamSectionData = {
+        matchMode, matchState, homeTeam, awayTeam, clock,
+        matchCentreUrl,
+        roundTitle: data.roundTitle,
+        isCurrentRound: data.isCurrentRound
+    };
 
     return (
         <div className="flex flex-col">
@@ -79,7 +97,7 @@ export default function RoundFixture(
             </a>
             <div className="flex flex-row text-lg items-center justify-center gap-4 p-2">
                 <TeamSection
-                    data={data}
+                    data={teamSectionData}
                     teamName={homeTeamName}
                     imgKey={homeTeamTheme.key}
                     position={homeTeamPos}
@@ -89,10 +107,10 @@ export default function RoundFixture(
                     modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
                 {
-                    getMatchState(data, modifiable, colour)
+                    getMatchState(teamSectionData, modifiable, colour)
                 }
                 <TeamSection
-                    data={data}
+                    data={teamSectionData}
                     teamName={awayTeamName}
                     imgKey={awayTeamTheme.key}
                     position={awayTeamPos}

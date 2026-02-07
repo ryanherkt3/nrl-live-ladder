@@ -17,6 +17,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
+    // Empty string means ladder data up to the latest round will count
+    const lastRound = parseInt(useSearchParams().get('round') ?? '-1');
+
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
 
@@ -25,7 +28,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const drawSeason = season ? parseInt(season) : year;
 
     // Ensure byes is always an array
-    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason);
+    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason, lastRound);
     const pageVariables = { ...pageVariablesRaw, byes: pageVariablesRaw.byes ?? [] };
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 

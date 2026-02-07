@@ -19,11 +19,17 @@ import { useSearchParams } from 'next/navigation';
 type Prediction = Record<string, Record<string, string>>;
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) {
+    const currentYear = useSelector((state: RootState) => state.currentYear.value);
+    const { year } = currentYear;
+
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
-    const { year } = currentYear;
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : year;
+
+    const rounds = NUMS[comp].ROUNDS(drawSeason);
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
@@ -33,16 +39,10 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
 
     const dispatch = useDispatch();
 
-    // Empty string means the current year will be fetched
-    const season = useSearchParams().get('season');
-    const drawSeason = season ? parseInt(season) : year;
-
     const seasonDrawInfo = Object.values(seasonDraw);
-    const pageVariables = getPageVariables(seasonDrawInfo, true, comp, drawSeason);
+    const pageVariables = getPageVariables(seasonDrawInfo, true, comp, drawSeason, rounds);
 
     const { currentRoundNo, allTeams, fixtures, byes } = pageVariables;
-
-    const rounds = NUMS[comp].ROUNDS(drawSeason);
 
     // Set current fixture round to last round if in finals football
     const inFinalsFootball = currentRoundNo > rounds;
@@ -194,7 +194,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
         }
 
         // Get updated data for each match
-        const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
+        const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year, rounds);
         const { allTeams } = pageVariables;
 
         setTeams(allTeams);

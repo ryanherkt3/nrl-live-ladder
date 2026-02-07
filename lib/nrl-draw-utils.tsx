@@ -52,19 +52,25 @@ export function getRoundFixtures(
  * @param {Boolean} modifiable if the team stats can be modified (on the ladder predictor page)
  * @param {string} currentComp
  * @param {number} currentYear
+ * @param {number} lastRound
  * @returns {PageVariables}
  */
 export function getPageVariables(
     seasonDraw: DrawInfo[],
     modifiable: boolean,
     currentComp: string,
-    currentYear: number
+    currentYear: number,
+    lastRound: number,
 ) {
     // Construct list of teams manually
     const teamList: TeamData[] = constructTeamData(seasonDraw[0].filterTeams, currentComp, currentYear);
 
     // Get current round number
     const currentRoundInfo: DrawInfo[] = seasonDraw.filter((round: DrawInfo) => {
+        if (lastRound > 0 && round.selectedRoundId === lastRound) {
+            return true;
+        }
+
         if (round.byes !== undefined) {
             return round.byes[0].isCurrentRound;
         }
