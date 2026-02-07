@@ -2,8 +2,7 @@ import clsx from 'clsx';
 import { TeamData } from '../../lib/definitions';
 import { getShortCode } from '../../lib/utils';
 import TeamImage from '../team-image';
-import { RootState } from '@/state/store';
-import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function LadderRow(
     {
@@ -28,8 +27,8 @@ export default function LadderRow(
         qualificationStatus: string;
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const { stats: statsData, theme, name } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;

@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import { useSearchParams } from 'next/navigation';
 
 export default function TeamImage(
     {
@@ -16,8 +15,8 @@ export default function TeamImage(
         useLight: boolean
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     let imageType = 'badge.png';
     if (comp.includes('nrl')) {

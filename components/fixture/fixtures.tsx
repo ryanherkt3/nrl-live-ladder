@@ -5,6 +5,7 @@ import { getRoundFixtures } from '@/lib/nrl-draw-utils';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/state/store';
+import { useSearchParams } from 'next/navigation';
 
 export default function Fixtures(
     {
@@ -28,14 +29,20 @@ export default function Fixtures(
         modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { ROUNDS: lastRoundNum, FINALS_WEEKS } = NUMS[comp];
-    const grandFinalRoundNum = lastRoundNum + FINALS_WEEKS;
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
+
+    const lastRoundNum = NUMS[comp].ROUNDS(drawSeason);
+    const finalsWeeks = NUMS[comp].FINALS_WEEKS(drawSeason);
+
+    const grandFinalRoundNum = lastRoundNum + finalsWeeks;
 
     const inFinalsFootball = roundNum >= lastRoundNum + 1;
 

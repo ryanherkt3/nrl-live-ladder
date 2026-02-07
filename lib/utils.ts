@@ -185,48 +185,191 @@ export const COLOURCSSVARIANTS : Record<string, string> = Object.freeze({
     'nrlw-ctry-hover-text': 'hover:text-nrlw-ctry',
 });
 
-export const NUMS : Record<string, CompInfo> = Object.freeze({
+export const NUMS : Record<string, CompInfo> = {
     nrl: {
-        ROUNDS: 27,
-        FINALS_WEEKS: 4,
-        WEEK_ONE_FINALS_FORMAT: [[1, 4], [2, 3], [5, 8], [6, 7]],
-        BYES: 3,
-        MATCHES: 24,
-        TEAMS: 17,
-        FINALS_TEAMS: 8,
-        WIN_POINTS: 2,
+        ROUNDS: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if (year === 2020) {
+                return 20;
+            }
+            if ([2007, 2018, 2019, 2021, 2022].includes(year)) {
+                return 25;
+            }
+            if ([1998, 2023, 2024, 2025, 2026].includes(year)) {
+                return 27;
+            }
+            return 26; // 1999-2006, 2008-17
+        },
+        FINALS_WEEKS: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            return year === 1998 ? 7 : 4;
+        },
+        WEEK_ONE_FINALS_FORMAT: [[1, 4], [2, 3], [5, 8], [6, 7]], // for current year only
+        BYES: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([1998, 2000, 2001, 2020].includes(year)) {
+                return 0;
+            }
+            if ([2007, 2018, 2019, 2021, 2022].includes(year)) {
+                return 1;
+            }
+            if ([2023, 2024, 2025, 2026].includes(year)) {
+                return 3;
+            }
+            return 2; // 1999, 2002-06, 2008-17
+        },
+        MATCHES: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if (year === 2020) {
+                return 20;
+            }
+            if (year === 2000 || year === 2001) {
+                return 26;
+            }
+            return 24;
+        },
+        TEAMS: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if (year === 1998) {
+                return 20;
+            }
+            if ([1999,2023,2024,2025,2026].includes(year)) {
+                return 17;
+            }
+            if (year === 2000 || year === 2001) {
+                return 14;
+            }
+            if ([2002, 2003, 2004, 2005, 2006].includes(year)) {
+                return 15;
+            }
+            return 16; // 2006-22
+        },
+        FINALS_TEAMS: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            return year === 1998 ? 10 : 8;
+        },
+        WIN_POINTS: () => 2,
+        BYE_POINTS: (year: number) => {
+            if (year < 1998 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if (year === 1998 || year === 2000 || year === 2001 || year === 2020) {
+                return 0;
+            }
+            return 2;
+        },
     },
     nrlw: {
-        ROUNDS: 11,
-        FINALS_WEEKS: 3,
+        // TODO add 2018-19 back to proper location when NRL side bug is fixed
+        ROUNDS: (year: number) => {
+            if (year < 2018 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([2020].includes(year)) {
+                return 3;
+            } // 2018-19
+            if ([2021, 2022].includes(year)) {
+                return 5;
+            }
+            if ([2023, 2024].includes(year)) {
+                return 9;
+            }
+            return 11; // 2018-19, 2025-present
+        },
+        FINALS_WEEKS: (year: number) => {
+            if (year < 2018 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([2020].includes(year)) {
+                return 1;
+            }
+            if ([2021, 2022, 2023, 2024].includes(year)) {
+                return 2;
+            }
+            return 3; // 2018-19, 2025-present
+        },
         WEEK_ONE_FINALS_FORMAT: [[3, 6], [4, 5]],
-        BYES: 0,
-        MATCHES: 11,
-        TEAMS: 12,
-        FINALS_TEAMS: 6,
-        WIN_POINTS: 2,
+        BYES: () => 0,
+        MATCHES: (year: number) => {
+            if (year < 2018 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([2020].includes(year)) {
+                return 3;
+            } // 2018-19
+            if ([2021, 2022].includes(year)) {
+                return 5;
+            }
+            if ([2023, 2024].includes(year)) {
+                return 9;
+            }
+            return 11; // 2018-19, 2025-present
+        },
+        TEAMS: (year: number) => {
+            if (year < 2018 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([2020].includes(year)) {
+                return 4;
+            } // 2018-19
+            if ([2021, 2022].includes(year)) {
+                return 6;
+            }
+            if ([2023, 2024].includes(year)) {
+                return 10;
+            }
+            return 12; // 2018-19, 2025-present
+        },
+        FINALS_TEAMS: (year: number) => {
+            if (year < 2018 || year > new Date().getFullYear()) {
+                return -1;
+            }
+            if ([2020].includes(year)) {
+                return 2;
+            } // 2018-19
+            if ([2021, 2022, 2023, 2024].includes(year)) {
+                return 4;
+            }
+            return 6; // 2018-19, 2025-present
+        },
+        WIN_POINTS: () => 2,
+        BYE_POINTS: () => 2,
     },
     nsw: {
-        ROUNDS: 26,
-        FINALS_WEEKS: 4,
+        ROUNDS: () => 26,
+        FINALS_WEEKS: () => 4,
         WEEK_ONE_FINALS_FORMAT: [[2, 3], [4, 5]],
-        BYES: 2,
-        MATCHES: 24,
-        TEAMS: 13,
-        FINALS_TEAMS: 5,
-        WIN_POINTS: 2,
+        BYES: () => 2,
+        MATCHES: () => 24,
+        TEAMS: () => 13,
+        FINALS_TEAMS: () => 5,
+        WIN_POINTS: () => 2,
+        BYE_POINTS: () => 2,
     },
     qld: {
-        ROUNDS: 23,
-        FINALS_WEEKS: 4,
+        ROUNDS: () => 23,
+        FINALS_WEEKS: () => 4,
         WEEK_ONE_FINALS_FORMAT: [[1, 4], [2, 3], [5, 8], [6, 7]],
-        BYES: 3,
-        MATCHES: 20,
-        TEAMS: 15,
-        FINALS_TEAMS: 8,
-        WIN_POINTS: 2,
+        BYES: () => 3,
+        MATCHES: () => 20,
+        TEAMS: () => 15,
+        FINALS_TEAMS: () => 8,
+        WIN_POINTS: () => 2,
+        BYE_POINTS: () => 2,
     },
-});
+};
 
 export const LINKS = [
     {

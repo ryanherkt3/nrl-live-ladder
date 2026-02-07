@@ -7,8 +7,9 @@ import { NUMS } from './utils';
  * @param {Array<TeamData>} teams
  * @param {string} currentComp
  * @returns {Array<TeamData>} the list of teams
+ * @param {number} currentYear
  */
-export function constructTeamData(teams: TeamData[], currentComp: string) {
+export function constructTeamData(teams: TeamData[], currentComp: string, currentYear: number) {
     const teamList: TeamData[] = [];
 
     for (const team of teams) {
@@ -24,7 +25,7 @@ export function constructTeamData(teams: TeamData[], currentComp: string) {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: getMaxPoints(0, 0, currentComp)
+                maxPoints: getMaxPoints(0, 0, currentComp, currentYear)
             },
             name: team.name,
             theme: {
@@ -42,16 +43,19 @@ export function constructTeamData(teams: TeamData[], currentComp: string) {
  * @param {number} losses
  * @param {number} draws
  * @param {string} currentComp
+ * @param {number} currentYear
  * @returns {number}
  */
-export function getMaxPoints(losses: number, draws: number, currentComp: string) {
-    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[currentComp];
+export function getMaxPoints(losses: number, draws: number, currentComp: string, currentYear: number) {
+    const byes = NUMS[currentComp].BYES(currentYear);
+    const winPoints = NUMS[currentComp].WIN_POINTS(currentYear);
+    const matches = NUMS[currentComp].MATCHES(currentYear);
 
-    const perfectSeasonPts = WIN_POINTS * MATCHES;
+    const perfectSeasonPts = winPoints * matches;
 
-    const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
+    const pointsLost = perfectSeasonPts - (winPoints * losses) - draws;
 
-    return pointsLost + (WIN_POINTS * byes);
+    return pointsLost + (winPoints * byes);
 }
 
 /**
@@ -73,7 +77,8 @@ export function constructTeamStats(
     currentComp: string,
     currentYear: number,
 ) {
-    const { WIN_POINTS, ROUNDS } = NUMS[currentComp];
+    const rounds = NUMS[currentComp].ROUNDS(currentYear);
+    const winPoints = NUMS[currentComp].WIN_POINTS(currentYear);
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -83,16 +88,16 @@ export function constructTeamStats(
         team.stats['points for'] += teamScore;
         team.stats['points against'] += oppScore;
         team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
-        team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
-            (WIN_POINTS * team.stats.byes);
-        team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp);
+        team.stats.points = (winPoints * team.stats.wins) + team.stats.drawn +
+            (winPoints * team.stats.byes);
+        team.stats.noByePoints = team.stats.points - (winPoints * team.stats.byes);
+        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, currentYear);
     };
 
     let roundsCalculated = 1;
     for (const round of seasonDraw) {
         // Do not count stats for finals games
-        if (roundsCalculated > ROUNDS) {
+        if (roundsCalculated > rounds) {
             break;
         }
 
@@ -108,9 +113,9 @@ export function constructTeamStats(
                 // give the bye team their points
                 if (playedRoundFixtures.length && byeTeam) {
                     byeTeam.stats.byes += 1;
-                    byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
-                        (WIN_POINTS * byeTeam.stats.byes);
-                    byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+                    byeTeam.stats.points = (winPoints * byeTeam.stats.wins) + byeTeam.stats.drawn +
+                        (winPoints * byeTeam.stats.byes);
+                    byeTeam.stats.noByePoints = byeTeam.stats.points - (winPoints * byeTeam.stats.byes);
                 }
             }
         }

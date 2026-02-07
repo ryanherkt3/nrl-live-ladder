@@ -8,6 +8,7 @@ import { COLOURCSSVARIANTS, getOrdinalNumber } from '../../lib/utils';
 import TeamSection from './team-section';
 import { RootState } from '@/state/store';
 import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function RoundFixture(
     {
@@ -27,8 +28,8 @@ export default function RoundFixture(
         modifiedFixtureCb: (_slug: string, _round: number, _team: string, _score: number) => void
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;

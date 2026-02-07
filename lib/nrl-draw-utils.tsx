@@ -61,7 +61,7 @@ export function getPageVariables(
     currentYear: number
 ) {
     // Construct list of teams manually
-    const teamList: TeamData[] = constructTeamData(seasonDraw[0].filterTeams, currentComp);
+    const teamList: TeamData[] = constructTeamData(seasonDraw[0].filterTeams, currentComp, currentYear);
 
     // Get current round number
     const currentRoundInfo: DrawInfo[] = seasonDraw.filter((round: DrawInfo) => {
@@ -73,10 +73,12 @@ export function getPageVariables(
     });
 
     const { byes, fixtures, selectedRoundId: currentRoundNo } = currentRoundInfo[0];
-    const { ROUNDS, FINALS_WEEKS } = NUMS[currentComp];
+
+    const rounds = NUMS[currentComp].ROUNDS(currentYear);
+    const finalsWeeks = NUMS[currentComp].FINALS_WEEKS(currentYear);
 
     let nextRoundInfo;
-    if (currentRoundNo < ROUNDS + FINALS_WEEKS) {
+    if (currentRoundNo < rounds + finalsWeeks) {
         nextRoundInfo = seasonDraw[currentRoundNo];
     }
     const liveMatches = fixtures.filter((fixture: Match) => {

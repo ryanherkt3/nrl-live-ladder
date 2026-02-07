@@ -1,6 +1,7 @@
 import { COLOURCSSVARIANTS } from '@/lib/utils';
 import { RootState } from '@/state/store';
 import clsx from 'clsx';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -19,8 +20,8 @@ export default function InputScore(
         isHomeTeam: boolean
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;

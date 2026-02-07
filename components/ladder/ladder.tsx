@@ -11,16 +11,21 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../state/store';
 import { teamSortFunction } from '@/lib/team-stats';
 import { getMinPointsForSpots, getQualificationStatus } from '@/lib/qualification';
+import { useSearchParams } from 'next/navigation';
 
 export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
 
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : year;
+
     // Ensure byes is always an array
-    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason);
     const pageVariables = { ...pageVariablesRaw, byes: pageVariablesRaw.byes ?? [] };
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
@@ -65,7 +70,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         if (Object.values(byes).length) {
             setByeTeams(byes);
         }
-    }, [currentComp]);
+    }, [comp]);
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
@@ -73,14 +78,15 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         );
     };
 
-    const { ROUNDS, BYES } = NUMS[comp];
+    const rounds = NUMS[comp].ROUNDS(drawSeason);
+    const seasonByes = NUMS[comp].BYES(drawSeason);
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
-    const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
+    const lastFixtureRound = currentRoundNo <= rounds ? rounds : currentRoundNo;
 
-    const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp);
-    const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp);
+    const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp, drawSeason);
+    const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp, drawSeason);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -92,7 +98,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
                 // Do not show bye toggle if:
                 // 1. The competition does not have byes, (BYES = 0) OR
                 // 2. The competition is in round 1 or the last round and beyond
-                BYES === 0 || (currentRoundNo === 1 || currentRoundNo >= ROUNDS) ?
+                seasonByes === 0 || (currentRoundNo === 1 || currentRoundNo >= rounds) ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
@@ -123,6 +129,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
  * @param {boolean} byePoints
  * @param {PageVariables} pageVariables
  * @param {String} currentComp
+ * @param {number} drawSeason
  * @returns {LadderRow} React object
  */
 function getLadderRow(
@@ -131,17 +138,20 @@ function getLadderRow(
     byePoints: boolean,
     pageVariables: PageVariables,
     currentComp: string,
+    drawSeason: number
 ) {
-    const { FINALS_TEAMS, WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
+    const { WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
-    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
-    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+    const teamList = isInTopSection ? allTeams.slice(0, finalsTeams) : allTeams.slice(finalsTeams);
+    const indexAdd = isInTopSection ? 1 : finalsTeams + 1;
 
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const { name, stats, theme } = team;
-        const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
+        const rounds = NUMS[currentComp].ROUNDS(drawSeason);
+        const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
         const isPlaying = Array.isArray(liveMatches) &&
             liveMatches.some((match: Match) => match.awayTeam.nickName === name || match.homeTeam.nickName === name);
@@ -189,10 +199,10 @@ function getLadderRow(
 
             nextMatchUrl = matchCentreUrl;
         }
-        else if (currentRoundNo < ROUNDS) {
+        else if (currentRoundNo < rounds) {
             nextTeam = 'BYE';
         }
-        else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
+        else if (currentRoundNo === rounds && ladderPos <= finalsTeams) {
             let finalsOppLadderPos: number | undefined;
             // Get week 1 finals matchup for a team if possible
             const weekOneMatchup = WEEK_ONE_FINALS_FORMAT.find((matchup: number[]) => matchup.includes(ladderPos));
@@ -206,7 +216,7 @@ function getLadderRow(
         }
 
         const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp, drawSeason), currentComp, drawSeason
         );
 
         return <LadderRow

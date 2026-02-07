@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { COLOURCSSVARIANTS, COMPID } from '../lib/utils';
-import { useDispatch, useSelector } from 'react-redux';
-import { update as compUpdate } from '../state/current-comp/currentComp';
-import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
-import { RootState } from '../state/store';
+import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
+import { resetDraw } from '@/state/draw/drawData';
 
 export default function CompButton({compKey}: {compKey: string}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const dispatch = useDispatch();
 
@@ -17,16 +16,7 @@ export default function CompButton({compKey}: {compKey: string}) {
 
     const resetStates = (compKey: string) => {
         if (compKey !== comp && Object.keys(COMPID).includes(compKey.toUpperCase())) {
-            dispatch(compUpdate(compKey));
-            dispatch(
-                mainColourUpdate(
-                    {
-                        comp: COMPID[compKey],
-                        currentRoundNo: -1,
-                        finalUpdate: false,
-                    }
-                )
-            );
+            dispatch(resetDraw());
         }
     };
 

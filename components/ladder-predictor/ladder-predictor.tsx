@@ -14,12 +14,13 @@ import { update as resetAllBtnUpdate } from '../../state/reset-all-button/resetA
 import { RootState } from '../../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualification';
 import clsx from 'clsx';
+import { useSearchParams } from 'next/navigation';
 
 type Prediction = Record<string, Record<string, string>>;
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
@@ -32,15 +33,20 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
 
     const dispatch = useDispatch();
 
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : year;
+
     const seasonDrawInfo = Object.values(seasonDraw);
-    const pageVariables = getPageVariables(seasonDrawInfo, true, comp, year);
+    const pageVariables = getPageVariables(seasonDrawInfo, true, comp, drawSeason);
 
     const { currentRoundNo, allTeams, fixtures, byes } = pageVariables;
-    const { ROUNDS } = NUMS[comp];
+
+    const rounds = NUMS[comp].ROUNDS(drawSeason);
 
     // Set current fixture round to last round if in finals football
-    const inFinalsFootball = currentRoundNo > ROUNDS;
-    const currentFixtureRound = inFinalsFootball ? ROUNDS : currentRoundNo;
+    const inFinalsFootball = currentRoundNo > rounds;
+    const currentFixtureRound = inFinalsFootball ? currentRoundNo : rounds;
 
     const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
         const roundKey = round - 1;
@@ -165,7 +171,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
         if (clearAll) {
             // Reset the scores for every predicted fixture and delete the localStorage entry
             for (const round of seasonDrawInfo) {
-                if (round.selectedRoundId > ROUNDS) {
+                if (round.selectedRoundId > rounds) {
                     break;
                 }
 
@@ -228,8 +234,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
                 description={'Predict the outcome of every match and see how the ladder looks!'}
             />
             <Standings
-                topHalf={getLadderRow(true, teams, pageVariables.liveMatches, comp)}
-                bottomHalf={getLadderRow(false, teams, pageVariables.liveMatches, comp)}
+                topHalf={getLadderRow(true, teams, pageVariables.liveMatches, comp, drawSeason)}
+                bottomHalf={getLadderRow(false, teams, pageVariables.liveMatches, comp, drawSeason)}
                 predictorPage={true}
             />
             <div
@@ -267,7 +273,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
                 fixtures={roundIndex === currentFixtureRound ? fixtures : fixturesToShow}
                 teamList={teams}
                 updateCallback={updateFixturesCb}
-                lastRoundNo={inFinalsFootball ? currentRoundNo : ROUNDS}
+                lastRoundNo={inFinalsFootball ? currentRoundNo : rounds}
                 modifiable={!inFinalsFootball}
                 modifiedFixtureCb={updateAllTeams as (_slug: string, _round: number, _team: string, _score: number) => void}
             />
@@ -282,13 +288,20 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
  * @param {Array<TeamData>} allTeams
  * @param {Array<Match>} liveMatches
  * @param {String} currentComp
+ * @param {number} drawSeason
  * @returns {LadderRow} React object
  */
-function getLadderRow(isInTopSection: boolean, allTeams: TeamData[], liveMatches: Match[], currentComp: string) {
-    const { FINALS_TEAMS } = NUMS[currentComp];
+function getLadderRow(
+    isInTopSection: boolean,
+    allTeams: TeamData[],
+    liveMatches: Match[],
+    currentComp: string,
+    drawSeason: number
+) {
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
-    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
-    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+    const teamList = isInTopSection ? allTeams.slice(0, finalsTeams) : allTeams.slice(finalsTeams);
+    const indexAdd = isInTopSection ? 1 : finalsTeams + 1;
 
     return teamList.map((team: TeamData) => {
         let isPlaying = false;
@@ -309,7 +322,7 @@ function getLadderRow(isInTopSection: boolean, allTeams: TeamData[], liveMatches
         const ladderPos = teamList.indexOf(team) + indexAdd;
 
         const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp, drawSeason), currentComp, drawSeason
         );
 
         return <LadderRow

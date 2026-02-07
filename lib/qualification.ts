@@ -6,12 +6,16 @@ export function getQualificationStatus(
     team: TeamData,
     allTeams: TeamData[],
     minPointsForSpots: TeamStatuses,
-    currentComp: string
+    currentComp: string,
+    currentYear: number
 ) {
-    const { FINALS_TEAMS, MATCHES, BYES, TEAMS } = NUMS[currentComp];
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(currentYear);
+    const matches = NUMS[currentComp].MATCHES(currentYear);
+    const byes = NUMS[currentComp].BYES(currentYear);
+    const teams = NUMS[currentComp].TEAMS(currentYear);
 
     const topTeams = [...allTeams];
-    const bottomTeams = topTeams.splice(FINALS_TEAMS);
+    const bottomTeams = topTeams.splice(finalsTeams);
 
     const lastFinalist = topTeams[topTeams.length - 1];
     const { stats: lfStats } = lastFinalist;
@@ -22,12 +26,12 @@ export function getQualificationStatus(
     // Include bye points in the calculations, as sometimes a team may look as
     // though their worst finish is one place above the cut off, but are actually
     // qualified if bye points are counted
-    const pointsWithByes = ((wins + BYES) * 2) + drawn;
+    const pointsWithByes = ((wins + byes) * 2) + drawn;
 
     const bottomTeamsCanFinishAbove = bottomTeams.filter((bottomTeam: TeamData) => {
         const filteredTeamStats = bottomTeam.stats;
         const filteredTeamPointsWithByes =
-            ((bottomTeam.stats.wins + NUMS[currentComp].BYES) * 2) + bottomTeam.stats.drawn;
+            ((bottomTeam.stats.wins + byes) * 2) + bottomTeam.stats.drawn;
 
         const filteredTeamHasLessPoints = filteredTeamStats.maxPoints < pointsWithByes;
 
@@ -48,7 +52,7 @@ export function getQualificationStatus(
         (
             // Is also eliminated if last placed finals team has better points differential
             // when tied on points at end of season
-            played === MATCHES &&
+            played === matches &&
             lfStats.points >= pointsWithByes &&
             lfStats['points difference'] > team.stats['points difference']
         );
@@ -62,7 +66,7 @@ export function getQualificationStatus(
     else if (pointsWithByes >= topFour) {
         qualificationStatus = '(T4)';
     }
-    else if (pointsWithByes >= finalsQualification || bottomTeamsCanFinishAbove.length >= TEAMS - FINALS_TEAMS) {
+    else if (pointsWithByes >= finalsQualification || bottomTeamsCanFinishAbove.length >= teams - finalsTeams) {
         qualificationStatus = '(Q)';
     }
 
@@ -72,24 +76,26 @@ export function getQualificationStatus(
 // Get the lowest amount of points to qualify for a given position (top 2/4/8, elimination)
 export function getMinPointsForSpots(
     allTeams: TeamData[],
-    currentComp: string
+    currentComp: string,
+    currentYear: number
 ) {
-    const { FINALS_TEAMS, BYES } = NUMS[currentComp];
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(currentYear);
+    const byes = NUMS[currentComp].BYES(currentYear);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
     });
 
-    const lowestPlacedFinalsTeam = teamsByMaxPoints[FINALS_TEAMS - 1];
+    const lowestPlacedFinalsTeam = teamsByMaxPoints[finalsTeams - 1];
     const { wins: lowestPlacedFinalsTeamWins, drawn : lowestPlacedFinalsTeamDraws } = lowestPlacedFinalsTeam.stats;
 
     const minPointsForSpots: TeamStatuses = {
         // Add one to the finals spots
         topTwo: teamsByMaxPoints[2].stats.maxPoints + 1,
-        topFour: teamsByMaxPoints[4].stats.maxPoints + 1,
-        finalsQualification: teamsByMaxPoints[FINALS_TEAMS].stats.maxPoints + 1,
+        topFour: finalsTeams >= 4 ? teamsByMaxPoints[4].stats.maxPoints + 1 : 0,
+        finalsQualification: teamsByMaxPoints[finalsTeams].stats.maxPoints + 1,
         // Subtract one for the eliminated spots
-        eliminated: ((lowestPlacedFinalsTeamWins + lowestPlacedFinalsTeamDraws + BYES) * 2) - 1,
+        eliminated: ((lowestPlacedFinalsTeamWins + lowestPlacedFinalsTeamDraws + byes) * 2) - 1,
     };
 
     return minPointsForSpots;

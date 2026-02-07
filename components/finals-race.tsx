@@ -8,10 +8,11 @@ import PageDescription from './page-desc';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
+import { useSearchParams } from 'next/navigation';
 
 export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const { year } = currentYear;
@@ -27,6 +28,10 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
 
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
+
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
@@ -47,13 +52,13 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
                 </div>
                 {
                     getTableRows(
-                        allTeams, true, highestMaxPts, lastPlacePts, liveMatches, comp
+                        allTeams, true, highestMaxPts, lastPlacePts, liveMatches, comp, drawSeason
                     )
                 }
                 <div className={`border-4 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
                 {
                     getTableRows(
-                        allTeams, false, highestMaxPts, lastPlacePts, liveMatches, comp
+                        allTeams, false, highestMaxPts, lastPlacePts, liveMatches, comp, drawSeason
                     )
                 }
             </div>
@@ -70,6 +75,7 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
  * @param {number} lastPlacePts the current points the last placed team has
  * @param {Array<Match>} liveMatches a list of the ongoing match(es)
  * @param {string} currentComp
+ * @param {number} drawSeason
  * @returns
  */
 function getTableRows(
@@ -78,12 +84,13 @@ function getTableRows(
     highestMaxPts: number,
     lastPlacePts: number,
     liveMatches: Match[],
-    currentComp: string
+    currentComp: string,
+    drawSeason: number
 ) {
-    const { FINALS_TEAMS } = NUMS[currentComp];
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
     const topTeams = [...allTeams];
-    const bottomTeams = topTeams.splice(FINALS_TEAMS);
+    const bottomTeams = topTeams.splice(finalsTeams);
     const teamList = topHalf ? topTeams : bottomTeams;
 
     return teamList.map((team: TeamData) => {
@@ -100,7 +107,7 @@ function getTableRows(
         }
 
         const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp, drawSeason), currentComp, drawSeason
         );
         const isEliminated = qualificationStatus === '(E)';
 
@@ -163,7 +170,7 @@ function getTableRows(
                     getLadderWorms(pointValues, nickname.toLowerCase().replace(' ', ''), isEliminated, currentComp)
                 }
                 {
-                    getLadderStatus(allTeams, pointValues, nickname, team, currentComp)
+                    getLadderStatus(allTeams, pointValues, nickname, team, currentComp, drawSeason)
                 }
             </div>
         );
@@ -243,6 +250,7 @@ function getLadderWorms(pointValues: TeamPoints, nickname: string, isEliminated:
  * @param {String} nickname the team's name (e.g. Panthers)
  * @param {TeamData} teamInfo info about the team whose ladder status is being updated here
  * @param {string} currentComp
+ * @param {number} drawSeason
  * @returns HTML object
  */
 function getLadderStatus(
@@ -251,18 +259,22 @@ function getLadderStatus(
     nickname: string,
     teamInfo: TeamData,
     currentComp: string,
+    drawSeason: number
 ) {
     const { currentPoints, maxPoints } = pointValues;
     const isFinished = currentPoints === maxPoints;
 
+    const matches = NUMS[currentComp].MATCHES(drawSeason);
+    const byes = NUMS[currentComp].BYES(drawSeason);
+
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamPointsWithByes = ((team.stats.wins + NUMS[currentComp].BYES) * 2) + team.stats.drawn;
+        const filteredTeamPointsWithByes = ((team.stats.wins + byes) * 2) + team.stats.drawn;
 
         return filteredTeamPointsWithByes > maxPoints ||
             (
                 isFinished && team.name !== nickname &&
-                filteredTeamStats.played === NUMS[currentComp].MATCHES &&
+                filteredTeamStats.played === matches &&
                 filteredTeamPointsWithByes >= maxPoints &&
                 filteredTeamStats['points difference'] > teamInfo.stats['points difference']
             );
@@ -270,7 +282,7 @@ function getLadderStatus(
 
     const teamsCanFinishBelow = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
-        const filteredTeamHasFinished = filteredTeamStats.played === NUMS[currentComp].MATCHES;
+        const filteredTeamHasFinished = filteredTeamStats.played === matches;
 
         if (team.name !== nickname) {
             if (filteredTeamStats.maxPoints > currentPoints) {
