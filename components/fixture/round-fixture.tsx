@@ -101,7 +101,7 @@ export default function RoundFixture(
                 <TeamSection
                     data={teamSectionData}
                     teamName={homeTeamName}
-                    imgKey={homeTeamTheme.key}
+                    imgKey={homeTeamTheme?.key ?? ''}
                     position={homeTeamPos}
                     isHomeTeam={true}
                     isWinning={winningTeam === 'homeTeam'}
@@ -114,7 +114,7 @@ export default function RoundFixture(
                 <TeamSection
                     data={teamSectionData}
                     teamName={awayTeamName}
-                    imgKey={awayTeamTheme.key}
+                    imgKey={awayTeamTheme?.key ?? ''}
                     position={awayTeamPos}
                     isHomeTeam={false}
                     isWinning={winningTeam === 'awayTeam'}

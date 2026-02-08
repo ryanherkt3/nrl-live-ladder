@@ -101,7 +101,7 @@ export default function LadderRow(
                 <div className='max-xs:hidden xs:block'>
                     <TeamImage
                         matchLink=''
-                        teamKey={theme.key}
+                        teamKey={theme?.key ?? ''}
                         tooltip={name}
                         useLight={isQualified && lightImageTeams.includes(name)}
                     />

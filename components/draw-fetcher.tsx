@@ -76,7 +76,19 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                 );
             }
 
-            dispatch(setDrawData(seasonDrawValues));
+            // Deduplicate byes by teamNickName
+            const dedupedSeasonDrawValues = seasonDrawValues.map(round =>
+                round.byes ?
+                    {
+                        ...round,
+                        byes: round.byes.filter(
+                            (bye, idx, arr) => arr.findIndex(b => b.teamNickName === bye.teamNickName) === idx
+                        )
+                    }
+                    : round
+            );
+
+            dispatch(setDrawData(dedupedSeasonDrawValues));
         }
         catch (err) {
             console.error(err);

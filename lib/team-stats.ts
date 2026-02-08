@@ -29,7 +29,9 @@ export function constructTeamData(teams: TeamData[], currentComp: string, curren
             },
             name: team.name,
             theme: {
-                key: team.theme.key
+                key: team.theme ?
+                    team.theme.key :
+                    (['Chargers', 'Eagles'].includes(team.name) ? team.name.toLowerCase() : '')
             }
         });
     }
@@ -218,6 +220,53 @@ export function constructTeamStats(
             if (isValidHomeScore && isValidAwayScore) {
                 updateStats(homeFixtureTeam, homeScore, awayScore);
                 updateStats(awayFixtureTeam, awayScore, homeScore);
+            }
+        }
+
+        // Points deductions
+        if (currentYear === 2000 && round.selectedRoundId >= 4) {
+            const cowboysData = teams.find((team: TeamData) => team.name === 'Cowboys');
+            if (cowboysData?.stats) {
+                cowboysData.stats.points -= 2;
+                cowboysData.stats.noByePoints -= 2;
+                cowboysData.stats.maxPoints -= 2;
+            }
+        }
+        if (currentYear === 2002 && round.selectedRoundId >= 23) {
+            const bulldogsData = teams.find((team: TeamData) => team.name === 'Bulldogs');
+            if (bulldogsData?.stats) {
+                bulldogsData.stats.points -= 37;
+                bulldogsData.stats.noByePoints -= 37;
+                bulldogsData.stats.maxPoints -= 37;
+            }
+        }
+        if (currentYear === 2006) {
+            const warriorsData = teams.find((team: TeamData) => team.name === 'Warriors');
+            if (warriorsData?.stats) {
+                warriorsData.stats.points -= 4;
+                warriorsData.stats.noByePoints -= 4;
+                warriorsData.stats.maxPoints -= 4;
+            }
+        }
+        if (currentYear === 2010 && round.selectedRoundId >= 7) {
+            const stormsData = teams.find((team: TeamData) => team.name === 'Storm');
+            if (stormsData?.stats) {
+                stormsData.stats.points = 0;
+                stormsData.stats.noByePoints = 0;
+                stormsData.stats.maxPoints = 0;
+            }
+        }
+        if (currentYear === 2016 && round.selectedRoundId >= 9) {
+            const eelsData = teams.find((team: TeamData) => team.name === 'Eels');
+            if (eelsData?.stats) {
+                eelsData.stats.points -= 12;
+                eelsData.stats.noByePoints -= 12;
+                eelsData.stats.maxPoints -= 12;
+                if (round.selectedRoundId === 9) {
+                    eelsData.stats['points for'] -= 164;
+                    eelsData.stats['points against'] -= 119;
+                    eelsData.stats['points difference'] -= 45;
+                }
             }
         }
 

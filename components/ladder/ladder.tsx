@@ -196,11 +196,13 @@ function getLadderRow(
             const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0] ?? {};
 
             if (name === homeTeam.nickName) {
-                nextTeam = awayTeam.theme.key;
+                nextTeam = ['Chargers', 'Eagles'].includes(awayTeam.nickName) ?
+                    awayTeam.nickName.toLowerCase() : (awayTeam.theme ? awayTeam.theme.key : '');
                 nextTeamTooltip = awayTeam.nickName;
             }
             else {
-                nextTeam = homeTeam.theme.key;
+                nextTeam = ['Chargers', 'Eagles'].includes(homeTeam.nickName) ?
+                    homeTeam.nickName.toLowerCase() : (homeTeam.theme ? homeTeam.theme.key : '');
                 nextTeamTooltip = homeTeam.nickName;
             }
 
@@ -227,7 +229,7 @@ function getLadderRow(
         );
 
         return <LadderRow
-            key={theme.key}
+            key={theme?.key ?? ''}
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}

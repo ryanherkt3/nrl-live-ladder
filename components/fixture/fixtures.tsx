@@ -96,10 +96,10 @@ export default function Fixtures(
                         <div className="flex flex-row flex-wrap gap-6 justify-center py-2">
                             {
                                 byes.map((byeTeam: ByeTeam) => {
-                                    const { key } = byeTeam.theme;
+                                    const key = byeTeam.theme?.key ?? '';
 
                                     const foundTeam = teamList.find((team: TeamData) => {
-                                        return team.theme.key === key;
+                                        return team.theme?.key ?? '' === key;
                                     });
                                     const imageTooltip = foundTeam ? foundTeam.name : '';
 

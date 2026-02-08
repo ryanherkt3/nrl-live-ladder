@@ -48,7 +48,7 @@ export function getQualificationStatus(
 
     // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
     let qualificationStatus = '';
-    const isEliminated = maxPoints < eliminated ||
+    const isEliminated = maxPoints <= eliminated ||
         (
             // Is also eliminated if last placed finals team has better points differential
             // when tied on points at end of season
@@ -96,7 +96,7 @@ export function getMinPointsForSpots(
         topFour: finalsTeams >= 4 ? teamsByMaxPoints[4].stats.maxPoints + 1 : 0,
         finalsQualification: teamsByMaxPoints[finalsTeams].stats.maxPoints + 1,
         // Subtract one for the eliminated spots
-        eliminated: ((lowestPlacedFinalsTeamWins + lowestPlacedFinalsTeamDraws + byes) * 2) - 1,
+        eliminated: ((lowestPlacedFinalsTeamWins + byes) * 2) + lowestPlacedFinalsTeamDraws - 1,
     };
 
     return minPointsForSpots;

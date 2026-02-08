@@ -3,12 +3,12 @@
 export interface TeamData {
     stats: TeamStats;
     name: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface NextTeam {
     nickname: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
     matchCentreUrl: string;
     isBye: boolean;
 }
@@ -45,7 +45,7 @@ export interface Match {
 export interface ByeTeam {
     isCurrentRound: boolean;
     teamNickName: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface MatchTime {
@@ -56,7 +56,7 @@ export interface MatchTime {
 export interface FixtureTeam {
     nickName: string;
     score: number | string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface DrawInfo {

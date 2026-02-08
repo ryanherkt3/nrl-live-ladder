@@ -9,6 +9,8 @@ import { CompInfo } from './definitions';
  */
 export function getShortCode(name: string, currentComp: string) {
     const isNSWCup = currentComp === 'nsw';
+    const isQCup = currentComp === 'qld';
+    const isNRL = currentComp === 'nrl';
 
     switch (name) {
         // NRL/W clubs:
@@ -46,13 +48,25 @@ export function getShortCode(name: string, currentComp: string) {
             return 'WAR';
         case 'Wests Tigers':
             return 'WST';
+        // NRL - defunct
+        case 'Rams':
+            return 'ADE';
+        case 'Chargers':
+            return 'GLD';
+        case 'Eagles':
+            return 'EAG';
+        case 'Steelers':
+            return 'ILL';
+        // NRL & Q Cup
+        case 'Tigers':
+            return (isNRL ? 'BAL' : 'TIG');
         // NSW & Q Cup
         case 'Bears':
-            return (isNSWCup ? 'NSB' : 'BUR');
+            return (isQCup ? 'BUR' : 'NSB');
         case 'Jets':
             return (isNSWCup ? 'NWT' : 'IPS');
         case 'Magpies':
-            return (isNSWCup ? 'WSM' : 'MAG');
+            return (isQCup ? 'MAG' : 'WSM');
         // Q Cup only
         case 'Blackhawks':
             return 'BLA';
@@ -72,8 +86,6 @@ export function getShortCode(name: string, currentComp: string) {
             return 'PRI';
         case 'Seagulls':
             return 'SEA';
-        case 'Tigers':
-            return 'TIG';
         case 'WM Seagulls':
             return 'SEA';
         default:
@@ -194,10 +206,13 @@ export const NUMS : Record<string, CompInfo> = {
             if (year === 2020) {
                 return 20;
             }
+            if (year === 1998) {
+                return 24;
+            }
             if ([2007, 2018, 2019, 2021, 2022].includes(year)) {
                 return 25;
             }
-            if ([1998, 2023, 2024, 2025, 2026].includes(year)) {
+            if ([2023, 2024, 2025, 2026].includes(year)) {
                 return 27;
             }
             return 26; // 1999-2006, 2008-17

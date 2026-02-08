@@ -329,7 +329,7 @@ function getLadderRow(
         );
 
         return <LadderRow
-            key={team.theme.key}
+            key={team.theme ? team.theme.key : ''}
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}
