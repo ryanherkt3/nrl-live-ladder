@@ -11,7 +11,6 @@ import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';
 import { useDispatch, useSelector } from 'react-redux';
 import { setDrawData, setDrawError } from '../state/draw/drawData';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
-import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
 import { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -20,7 +19,6 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
 
     const dispatch = useDispatch();
@@ -31,9 +29,8 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
 
     // Empty string means the current year will be fetched
     const season = useSearchParams().get('season');
-    const drawSeason = season ? parseInt(season) : currentYear.year;
 
-    const fetchData = async () => {
+    const fetchData = async (drawSeason: number) => {
         try {
             const rounds = NUMS[comp].ROUNDS(drawSeason);
             const finalsWeeks = NUMS[comp].FINALS_WEEKS(drawSeason);
@@ -60,13 +57,7 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                 return round.fixtures[0].isCurrentRound;
             });
 
-            // Set the current year to be the year of the draw if it is not matching
             const { selectedSeasonId } = currentRound[0];
-            const skipYearUpdate = comp === 'nrlw' && [2018, 2019].includes(selectedSeasonId);
-            if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== selectedSeasonId && !skipYearUpdate) {
-                dispatch(currentYearUpdate(selectedSeasonId));
-            }
-
             const { colour } = mainSiteColour;
             const colourMatchesComp = comp === colour.split('-')[0];
             const skipColourUpdate = selectedSeasonId < new Date().getFullYear();
@@ -94,19 +85,23 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
     };
 
     useEffect(() => {
-        void fetchData();
+        const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
-        // Only re-fetch if in current season
-        const intervalId = setInterval(() => {
-            if (drawSeason === new Date().getFullYear()) {
-                void fetchData();
-            }
-        }, 60000);
+        if (!drawData.length && !drawFetched) {
+            void fetchData(drawSeason);
 
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, []);
+            // Only re-fetch if in current season
+            const intervalId = setInterval(() => {
+                if (drawSeason === new Date().getFullYear()) {
+                    void fetchData(drawSeason);
+                }
+            }, 60000);
+
+            return () => {
+                clearInterval(intervalId);
+            };
+        }
+    }, [season]);
 
     // Loading states
     if (drawError) {

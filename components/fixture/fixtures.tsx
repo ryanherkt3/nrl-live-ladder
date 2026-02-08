@@ -89,7 +89,7 @@ export default function Fixtures(
                 getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
             }
             {
-                inFinalsFootball || byes === undefined ?
+                inFinalsFootball || !byes?.length ?
                     null :
                     <div className="flex flex-col">
                         <span className="text-center text-lg text-white font-semibold bg-black">BYE TEAMS</span>

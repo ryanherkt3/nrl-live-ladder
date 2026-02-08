@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import currentYearReducer from './current-year/currentYear';
 import mainSiteColourReducer from './main-site-colour/mainSiteColour';
 import clearRoundButtonReducer from './clear-round-button/clearRoundButton';
 import resetAllButtonReducer from './reset-all-button/resetAllButton';
@@ -7,7 +6,6 @@ import drawDataReducer from './draw/drawData';
 
 export const store = configureStore({
     reducer: {
-        currentYear: currentYearReducer,
         mainSiteColour: mainSiteColourReducer,
         clearRoundButton: clearRoundButtonReducer,
         resetAllButton: resetAllButtonReducer,

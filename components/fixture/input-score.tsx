@@ -23,11 +23,12 @@ export default function InputScore(
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
-    const { year } = currentYear;
-
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
+
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     const teamsIndex = comp.includes('nrl') ? 4 : 6;
     const roundIndex = teamsIndex - 1;
@@ -37,7 +38,7 @@ export default function InputScore(
 
     let predictedTeamScore: number | undefined;
 
-    const predictionsRaw = localStorage.getItem(`predictedMatches${String(year)}${comp}`);
+    const predictionsRaw = localStorage.getItem(`predictedMatches${String(drawSeason)}${comp}`);
     if (predictionsRaw) {
         type PredictionsType = Record<number, Record<string, string> | undefined> | undefined;
         const predictions: PredictionsType = JSON.parse(predictionsRaw) as PredictionsType;

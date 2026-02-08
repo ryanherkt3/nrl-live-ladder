@@ -63,10 +63,11 @@ export function getQualificationStatus(
     else if (pointsWithByes >= topTwo) {
         qualificationStatus = '(T2)';
     }
-    else if (pointsWithByes >= topFour) {
+    else if (pointsWithByes >= topFour && teams > 4) {
         qualificationStatus = '(T4)';
     }
-    else if (pointsWithByes >= finalsQualification || bottomTeamsCanFinishAbove.length >= teams - finalsTeams) {
+    else if (pointsWithByes >= finalsQualification ||
+            (played === matches && bottomTeamsCanFinishAbove.length >= teams - finalsTeams)) {
         qualificationStatus = '(Q)';
     }
 

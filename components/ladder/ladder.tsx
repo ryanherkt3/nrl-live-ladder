@@ -7,11 +7,10 @@ import { NUMS } from '@/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './standings';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
 import { teamSortFunction } from '@/lib/team-stats';
 import { getMinPointsForSpots, getQualificationStatus } from '@/lib/qualification';
 import { useSearchParams } from 'next/navigation';
+import SeasonAndYearPicker from '../season-and-year-picker';
 
 export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
@@ -20,12 +19,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means ladder data up to the latest round will count
     const lastRound = parseInt(useSearchParams().get('round') ?? '-1');
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
-    const { year } = currentYear;
-
     // Empty string means the current year will be fetched
     const season = useSearchParams().get('season');
-    const drawSeason = season ? parseInt(season) : year;
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     // Ensure byes is always an array
     const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason, lastRound);
@@ -62,6 +58,11 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         }));
     }, [fixtures]);
 
+    // Update round index if a different round has been chosen by a user
+    useEffect(() => {
+        setRoundIndex(lastRound);
+    }, [lastRound]);
+
     // Update ladder teams, round index, fixtures and byes
     // when the competition has changed (e.g. from NRL to NRLW)
     useEffect(() => {
@@ -86,7 +87,9 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
-    const lastFixtureRound = currentRoundNo <= rounds ? rounds : currentRoundNo;
+    const lastFixtureRound = drawSeason < new Date().getFullYear() ?
+        rounds + NUMS[comp].FINALS_WEEKS(drawSeason) :
+        currentRoundNo <= rounds ? rounds : currentRoundNo;
 
     const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp, drawSeason);
     const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp, drawSeason);
@@ -94,9 +97,10 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <PageDescription
-                cssClasses={'text-xl text-center'}
+                cssClasses={'text-xl flex flex-col gap-3 items-center text-center'}
                 description={'Ladder auto-updates every few seconds'}
             />
+            <SeasonAndYearPicker />
             {
                 // Do not show bye toggle if:
                 // 1. The competition does not have byes, (BYES = 0) OR

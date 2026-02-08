@@ -8,7 +8,7 @@ import { COLOURCSSVARIANTS, getOrdinalNumber } from '../../lib/utils';
 import TeamSection from './team-section';
 import { RootState } from '@/state/store';
 import { useSelector } from 'react-redux';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function RoundFixture(
     {
@@ -30,6 +30,8 @@ export default function RoundFixture(
 ) {
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
+
+    const pathname = usePathname();
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
@@ -67,7 +69,7 @@ export default function RoundFixture(
         matchCentreUrl = `https://nrl.com${matchCentreUrl}`;
     }
 
-    const teamSectionData = {
+    const teamSectionData = pathname.includes('ladder-predictor') ? data : {
         matchMode, matchState, homeTeam, awayTeam, clock,
         matchCentreUrl,
         roundTitle: data.roundTitle,

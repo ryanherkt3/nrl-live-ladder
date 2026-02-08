@@ -20,7 +20,7 @@ export default function TeamImage(
 
     let imageType = 'badge.png';
     if (comp.includes('nrl')) {
-        const lightImageTeams = ['cowboys', 'dragons', 'rabbitohs', 'sharks', 'storm'];
+        const lightImageTeams = ['broncos', 'cowboys', 'dragons', 'rabbitohs', 'sharks', 'storm'];
 
         imageType = `badge-basic24${useLight && lightImageTeams.includes(teamKey) ? '-light' : ''}.svg`;
     }

@@ -57,13 +57,13 @@ export default function LadderRow(
     }
 
     const darkBgQualifiedTeams = [
-        'Warriors', 'Cowboys', 'Rabbitohs', 'Bulldogs', 'Broncos', 'Sea Eagles', 'Knights' // NRL
+        'Warriors', 'Cowboys', 'Rabbitohs', 'Bulldogs', 'Broncos', 'Sea Eagles', 'Knights', 'Storm', 'Dragons' // NRL
     ];
     if (comp === 'nsw') {
         darkBgQualifiedTeams.push('Magpies'); // NSW
     }
 
-    const lightImageTeams = ['Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
+    const lightImageTeams = ['Broncos', 'Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
 
     const useLightImageForNextGame = isQualified &&
         lightImageTeams.includes(nextTeamTooltip) &&

@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 import { useSearchParams } from 'next/navigation';
+import SeasonAndYearPicker from './season-and-year-picker';
 
 export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
@@ -17,13 +18,14 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means ladder data up to the latest round will count
     const lastRound = parseInt(useSearchParams().get('round') ?? '-1');
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
-    const { year } = currentYear;
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, year, lastRound);
+    const { allTeams, liveMatches } = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason, lastRound);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
         return b.stats.maxPoints - a.stats.maxPoints;
@@ -32,19 +34,16 @@ export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     const highestMaxPts = teamsByMaxPoints[0].stats.maxPoints;
     const lastPlacePts = allTeams[allTeams.length - 1].stats.points;
 
-    // Empty string means the current year will be fetched
-    const season = useSearchParams().get('season');
-    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
-
     return (
         <div className="px-6 py-8 flex flex-col gap-6 page-min-height">
             {
                 getRoundFixturesSection(liveMatches, allTeams)
             }
             <PageDescription
-                cssClasses={'text-xl font-semibold text-center'}
+                cssClasses={'text-xl font-semibold flex flex-col gap-3 items-center text-center'}
                 description={'See where your team stands in the race for Finals Football'}
             />
+            <SeasonAndYearPicker />
             <div className="flex flex-col">
                 <div className="w-full md:hidden max-md:flex flex-row items-center text-center py-1 font-semibold">
                     <div className="w-[15%] mr-4"></div>
