@@ -2,8 +2,6 @@
 'use client';
 
 import Ladder from './ladder/ladder';
-import useSWR from 'swr';
-import axios from 'axios';
 import SkeletonLadder from './skeletons/skeleton-ladder';
 import SkeletonMaxPoints from './skeletons/skeleton-max-points';
 import LadderPredictor from './ladder-predictor/ladder-predictor';
@@ -11,41 +9,46 @@ import FinalsRace from './finals-race';
 import { COMPID, NUMS } from '../lib/utils';
 import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';
 import { useDispatch, useSelector } from 'react-redux';
+import { setDrawData, setDrawError } from '../state/draw/drawData';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
-import { update as currentYearUpdate } from '../state/current-year/currentYear';
 import { RootState } from '../state/store';
 import { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 export default function DrawFetcher({pageName}: {pageName: string}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
 
     const dispatch = useDispatch();
 
-    const { ROUNDS, FINALS_WEEKS } = NUMS[comp];
-    const compRounds = ROUNDS + FINALS_WEEKS + 1;
-    const compId = COMPID[comp.toUpperCase()];
-    const apiUrl = `/api/seasondraw?comp=${String(compId)}&rounds=${String(compRounds)}`;
+    const drawData = useSelector((state: RootState) => state.drawData.data);
+    const drawFetched = useSelector((state: RootState) => state.drawData.fetched);
+    const drawError = useSelector((state: RootState) => state.drawData.error);
 
-    // Get the data
-    const fetcher = async (url: string): Promise<{ success: boolean; data: DrawInfo[]; error: Error }> =>
-        axios.get(url).then(res => res.data as { success: boolean; data: DrawInfo[]; error: Error });
-    const swrResult = useSWR<{ success: boolean; data: DrawInfo[]; error: Error }>(apiUrl, fetcher);
-    const { data: seasonDraw, error, isLoading } = swrResult as {
-        data: { success: boolean; data: DrawInfo[]; error: Error } | undefined;
-        error: Error | undefined;
-        isLoading: boolean;
-    };
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
 
-    useEffect(() => {
-        if (!error && !isLoading) {
-            const { data: seasonData } = seasonDraw as { success: boolean, data: DrawInfo[]};
+    const fetchData = async (drawSeason: number) => {
+        try {
+            const rounds = NUMS[comp].ROUNDS(drawSeason);
+            const finalsWeeks = NUMS[comp].FINALS_WEEKS(drawSeason);
+
+            const compRounds = rounds + finalsWeeks + 1;
+            const compId = COMPID[comp.toUpperCase()];
+            const apiUrl =
+                `/api/seasondraw?comp=${String(compId)}&rounds=${String(compRounds)}${drawSeason ? `&season=${String(drawSeason)}` : ''}`;
+
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('HTTP error!');
+            }
+            const result = await response.json() as { 'success': boolean, 'data': DrawInfo[] };
 
             // Set the main colour used for the finalists bar, completed games etc
-            const seasonDrawValues: DrawInfo[] = Object.values(seasonData);
+            const seasonDrawValues: DrawInfo[] = Object.values(result.data);
+
             const currentRound: DrawInfo[] = seasonDrawValues.filter((round: DrawInfo) => {
                 if (round.byes !== undefined) {
                     return round.byes[0].isCurrentRound;
@@ -54,18 +57,14 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                 return round.fixtures[0].isCurrentRound;
             });
 
-            // Set the current year to be the year of the draw if it is not matching
-            const seasonId = seasonData[1].selectedSeasonId;
-            if (currentYear.updateStatus === ReduxUpdateFlags.NotUpdated && currentYear.year !== seasonId) {
-                dispatch(currentYearUpdate(seasonId));
-            }
-
+            const { selectedSeasonId } = currentRound[0];
             const { colour } = mainSiteColour;
             const colourMatchesComp = comp === colour.split('-')[0];
+            const skipColourUpdate = selectedSeasonId < new Date().getFullYear();
 
             // Update the main site colour if the final update has not been executed,
             // or when there is a mismatch (e.g. NRL Ladder -> Homepage -> NSW Cup)
-            if (mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate || !colourMatchesComp) {
+            if ((mainSiteColour.updateStatus !== ReduxUpdateFlags.FinalUpdate || !colourMatchesComp) && !skipColourUpdate) {
                 dispatch(
                     mainColourUpdate(
                         {
@@ -76,30 +75,65 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                     )
                 );
             }
+
+            // Deduplicate byes by teamNickName
+            const dedupedSeasonDrawValues = seasonDrawValues.map(round =>
+                round.byes ?
+                    {
+                        ...round,
+                        byes: round.byes.filter(
+                            (bye, idx, arr) => arr.findIndex(b => b.teamNickName === bye.teamNickName) === idx
+                        )
+                    }
+                    : round
+            );
+
+            dispatch(setDrawData(dedupedSeasonDrawValues));
         }
-    }, [currentComp, comp, currentYear, mainSiteColour, mainSiteColour.colour, error, isLoading, seasonDraw, dispatch, compId]);
+        catch (err) {
+            console.error(err);
+            dispatch(setDrawError());
+        }
+    };
+
+    useEffect(() => {
+        const drawSeason = season ? parseInt(season) : new Date().getFullYear();
+
+        if (!drawData.length && !drawFetched) {
+            void fetchData(drawSeason);
+
+            // Only re-fetch if in current season
+            const intervalId = setInterval(() => {
+                if (drawSeason === new Date().getFullYear()) {
+                    void fetchData(drawSeason);
+                }
+            }, 60000);
+
+            return () => {
+                clearInterval(intervalId);
+            };
+        }
+    }, [season]);
 
     // Loading states
-    if (error) {
+    if (drawError) {
         return <div className="px-8 py-6 flex flex-col gap-6">Failed to load!</div>;
     }
-    if (isLoading) {
+    if (!drawFetched) {
         return pageName === 'finals-race' ?
             <SkeletonMaxPoints /> :
             <SkeletonLadder predictorPage={pageName === 'ladder-predictor'} />;
     }
 
-    const { data: seasonData } = seasonDraw as { success: boolean, data: DrawInfo[]};
-
     // Load the UI component based on the pageName argument passed in
     switch (pageName) {
         case 'ladder':
-            return <Ladder seasonDraw={seasonData} />;
+            return <Ladder seasonDraw={drawData} />;
         case 'ladder-predictor':
-            return <LadderPredictor seasonDraw={seasonData} />;
+            return <LadderPredictor seasonDraw={drawData} />;
         case 'finals-race':
-            return <FinalsRace seasonDraw={seasonData} />;
+            return <FinalsRace seasonDraw={drawData} />;
         default:
-            return <Ladder seasonDraw={seasonData} />;
+            return <Ladder seasonDraw={drawData} />;
     }
 }

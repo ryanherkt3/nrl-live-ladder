@@ -1,11 +1,14 @@
 import { NUMS } from '@/lib/utils';
 import SkeletonRoundFixture from './skeleton-round-fixture';
-import { RootState } from '../../state/store';
-import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function SkeletonFixtures() {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
+
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     return (
         <div className="flex flex-col gap-4">
@@ -14,27 +17,27 @@ export default function SkeletonFixtures() {
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getFixtures(comp)
+                getFixtures(comp, drawSeason)
             }
             {
-                getByes(comp)
+                getByes(comp, drawSeason)
             }
         </div>
     );
 }
 
-function getFixtures(currentComp: string) {
+function getFixtures(currentComp: string, drawSeason: number) {
     const fixtures = [];
 
-    for (let i = 2; i <= NUMS[currentComp].TEAMS; i += 2) {
+    for (let i = 2; i <= NUMS[currentComp].TEAMS(drawSeason); i += 2) {
         fixtures.push(<SkeletonRoundFixture key={i} />);
     }
 
     return fixtures;
 }
 
-function getByes(currentComp: string) {
-    if (!NUMS[currentComp].BYES) {
+function getByes(currentComp: string, drawSeason: number) {
+    if (!NUMS[currentComp].BYES(drawSeason)) {
         return null;
     }
 

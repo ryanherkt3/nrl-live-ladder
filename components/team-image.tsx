@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+import { useSearchParams } from 'next/navigation';
 
 export default function TeamImage(
     {
@@ -16,14 +15,25 @@ export default function TeamImage(
         useLight: boolean
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     let imageType = 'badge.png';
-    if (comp.includes('nrl')) {
-        const lightImageTeams = ['cowboys', 'dragons', 'rabbitohs', 'sharks', 'storm'];
+    if (comp.includes('nrl') && teamKey !== 'chargers') {
+        if ([
+            'steelers',
+            'north-sydney-bears',
+            'western-suburbs-magpies',
+            'adelaide-rams',
+            'balmain-tigers'
+        ].includes(teamKey)) {
+            imageType = `badge.${teamKey === 'adelaide-rams' ? 'png' : 'svg'}`;
+        }
+        else {
+            const lightImageTeams = ['broncos', 'cowboys', 'dragons', 'rabbitohs', 'sharks', 'storm'];
 
-        imageType = `badge-basic24${useLight && lightImageTeams.includes(teamKey) ? '-light' : ''}.svg`;
+            imageType = `badge-basic24${useLight && lightImageTeams.includes(teamKey) ? '-light' : ''}.svg`;
+        }
     }
     else if (comp === 'nsw') {
         if (teamKey === 'jets' || teamKey === 'north-sydney-bears' || teamKey === 'western-suburbs-magpies') {
@@ -44,7 +54,9 @@ export default function TeamImage(
         }
     }
 
-    const imgUrl = `https://nrl.com/.theme/${teamKey}/${imageType}`;
+    const imgUrl = ['chargers', 'eagles'].includes(teamKey) ?
+        'https://www.nrl.com/Client/dist/logos/fallback-badge-basic24.svg?bust=202505271' :
+        `https://nrl.com/.theme/${teamKey}/${imageType}`;
     const image = <Image src={imgUrl} width={36} height={36} alt={teamKey} title={tooltip} />;
 
     if (matchLink) {

@@ -7,8 +7,9 @@ import { NUMS } from './utils';
  * @param {Array<TeamData>} teams
  * @param {string} currentComp
  * @returns {Array<TeamData>} the list of teams
+ * @param {number} currentYear
  */
-export function constructTeamData(teams: TeamData[], currentComp: string) {
+export function constructTeamData(teams: TeamData[], currentComp: string, currentYear: number) {
     const teamList: TeamData[] = [];
 
     for (const team of teams) {
@@ -24,11 +25,13 @@ export function constructTeamData(teams: TeamData[], currentComp: string) {
                 'points difference': 0,
                 points: 0,
                 noByePoints: 0,
-                maxPoints: getMaxPoints(0, 0, currentComp)
+                maxPoints: getMaxPoints(0, 0, currentComp, currentYear)
             },
             name: team.name,
             theme: {
-                key: team.theme.key
+                key: team.theme ?
+                    team.theme.key :
+                    (['Chargers', 'Eagles'].includes(team.name) ? team.name.toLowerCase() : '')
             }
         });
     }
@@ -42,16 +45,19 @@ export function constructTeamData(teams: TeamData[], currentComp: string) {
  * @param {number} losses
  * @param {number} draws
  * @param {string} currentComp
+ * @param {number} currentYear
  * @returns {number}
  */
-export function getMaxPoints(losses: number, draws: number, currentComp: string) {
-    const { BYES: byes, WIN_POINTS, MATCHES } = NUMS[currentComp];
+export function getMaxPoints(losses: number, draws: number, currentComp: string, currentYear: number) {
+    const byes = NUMS[currentComp].BYES(currentYear);
+    const winPoints = NUMS[currentComp].WIN_POINTS(currentYear);
+    const matches = NUMS[currentComp].MATCHES(currentYear);
 
-    const perfectSeasonPts = WIN_POINTS * MATCHES;
+    const perfectSeasonPts = winPoints * matches;
 
-    const pointsLost = perfectSeasonPts - (WIN_POINTS * losses) - draws;
+    const pointsLost = perfectSeasonPts - (winPoints * losses) - draws;
 
-    return pointsLost + (WIN_POINTS * byes);
+    return pointsLost + (winPoints * byes);
 }
 
 /**
@@ -73,7 +79,8 @@ export function constructTeamStats(
     currentComp: string,
     currentYear: number,
 ) {
-    const { WIN_POINTS, ROUNDS } = NUMS[currentComp];
+    const rounds = NUMS[currentComp].ROUNDS(currentYear);
+    const winPoints = NUMS[currentComp].WIN_POINTS(currentYear);
 
     const updateStats = (team: TeamData, teamScore: number, oppScore: number) => {
         team.stats.played += 1;
@@ -83,16 +90,16 @@ export function constructTeamStats(
         team.stats['points for'] += teamScore;
         team.stats['points against'] += oppScore;
         team.stats['points difference'] = team.stats['points for'] - team.stats['points against'];
-        team.stats.points = (WIN_POINTS * team.stats.wins) + team.stats.drawn +
-            (WIN_POINTS * team.stats.byes);
-        team.stats.noByePoints = team.stats.points - (WIN_POINTS * team.stats.byes);
-        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp);
+        team.stats.points = (winPoints * team.stats.wins) + team.stats.drawn +
+            (winPoints * team.stats.byes);
+        team.stats.noByePoints = team.stats.points - (winPoints * team.stats.byes);
+        team.stats.maxPoints = getMaxPoints(team.stats.lost, team.stats.drawn, currentComp, currentYear);
     };
 
     let roundsCalculated = 1;
     for (const round of seasonDraw) {
-        // Do not count stats for finals games
-        if (roundsCalculated > ROUNDS) {
+        // Do not count stats for finals games, or those that haven't started
+        if (roundsCalculated > rounds || roundsCalculated > currentRoundNo) {
             break;
         }
 
@@ -108,9 +115,9 @@ export function constructTeamStats(
                 // give the bye team their points
                 if (playedRoundFixtures.length && byeTeam) {
                     byeTeam.stats.byes += 1;
-                    byeTeam.stats.points = (WIN_POINTS * byeTeam.stats.wins) + byeTeam.stats.drawn +
-                        (WIN_POINTS * byeTeam.stats.byes);
-                    byeTeam.stats.noByePoints = byeTeam.stats.points - (WIN_POINTS * byeTeam.stats.byes);
+                    byeTeam.stats.points = (winPoints * byeTeam.stats.wins) + byeTeam.stats.drawn +
+                        (winPoints * byeTeam.stats.byes);
+                    byeTeam.stats.noByePoints = byeTeam.stats.points - (winPoints * byeTeam.stats.byes);
                 }
             }
         }
@@ -213,6 +220,53 @@ export function constructTeamStats(
             if (isValidHomeScore && isValidAwayScore) {
                 updateStats(homeFixtureTeam, homeScore, awayScore);
                 updateStats(awayFixtureTeam, awayScore, homeScore);
+            }
+        }
+
+        // Points deductions
+        if (currentYear === 2000 && round.selectedRoundId >= 4) {
+            const cowboysData = teams.find((team: TeamData) => team.name === 'Cowboys');
+            if (cowboysData?.stats) {
+                cowboysData.stats.points -= 2;
+                cowboysData.stats.noByePoints -= 2;
+                cowboysData.stats.maxPoints -= 2;
+            }
+        }
+        if (currentYear === 2002 && round.selectedRoundId >= 23) {
+            const bulldogsData = teams.find((team: TeamData) => team.name === 'Bulldogs');
+            if (bulldogsData?.stats) {
+                bulldogsData.stats.points -= 37;
+                bulldogsData.stats.noByePoints -= 37;
+                bulldogsData.stats.maxPoints -= 37;
+            }
+        }
+        if (currentYear === 2006) {
+            const warriorsData = teams.find((team: TeamData) => team.name === 'Warriors');
+            if (warriorsData?.stats) {
+                warriorsData.stats.points -= 4;
+                warriorsData.stats.noByePoints -= 4;
+                warriorsData.stats.maxPoints -= 4;
+            }
+        }
+        if (currentYear === 2010 && round.selectedRoundId >= 7) {
+            const stormsData = teams.find((team: TeamData) => team.name === 'Storm');
+            if (stormsData?.stats) {
+                stormsData.stats.points = 0;
+                stormsData.stats.noByePoints = 0;
+                stormsData.stats.maxPoints = 0;
+            }
+        }
+        if (currentYear === 2016 && round.selectedRoundId >= 9) {
+            const eelsData = teams.find((team: TeamData) => team.name === 'Eels');
+            if (eelsData?.stats) {
+                eelsData.stats.points -= 12;
+                eelsData.stats.noByePoints -= 12;
+                eelsData.stats.maxPoints -= 12;
+                if (round.selectedRoundId === 9) {
+                    eelsData.stats['points for'] -= 164;
+                    eelsData.stats['points against'] -= 119;
+                    eelsData.stats['points difference'] -= 45;
+                }
             }
         }
 

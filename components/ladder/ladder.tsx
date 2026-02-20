@@ -7,20 +7,24 @@ import { NUMS } from '@/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/lib/nrl-draw-utils';
 import PageDescription from '../page-desc';
 import Standings from './standings';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
 import { teamSortFunction } from '@/lib/team-stats';
 import { getMinPointsForSpots, getQualificationStatus } from '@/lib/qualification';
+import { useSearchParams } from 'next/navigation';
+import SeasonAndYearPicker from '../season-and-year-picker';
 
 export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const currentYear = useSelector((state: RootState) => state.currentYear.value);
-    const { year } = currentYear;
+    // Empty string means ladder data up to the latest round will count
+    const lastRound = parseInt(useSearchParams().get('round') ?? '-1');
+
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
     // Ensure byes is always an array
-    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, year);
+    const pageVariablesRaw = getPageVariables(Object.values(seasonDraw), false, comp, drawSeason, lastRound);
     const pageVariables = { ...pageVariablesRaw, byes: pageVariablesRaw.byes ?? [] };
     const { byes, fixtures, currentRoundNo, allTeams } = pageVariables;
 
@@ -54,6 +58,11 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         }));
     }, [fixtures]);
 
+    // Update round index if a different round has been chosen by a user
+    useEffect(() => {
+        setRoundIndex(lastRound);
+    }, [lastRound]);
+
     // Update ladder teams, round index, fixtures and byes
     // when the competition has changed (e.g. from NRL to NRLW)
     useEffect(() => {
@@ -65,7 +74,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         if (Object.values(byes).length) {
             setByeTeams(byes);
         }
-    }, [currentComp]);
+    }, [comp]);
 
     const updateFixturesCb = (showPreviousRound: boolean) => {
         updateFixturesToShow(
@@ -73,26 +82,30 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
         );
     };
 
-    const { ROUNDS, BYES } = NUMS[comp];
+    const rounds = NUMS[comp].ROUNDS(drawSeason);
+    const seasonByes = NUMS[comp].BYES(drawSeason);
 
     // Last round for the toggle. Is last round of regular season if not finals football,
     // otherwise it is set to the current finals football week
-    const lastFixtureRound = currentRoundNo <= ROUNDS ? ROUNDS : currentRoundNo;
+    const lastFixtureRound = drawSeason < new Date().getFullYear() ?
+        rounds + NUMS[comp].FINALS_WEEKS(drawSeason) :
+        currentRoundNo <= rounds ? rounds : currentRoundNo;
 
-    const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp);
-    const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp);
+    const topTeams = getLadderRow(true, ladderTeams, byePoints, pageVariables, comp, drawSeason);
+    const bottomTeams = getLadderRow(false, ladderTeams, byePoints, pageVariables, comp, drawSeason);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
             <PageDescription
-                cssClasses={'text-xl text-center'}
+                cssClasses={'text-xl flex flex-col gap-3 items-center text-center'}
                 description={'Ladder auto-updates every few seconds'}
             />
+            <SeasonAndYearPicker />
             {
                 // Do not show bye toggle if:
                 // 1. The competition does not have byes, (BYES = 0) OR
                 // 2. The competition is in round 1 or the last round and beyond
-                BYES === 0 || (currentRoundNo === 1 || currentRoundNo >= ROUNDS) ?
+                seasonByes === 0 || (currentRoundNo === 1 || currentRoundNo >= rounds) ?
                     null :
                     <ByeToggleSection setByeValue={byePoints} byeValueCb={updateByePoints} />
             }
@@ -123,6 +136,7 @@ export default function Ladder({seasonDraw}: {seasonDraw: DrawInfo[]}) {
  * @param {boolean} byePoints
  * @param {PageVariables} pageVariables
  * @param {String} currentComp
+ * @param {number} drawSeason
  * @returns {LadderRow} React object
  */
 function getLadderRow(
@@ -131,17 +145,20 @@ function getLadderRow(
     byePoints: boolean,
     pageVariables: PageVariables,
     currentComp: string,
+    drawSeason: number
 ) {
-    const { FINALS_TEAMS, WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
+    const { WEEK_ONE_FINALS_FORMAT } = NUMS[currentComp];
+    const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
-    const teamList = isInTopSection ? allTeams.slice(0, FINALS_TEAMS) : allTeams.slice(FINALS_TEAMS);
-    const indexAdd = isInTopSection ? 1 : FINALS_TEAMS + 1;
+    const teamList = isInTopSection ? allTeams.slice(0, finalsTeams) : allTeams.slice(finalsTeams);
+    const indexAdd = isInTopSection ? 1 : finalsTeams + 1;
 
     return teamList.map((team: TeamData) => {
         // Check if team is currently playing
         const { fixtures, currentRoundNo, nextRoundInfo, liveMatches } = pageVariables;
         const { name, stats, theme } = team;
-        const { ROUNDS, FINALS_TEAMS } = NUMS[currentComp];
+        const rounds = NUMS[currentComp].ROUNDS(drawSeason);
+        const finalsTeams = NUMS[currentComp].FINALS_TEAMS(drawSeason);
 
         const isPlaying = Array.isArray(liveMatches) &&
             liveMatches.some((match: Match) => match.awayTeam.nickName === name || match.homeTeam.nickName === name);
@@ -179,20 +196,22 @@ function getLadderRow(
             const { homeTeam, awayTeam, matchCentreUrl } = filteredFixture[0] ?? {};
 
             if (name === homeTeam.nickName) {
-                nextTeam = awayTeam.theme.key;
+                nextTeam = ['Chargers', 'Eagles'].includes(awayTeam.nickName) ?
+                    awayTeam.nickName.toLowerCase() : (awayTeam.theme ? awayTeam.theme.key : '');
                 nextTeamTooltip = awayTeam.nickName;
             }
             else {
-                nextTeam = homeTeam.theme.key;
+                nextTeam = ['Chargers', 'Eagles'].includes(homeTeam.nickName) ?
+                    homeTeam.nickName.toLowerCase() : (homeTeam.theme ? homeTeam.theme.key : '');
                 nextTeamTooltip = homeTeam.nickName;
             }
 
             nextMatchUrl = matchCentreUrl;
         }
-        else if (currentRoundNo < ROUNDS) {
+        else if (currentRoundNo < rounds) {
             nextTeam = 'BYE';
         }
-        else if (currentRoundNo === ROUNDS && ladderPos <= FINALS_TEAMS) {
+        else if (currentRoundNo === rounds && ladderPos <= finalsTeams) {
             let finalsOppLadderPos: number | undefined;
             // Get week 1 finals matchup for a team if possible
             const weekOneMatchup = WEEK_ONE_FINALS_FORMAT.find((matchup: number[]) => matchup.includes(ladderPos));
@@ -206,11 +225,11 @@ function getLadderRow(
         }
 
         const qualificationStatus = getQualificationStatus(
-            team, allTeams, getMinPointsForSpots(allTeams, currentComp), currentComp
+            team, allTeams, getMinPointsForSpots(allTeams, currentComp, drawSeason), currentComp, drawSeason
         );
 
         return <LadderRow
-            key={theme.key}
+            key={theme?.key ?? ''}
             teamData={team}
             position={ladderPos.toString()}
             isPlaying={isPlaying}

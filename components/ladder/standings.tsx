@@ -59,7 +59,7 @@ export default function Standings(
                 <div className="w-[15%] sm:w-[6%]" title="Points">PTS</div>
             </div>
             {topHalf}
-            <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]} mx-[-8px]`}></div>
+            <div className={`border-2 ${COLOURCSSVARIANTS[`${colour}-border`]} -mx-2`}></div>
             {bottomHalf}
             <div className='text-lg text-center pt-6'>
                 Coloured rows indicate a team who has qualified for finals, while a grayed out row indicates a team which can not make finals

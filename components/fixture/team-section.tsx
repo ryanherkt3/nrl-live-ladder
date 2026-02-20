@@ -4,8 +4,7 @@ import clsx from 'clsx';
 import { Match } from '@/lib/definitions';
 import InputScore from './input-score';
 import Score from './score';
-import { RootState } from '@/state/store';
-import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function TeamSection(
     {
@@ -29,8 +28,8 @@ export default function TeamSection(
         modifiedFixtureCb: undefined | (() => void)
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const mqStyles = 'max-sm:flex-col sm:flex-row max-sm:gap-2 sm:gap-6';
 

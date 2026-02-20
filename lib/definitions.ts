@@ -3,12 +3,12 @@
 export interface TeamData {
     stats: TeamStats;
     name: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface NextTeam {
     nickname: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
     matchCentreUrl: string;
     isBye: boolean;
 }
@@ -45,7 +45,7 @@ export interface Match {
 export interface ByeTeam {
     isCurrentRound: boolean;
     teamNickName: string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface MatchTime {
@@ -56,7 +56,7 @@ export interface MatchTime {
 export interface FixtureTeam {
     nickName: string;
     score: number | string;
-    theme: TeamTheme;
+    theme: TeamTheme | null;
 }
 
 export interface DrawInfo {
@@ -92,23 +92,19 @@ export interface PageVariables {
 }
 
 export interface CompInfo {
-    ROUNDS: number,
-    FINALS_WEEKS: number,
+    ROUNDS: (year: number) => number,
+    FINALS_WEEKS: (year: number) => number,
     WEEK_ONE_FINALS_FORMAT: number[][],
-    BYES: number,
-    MATCHES: number,
-    TEAMS: number,
-    FINALS_TEAMS: number,
-    WIN_POINTS: number,
+    BYES: (year: number) => number,
+    MATCHES: (year: number) => number,
+    TEAMS: (year: number) => number,
+    FINALS_TEAMS: (year: number) => number,
+    WIN_POINTS: (year: number) => number,
+    BYE_POINTS: (year: number) => number,
 }
 
 export interface MainSiteColour {
     colour: string,
-    updateStatus: ReduxUpdateFlags
-}
-
-export interface CurrentComp {
-    comp: string,
     updateStatus: ReduxUpdateFlags
 }
 

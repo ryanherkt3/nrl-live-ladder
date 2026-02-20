@@ -2,8 +2,7 @@ import clsx from 'clsx';
 import { TeamData } from '../../lib/definitions';
 import { getShortCode } from '../../lib/utils';
 import TeamImage from '../team-image';
-import { RootState } from '@/state/store';
-import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function LadderRow(
     {
@@ -28,8 +27,8 @@ export default function LadderRow(
         qualificationStatus: string;
     }
 ) {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const { stats: statsData, theme, name } = teamData;
     const { played, wins, drawn, lost, points, noByePoints, byes } = statsData;
@@ -58,13 +57,13 @@ export default function LadderRow(
     }
 
     const darkBgQualifiedTeams = [
-        'Warriors', 'Cowboys', 'Rabbitohs', 'Bulldogs', 'Broncos', 'Sea Eagles', 'Knights' // NRL
+        'Warriors', 'Cowboys', 'Rabbitohs', 'Bulldogs', 'Broncos', 'Sea Eagles', 'Knights', 'Storm', 'Dragons' // NRL
     ];
     if (comp === 'nsw') {
         darkBgQualifiedTeams.push('Magpies'); // NSW
     }
 
-    const lightImageTeams = ['Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
+    const lightImageTeams = ['Broncos', 'Cowboys', 'Dragons', 'Rabbitohs', 'Sharks', 'Storm']; // NRL
 
     const useLightImageForNextGame = isQualified &&
         lightImageTeams.includes(nextTeamTooltip) &&
@@ -102,7 +101,7 @@ export default function LadderRow(
                 <div className='max-xs:hidden xs:block'>
                     <TeamImage
                         matchLink=''
-                        teamKey={theme.key}
+                        teamKey={theme?.key ?? ''}
                         tooltip={name}
                         useLight={isQualified && lightImageTeams.includes(name)}
                     />

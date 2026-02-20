@@ -2,15 +2,21 @@ import { COLOURCSSVARIANTS, NUMS } from '@/lib/utils';
 import SkeletonMaxPointsRow from './skeleton-max-points-row';
 import { RootState } from '../../state/store';
 import { useSelector } from 'react-redux';
+import { useSearchParams } from 'next/navigation';
 
 export default function SkeletonMaxPoints() {
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Empty string means info about the NRL will be fetched
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
 
-    const { TEAMS, FINALS_TEAMS } = NUMS[comp];
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+    const drawSeason = season ? parseInt(season) : new Date().getFullYear();
+
+    const teams = NUMS[comp].TEAMS(drawSeason);
+    const finalsTeams = NUMS[comp].FINALS_TEAMS(drawSeason);
 
     return (
         <div className="px-8 py-6 flex flex-col gap-6">
@@ -19,11 +25,11 @@ export default function SkeletonMaxPoints() {
             </div>
             <div className="flex flex-col">
                 {
-                    getMaxPointsRow(1, FINALS_TEAMS)
+                    getMaxPointsRow(1, finalsTeams)
                 }
                 <div className={`border-4 ${COLOURCSSVARIANTS[`${colour}-border`]}`}></div>
                 {
-                    getMaxPointsRow(FINALS_TEAMS + 1, TEAMS)
+                    getMaxPointsRow(finalsTeams + 1, teams)
                 }
             </div>
         </div>

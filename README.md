@@ -54,13 +54,7 @@ jest
 * "No Byes" ladder - use the toggles at the top of the live ladder page to view the ladder as if bye points counted for nothing.
 * Live "max points" page - see how high (or low) your team can finish on the ladder with a visual chart (or table if on mobile) showing where each team stands in the race for Finals Football.
 * Ladder predictor - predict the outcome of matches and see how your predictions affect the ladder.
-
-### Future improvements
-
-* Add integration and E2E test coverage.
-* Make `SWR` requests on the main page once a minute instead of infrequently.
-* Include the ability to save/load predictions to/from a JSON file.
-* Add support for finals football predictions.
+* Past NRL/W seasons - view historical ladder data going back to 1998 for the NRL, and 2020 for the NRLW.
 
 ### Bug reports, Feature requests
 

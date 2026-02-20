@@ -7,15 +7,12 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import { COLOURCSSVARIANTS, COMPID, LINKS } from '../lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
-import { update as compUpdate } from '../state/current-comp/currentComp';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { RootState } from '../state/store';
 
 export default function Header() {
-    // Get the user's chosen competition, if one exists.
-    // Also set the main colour used for the finalists bar, completed games etc
-    const currentComp = useSelector((state: RootState) => state.currentComp.value);
-    const { comp } = currentComp;
+    // Get the user's chosen competition, if one exists
+    const comp = useSearchParams().get('comp') ?? 'nrl';
 
     const mainSiteColour = useSelector((state: RootState) => state.mainSiteColour.value);
     const { colour } = mainSiteColour;
@@ -25,6 +22,12 @@ export default function Header() {
     // Default to NRL if comp param is not provided or is invalid
     let initCompParam = useSearchParams().get('comp')?.toLowerCase() ?? 'nrl';
     initCompParam = Object.keys(COMPID).includes(initCompParam.toUpperCase()) ? initCompParam : 'nrl';
+
+    // Empty string means the current year will be fetched
+    const season = useSearchParams().get('season');
+
+    // Empty string means ladder data up to the latest round will count
+    const round = useSearchParams().get('round');
 
     useEffect(() => {
         const compsNotMatching = initCompParam !== comp;
@@ -39,9 +42,8 @@ export default function Header() {
                     }
                 )
             );
-            dispatch(compUpdate(initCompParam));
         }
-    }, [currentComp, mainSiteColour, initCompParam, colour, comp, dispatch]);
+    }, [mainSiteColour, initCompParam, colour, comp, dispatch]);
 
     const pathname = usePathname();
 
@@ -98,8 +100,16 @@ export default function Header() {
     // Customise query paramaters based on:
     // 1. whether the comp paramater is valid or not
     // 2. if the default comp (NRL) is being shown
-    const query = Object.keys(COMPID).includes(comp.toUpperCase()) && comp !== 'nrl' ?
-        {['comp']: comp} : {};
+    const query: Record<string, string> = {};
+    if (Object.keys(COMPID).includes(comp.toUpperCase()) && comp !== 'nrl') {
+        query.comp = comp;
+    }
+    if (season) {
+        query.season = season;
+    }
+    if (round) {
+        query.round = round;
+    }
 
     return (
         <div className={`${colourClasses} ${textClasses} ${navClasses}`}>
