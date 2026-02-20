@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import DrawFetcher from '../../components/draw-fetcher';
+import { Suspense } from 'react';
 
 export const metadata: Metadata = {
     title: 'Ladder Predictor',
@@ -7,5 +8,9 @@ export const metadata: Metadata = {
 };
 
 export default function LadderPredictorPage() {
-    return <DrawFetcher pageName={'ladder-predictor'} />;
+    return (
+        <Suspense>
+            <DrawFetcher pageName={'ladder-predictor'} />
+        </Suspense>
+    );
 }
