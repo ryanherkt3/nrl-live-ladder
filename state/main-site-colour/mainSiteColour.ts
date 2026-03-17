@@ -46,8 +46,8 @@ const MainSiteColourSlice = createSlice({
             }
             else if (comp === NRL) {
                 const NRLROUNDID : Record<number, string> = Object.freeze({
-                    5: 'mclt',
-                    9: 'magic',
+                    3: 'mclt',
+                    11: 'magic',
                     10: 'wil',
                     17: 'bean',
                     23: 'ind',

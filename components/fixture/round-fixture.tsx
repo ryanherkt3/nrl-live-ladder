@@ -82,10 +82,12 @@ export default function RoundFixture(
                 href={matchCentreUrl} target="_blank"
                 className={
                     clsx(
-                        'text-center text-lg text-white font-semibold',
+                        'text-center text-lg font-semibold',
                         {
                             'bg-indigo-400': modifiable && matchMode === 'Pre',
                             [COLOURCSSVARIANTS[`${colour}-bg`]]: isFullTime,
+                            'text-white': !isFullTime,
+                            'text-black': isFullTime && colour === 'nrl-mclt',
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
                             'bg-blue-400': matchMode === 'Pre' && !isFinalsFootball,
@@ -211,10 +213,11 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
         return (
             <div className={
                 clsx(
-                    'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35 text-white',
+                    'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35',
                     {
                         [trueClasses]: isFullTime,
-                        'border-indigo-400 bg-indigo-400': !isFullTime
+                        'text-black': isFullTime && mainSiteColour === 'nrl-mclt',
+                        'border-indigo-400 bg-indigo-400 text-white': !isFullTime
                     }
                 )
             }>
