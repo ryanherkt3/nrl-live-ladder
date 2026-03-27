@@ -11,9 +11,7 @@ import { store } from '../state/store';
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children, }: {children: React.ReactNode;}) {
-    const currentYear = new Date().getFullYear();
-
-    const footerClasses = 'antialiased text-lg flex flex-row h-20 p-4 justify-between items-center border-t';
+    const footerClasses = 'antialiased text-lg flex flex-row h-20 p-4 justify-center items-center border-t';
     const footerColours = 'bg-white border-gray-400';
 
     return (
@@ -29,12 +27,16 @@ export default function RootLayout({ children, }: {children: React.ReactNode;}) 
                             `${inter.className} ${footerClasses} ${footerColours}`
                         }
                     >
-                        <div>&copy; Ryan Herkt {currentYear}</div>
-                        <a className="visited:text-purple-500 hover:text-blue-500 text-blue-500"
-                            href="https://github.com/ryanherkt3/"
-                            target="_blank">
-                            <span>Github</span>
-                        </a>
+                        <div>
+                            Not affiliated with {" "}
+                            <a
+                                className="visited:text-purple-500 hover:text-blue-500 text-blue-500"
+                                href="https://nrl.com/"
+                                target="_blank"
+                            >
+                                nrl.com
+                            </a>
+                        </div>
                     </footer>
                 </body>
             </html>
