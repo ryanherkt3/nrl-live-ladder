@@ -99,7 +99,7 @@ export default function Fixtures(
                                     const key = byeTeam.theme?.key ?? '';
 
                                     const foundTeam = teamList.find((team: TeamData) => {
-                                        return team.theme?.key ?? '' === key;
+                                        return team.theme?.key === key;
                                     });
                                     const imageTooltip = foundTeam ? foundTeam.name : '';
 
