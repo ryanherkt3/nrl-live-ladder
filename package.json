@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@next/eslint-plugin-next": "16.2.2",
+    "@next/eslint-plugin-next": "16.2.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25",
     "@types/react": "^19",
