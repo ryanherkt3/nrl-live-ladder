@@ -15,3 +15,9 @@ updates:
       dev-dependencies:
         patterns: 
           - "*"
+    ignore:
+      - dependency-name: "eslint"
+      - dependency-name: "eslint-*"
+      - dependency-name: "@typescript-eslint/*"
+      - dependency-name: "@next-eslint/*"
+      - dependency-name: "@eslint/*"
