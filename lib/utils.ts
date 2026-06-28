@@ -120,6 +120,8 @@ export const COMPID : Record<string, number> = Object.freeze({
     QLD: 114,
 });
 
+export const WHITETEXTCOLOURS = ['nrl-ctry', 'nrl-bean', 'nrl-wil', 'qld'];
+
 // TODO
 // 1. Is there a more efficient way to do this?
 // 2. Move colours code to new file (lib/colours.ts)

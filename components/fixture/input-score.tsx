@@ -1,4 +1,4 @@
-import { COLOURCSSVARIANTS } from '@/lib/utils';
+import { COLOURCSSVARIANTS, WHITETEXTCOLOURS } from '@/lib/utils';
 import { RootState } from '@/state/store';
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
@@ -65,7 +65,6 @@ export default function InputScore(
         setScore(predictedTeamScore ?? '');
     }, [predictedTeamScore]);
 
-    const whiteTextBoxes = ['nrl-ctry', 'nrl-bean', 'nrl-wil', 'qld'];
     const mqStyles = 'max-md:text-2xl max-md:w-[50px] md:text-3xl md:w-[75px]';
 
     return (
@@ -75,7 +74,7 @@ export default function InputScore(
                     [`${mqStyles} text-center ${COLOURCSSVARIANTS[`${colour}-bg`]}`],
                     {
                         'sm:-order-1': !isHomeTeam,
-                        'text-white': whiteTextBoxes.includes(colour)
+                        'text-white': WHITETEXTCOLOURS.includes(colour)
                     }
                 )
             }

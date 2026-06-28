@@ -4,7 +4,7 @@
 import clsx from 'clsx';
 import { Match, TeamData } from '../../lib/definitions';
 import moment from 'moment';
-import { COLOURCSSVARIANTS, getOrdinalNumber } from '../../lib/utils';
+import { COLOURCSSVARIANTS, getOrdinalNumber, WHITETEXTCOLOURS } from '../../lib/utils';
 import TeamSection from './team-section';
 import { RootState } from '@/state/store';
 import { useSelector } from 'react-redux';
@@ -86,7 +86,7 @@ export default function RoundFixture(
                         {
                             'bg-indigo-400': modifiable && matchMode === 'Pre',
                             [COLOURCSSVARIANTS[`${colour}-bg`]]: isFullTime,
-                            'text-white': !isFullTime,
+                            'text-white': !isFullTime || WHITETEXTCOLOURS.includes(colour),
                             'text-black': isFullTime && colour === 'nrl-mclt',
                             'live-match': isLiveMatch && !isFullTime,
                             'bg-yellow-600': matchMode === 'Pre' && isFinalsFootball,
@@ -216,6 +216,7 @@ function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: 
                     'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35',
                     {
                         [trueClasses]: isFullTime,
+                        'text-white': WHITETEXTCOLOURS.includes(mainSiteColour),
                         'text-black': isFullTime && mainSiteColour === 'nrl-mclt',
                         'border-indigo-400 bg-indigo-400 text-white': !isFullTime
                     }
