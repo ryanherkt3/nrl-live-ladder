@@ -10,6 +10,28 @@ const nextConfig = {
             },
         ];
     },
+    async headers() {
+        return [
+        {
+            // Applies your headers to all routes in the application
+            source: '/:path*', 
+            headers: [
+                {
+                    key: 'X-Frame-Options',
+                    value: 'DENY',
+                },
+                {
+                    key: 'X-Content-Type-Options',
+                    value: 'nosniff',
+                },
+                {
+                    key: 'Referrer-Policy',
+                    value: 'strict-origin-when-cross-origin',
+                }
+            ],
+        },
+        ]
+    },
     images: {
         remotePatterns: [
             {
@@ -17,6 +39,13 @@ const nextConfig = {
                 hostname: 'nrl.com',
                 port: '',
                 pathname: '/.theme/**',
+                search: '',
+            },
+            {
+                protocol: 'https',
+                hostname: 'www.nrl.com',
+                port: '',
+                pathname: '/Client/dist/logos/**',
                 search: '',
             },
         ],
