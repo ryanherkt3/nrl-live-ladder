@@ -5,8 +5,9 @@ export default function proxy(req: NextRequest) {
     const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
 
     // Define strict dynamic rules with nonces
+    const isDev = process.env.NODE_ENV === 'development';
     const cspHeader = `
-        script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
+        script-src 'self' 'nonce-${nonce}' ${isDev ? 'unsafe-eval' : 'strict-dynamic'};
         img-src 'self' blob: data: https://nrl.com https://www.nrl.com;
         font-src 'self';
         object-src 'none';
