@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    poweredByHeader: false,
     async rewrites() {
         return [
             {
@@ -13,7 +14,6 @@ const nextConfig = {
     async headers() {
         return [
         {
-            // Applies your headers to all routes in the application
             source: '/:path*', 
             headers: [
                 {
