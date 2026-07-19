@@ -84,7 +84,9 @@ export function getMinPointsForSpots(
     const byes = NUMS[currentComp].BYES(currentYear);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
-        return b.stats.maxPoints - a.stats.maxPoints;
+        return (b.stats.wins - a.stats.wins) ||
+            (b.stats['points difference'] - a.stats['points difference']) ||
+            (b.stats.maxPoints - a.stats.maxPoints);
     });
 
     const lowestPlacedFinalsTeam = teamsByMaxPoints[finalsTeams - 1];
@@ -96,7 +98,7 @@ export function getMinPointsForSpots(
         topFour: finalsTeams >= 4 ? teamsByMaxPoints[4].stats.maxPoints + 1 : 0,
         finalsQualification: teamsByMaxPoints[finalsTeams].stats.maxPoints + 1,
         // Subtract one for the eliminated spots
-        eliminated: ((lowestPlacedFinalsTeamWins + byes) * 2) + lowestPlacedFinalsTeamDraws - 1,
+        eliminated: (((lowestPlacedFinalsTeamWins + byes) * 2) + lowestPlacedFinalsTeamDraws) - 1,
     };
 
     return minPointsForSpots;
