@@ -80,13 +80,13 @@ export async function GET(request: NextRequest) {
     // Make nrl.com think I am not a bot
     const uaString = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36';
 
-    const rounds = [];
-
+    const apiUrls = [];
     for (let i = 1; i < parseInt(compRounds); i++) {
-        const apiUrl =
-            `https://www.nrl.com/draw/data?competition=${comp}&round=${String(i)}${showPastSeason && season ? `&season=${season}`: ''}`;
+        apiUrls.push(`https://www.nrl.com/draw/data?competition=${comp}&round=${String(i)}${showPastSeason && season ? `&season=${season}`: ''}`);
+    }
 
-        const roundData = await fetch(apiUrl, {
+    const fetchPromises = apiUrls.map(async (url) => {
+        const roundData = await fetch(url, {
             method: 'GET',
             headers: {
                 'user-agent': uaString,
@@ -95,8 +95,10 @@ export async function GET(request: NextRequest) {
 
         const roundDataResult: unknown = await roundData.json();
 
-        rounds.push(roundDataResult);
-    }
+        return roundDataResult;
+    });
+
+    const rounds = await Promise.all(fetchPromises);
 
     return new Response(JSON.stringify({ 'success': true, 'data': rounds }), {
         status: 200,
