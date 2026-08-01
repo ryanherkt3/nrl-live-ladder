@@ -75,7 +75,7 @@ export default function RoundFixture(
     };
 
     const commonClasses = 'flex flex-row text-lg items-center justify-center gap-4 p-2';
-    const responsiveClasses = 'max-sm:flex-wrap max-sm:px-8';
+    const responsiveClasses = 'max-sm:flex-wrap max-sm:justify-between max-sm:px-8';
 
     return (
         <div className="flex flex-col">

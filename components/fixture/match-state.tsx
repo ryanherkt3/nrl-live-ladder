@@ -19,8 +19,8 @@ export default function MatchState(
         modifiedFixtureCb: undefined | (() => void),
     }
 ) {
-    let commonClasses = 'flex flex-row gap-4 py-2 max-sm:order-3';
-    const widthClasses = 'max-sm:w-full w-fit';
+    let commonClasses = 'py-2';
+    const widthClasses = 'w-fit';
     const alignmentClasses = 'items-center max-sm:justify-between justify-center text-center';
 
     const { matchMode, matchState, clock } = matchData;
@@ -28,7 +28,7 @@ export default function MatchState(
     const [selectedWinner, setSelectedWinner] = useState('');
 
     if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
-        commonClasses += ' pt-2';
+        commonClasses += ' flex flex-row gap-4 pt-2 max-sm:order-3 max-sm:w-full';
 
         return (
             <div className={`${commonClasses} ${alignmentClasses} ${widthClasses}`}>
@@ -90,7 +90,7 @@ export default function MatchState(
     const kickoffTime = moment(clock.kickOffTimeLong).format('LT');
 
     return (
-        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-15`}>
+        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-15 md:w-62 sm:w-49.5`}>
             <div>{kickoffTime}</div>
         </div>
     );
