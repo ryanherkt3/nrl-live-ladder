@@ -1,11 +1,11 @@
-import { Match, ByeTeam, TeamData } from '../../lib/definitions';
+import { Match, ByeTeam, TeamData, PredictedMatch } from '../../lib/definitions';
 import TeamImage from '../team-image';
 import { COLOURCSSVARIANTS, NUMS } from '@/lib/utils';
-import { getRoundFixtures } from '@/lib/nrl-draw-utils';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/state/store';
 import { useSearchParams } from 'next/navigation';
+import RoundFixture from './round-fixture';
 
 export default function Fixtures(
     {
@@ -26,7 +26,7 @@ export default function Fixtures(
         updateCallback: (_showPreviousRound: boolean) => void
         lastRoundNo: number,
         modifiable: boolean,
-        modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
+        modifiedFixtureCb: undefined | ((_slug: string, _round: number, __payload: PredictedMatch) => void)
     }
 ) {
     // Empty string means info about the NRL will be fetched
@@ -86,7 +86,18 @@ export default function Fixtures(
             </div>
             <div className="text-lg text-center">All fixtures are in your local timezone</div>
             {
-                getRoundFixtures(fixtures, teamList, inFinalsFootball, modifiable, modifiedFixtureCb)
+                fixtures.map((fixture: Match) => {
+                    return (
+                        <RoundFixture
+                            key={fixtures.indexOf(fixture)}
+                            data={fixture}
+                            ladder={teamList}
+                            isFinalsFootball={inFinalsFootball}
+                            modifiable={modifiable && fixture.matchMode === 'Pre'}
+                            modifiedFixtureCb={modifiedFixtureCb}
+                        />
+                    );
+                })
             }
             {
                 inFinalsFootball || !byes?.length ?

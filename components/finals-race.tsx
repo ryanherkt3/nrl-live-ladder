@@ -3,13 +3,14 @@
 import { COLOURCSSVARIANTS, getOrdinalNumber, getShortCode, NUMS } from '../lib/utils';
 import { DrawInfo, Match, TeamData, TeamPoints } from '../lib/definitions';
 import clsx from 'clsx';
-import { getRoundFixtures, getPageVariables } from '../lib/nrl-draw-utils';
+import { getPageVariables } from '../lib/nrl-draw-utils';
 import PageDescription from './page-desc';
 import { useSelector } from 'react-redux';
 import { RootState } from '../state/store';
 import { getMinPointsForSpots, getQualificationStatus } from '../lib/qualification';
 import { useSearchParams } from 'next/navigation';
 import SeasonAndYearPicker from './season-and-year-picker';
+import RoundFixture from './fixture/round-fixture';
 
 export default function FinalsRace({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
@@ -334,7 +335,18 @@ function getRoundFixturesSection(liveMatches: Match[], teamList: TeamData[]) {
             <div className="flex flex-col gap-4">
                 <span className="text-xl font-semibold text-center">Current live fixture(s):</span>
                 {
-                    getRoundFixtures(liveMatches, teamList, false, false, undefined)
+                    liveMatches.map((fixture: Match) => {
+                        return (
+                            <RoundFixture
+                                key={liveMatches.indexOf(fixture)}
+                                data={fixture}
+                                ladder={teamList}
+                                isFinalsFootball={false}
+                                modifiable={false}
+                                modifiedFixtureCb={undefined}
+                            />
+                        );
+                    })
                 }
             </div>
         );

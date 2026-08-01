@@ -99,7 +99,7 @@ export function constructTeamStats(
     let roundsCalculated = 1;
     for (const round of seasonDraw) {
         // Do not count stats for finals games, or those that haven't started
-        if (roundsCalculated > rounds || roundsCalculated > currentRoundNo) {
+        if (roundsCalculated > rounds || (!modifiable && roundsCalculated > currentRoundNo)) {
             break;
         }
 
@@ -125,17 +125,15 @@ export function constructTeamStats(
         for (const fixture of round.fixtures) {
             const { matchMode, homeTeam, awayTeam, roundTitle, matchCentreUrl } = fixture;
 
-            // If match not started and on ladder page break away
-            if (matchMode === 'Pre' && !modifiable) {
-                break;
-            }
-
             const homeFixtureTeam = teams.find((team: TeamData) => homeTeam.nickName === team.name);
             const awayFixtureTeam = teams.find((team: TeamData) => awayTeam.nickName === team.name);
 
-            // Update score from localStorage (if possible) if on ladder predictor page
+            let resolvedHomeScore: number | string = homeTeam.score;
+            let resolvedAwayScore: number | string = awayTeam.score;
+
+            // Update score from localStorage (if possible) if on ladder predictor page and match hasn't started
             const prediction = localStorage.getItem(`predictedMatches${String(currentYear)}${currentComp}`);
-            if (modifiable && prediction) {
+            if (matchMode === 'Pre' && modifiable && prediction) {
                 const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
                 const slug = matchCentreUrl.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
 
@@ -194,8 +192,8 @@ export function constructTeamStats(
                             cleanUpPredictions();
                         }
                         else {
-                            homeTeam.score = homeScore;
-                            awayTeam.score = awayScore;
+                            resolvedHomeScore = homeScore;
+                            resolvedAwayScore = awayScore;
                         }
                     }
                     else if (bothScoresInvalid) {
@@ -203,16 +201,16 @@ export function constructTeamStats(
                     }
                     // Otherwise delete the localStorage entry and get the correct score from the API request
                     else {
-                        homeTeam.score = fixture.homeTeam.score;
-                        awayTeam.score = fixture.awayTeam.score;
+                        resolvedHomeScore = fixture.homeTeam.score;
+                        resolvedAwayScore = fixture.awayTeam.score;
 
                         cleanUpPredictions();
                     }
                 }
             }
 
-            const { score: homeScore } = homeTeam;
-            const { score: awayScore } = awayTeam;
+            const homeScore = resolvedHomeScore;
+            const awayScore = resolvedAwayScore;
 
             // Only update team stats if both scores are numeric and non-NaN
             const isValidHomeScore = homeFixtureTeam && typeof homeScore === 'number' && !isNaN(homeScore);

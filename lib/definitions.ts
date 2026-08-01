@@ -81,6 +81,14 @@ export interface TeamPoints {
     maxPoints: number,
 }
 
+export interface PredictedMatch {
+    result: string,
+    homeScore: number,
+    awayScore: number
+}
+
+export type Prediction = Record<string, Record<string, string>>;
+
 export interface PageVariables {
     currentRoundInfo: DrawInfo[],
     byes: ByeTeam[]
