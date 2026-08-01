@@ -1,41 +1,37 @@
 import { getShortCode } from '@/lib/utils';
 import TeamImage from '../team-image';
 import clsx from 'clsx';
-import { Match } from '@/lib/definitions';
-import InputScore from './input-score';
-import Score from './score';
 import { useSearchParams } from 'next/navigation';
 
 export default function TeamSection(
     {
-        data,
         teamName,
         position,
         imgKey,
         isHomeTeam,
-        isWinning,
-        modifiable,
-        modifiedFixtureCb
     }:
     {
-        data: Match,
         teamName: string,
         position: string,
         imgKey: string
         isHomeTeam: boolean
-        isWinning: boolean
-        modifiable: boolean,
-        modifiedFixtureCb: undefined | (() => void)
     }
 ) {
     // Empty string means info about the NRL will be fetched
     const comp = useSearchParams().get('comp') ?? 'nrl';
 
-    const mqStyles = 'max-sm:flex-col sm:flex-row max-sm:gap-2 sm:gap-6';
+    const mqStyles = 'max-sm:flex-col max-sm:gap-2 sm:flex-row sm:gap-10 lg:w-[280px] md:w-[240px] sm:w-[160px]';
 
     return (
-        <div className={`flex ${mqStyles} pb-0 items-center justify-between min-w-[35%]`}>
-            <div className='flex flex-col text-center'>
+        <div className={
+            clsx(
+                `flex ${mqStyles} pb-0 items-center`,
+                {
+                    'justify-end': !isHomeTeam
+                }
+            )
+        }>
+            <div className='flex flex-col text-center lg:w-40 md:w-30'>
                 <div className="font-semibold">
                     <span className="md:block max-md:hidden">{teamName}</span>
                     <span className="md:hidden max-md:block">{getShortCode(teamName, comp)}</span>
@@ -52,57 +48,6 @@ export default function TeamSection(
             }>
                 <TeamImage matchLink='' teamKey={imgKey} tooltip={teamName} useLight={false} />
             </div>
-            {
-                getScoreSegment(
-                    data,
-                    isHomeTeam,
-                    isWinning,
-                    modifiable,
-                    modifiedFixtureCb,
-                    data.matchCentreUrl
-                )
-            }
         </div>
     );
-}
-
-/**
- * Get the score segment for display (either the team score or an input field if on
- * the ladder predictor page)
- *
- * @param {String} matchData data pertaining to the match (e.g. match state, match mode)
- * @param {String} isHomeTeam if the team is the home team or not
- * @param {String} winCondition e.g. home team is winning
- * @param {String} modifiable if the score can be modified by the user
- * @param {Function | undefined} modifiedFixtureCb
- * @param {String} matchSlug e.g. panthers-v-storm
- * @returns React component
- */
-function getScoreSegment(
-    matchData: Match,
-    isHomeTeam: boolean,
-    winCondition: boolean,
-    modifiable: boolean,
-    modifiedFixtureCb: undefined | (() => void),
-    matchSlug: string
-) {
-    const { matchState, matchMode } = matchData;
-    const team = isHomeTeam ? matchData.homeTeam : matchData.awayTeam;
-
-    const teamSlug = team.nickName.toLowerCase().replace(' ', '-');
-
-    if (modifiable && matchState !== 'FullTime' && matchMode !== 'Live') {
-        return (
-            <InputScore
-                modifiedFixtureCb={modifiedFixtureCb}
-                matchSlug={matchSlug}
-                team={teamSlug}
-                isHomeTeam={isHomeTeam}
-            />
-        );
-    }
-
-    const score = matchState !== 'Upcoming' && matchMode !== 'Pre' ? team.score : '';
-
-    return <Score score={score} winCondition={winCondition} isHomeTeam={isHomeTeam} />;
 }

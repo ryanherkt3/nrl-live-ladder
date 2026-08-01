@@ -1,19 +1,17 @@
-/* eslint-disable max-len */
 'use client';
 
 import clsx from 'clsx';
-import { Match, TeamData } from '../../lib/definitions';
-import moment from 'moment';
+import { Match, PredictedMatch, TeamData } from '../../lib/definitions';
 import { COLOURCSSVARIANTS, getOrdinalNumber, WHITETEXTCOLOURS } from '../../lib/utils';
 import TeamSection from './team-section';
 import { RootState } from '@/state/store';
 import { useSelector } from 'react-redux';
 import { usePathname, useSearchParams } from 'next/navigation';
+import MatchState from './match-state';
 
 export default function RoundFixture(
     {
         data,
-        winningTeam,
         ladder,
         isFinalsFootball,
         modifiable,
@@ -21,11 +19,10 @@ export default function RoundFixture(
     }:
     {
         data: Match,
-        winningTeam: string,
         ladder: TeamData[]
         isFinalsFootball: boolean,
         modifiable: boolean,
-        modifiedFixtureCb: (_slug: string, _round: number, _team: string, _score: number) => void
+        modifiedFixtureCb: undefined | ((_slug: string, _round: number, __payload: PredictedMatch) => void)
     }
 ) {
     // Empty string means info about the NRL will be fetched
@@ -54,6 +51,7 @@ export default function RoundFixture(
 
     const isLiveMatch = matchMode === 'Live';
     const isFullTime = matchState === 'FullTime';
+    const canPredictResult = modifiable && matchMode === 'Pre';
 
     // Get ladder position of teams
     const homeTeamObj = ladder.filter((team: TeamData) => {
@@ -76,6 +74,9 @@ export default function RoundFixture(
         isCurrentRound: data.isCurrentRound
     };
 
+    const commonClasses = 'flex flex-row text-lg items-center justify-center gap-4 p-2';
+    const responsiveClasses = 'max-sm:flex-wrap max-sm:px-8';
+
     return (
         <div className="flex flex-col">
             <a
@@ -84,7 +85,7 @@ export default function RoundFixture(
                     clsx(
                         'text-center text-lg font-semibold',
                         {
-                            'bg-indigo-400': modifiable && matchMode === 'Pre',
+                            'bg-indigo-400': canPredictResult,
                             [COLOURCSSVARIANTS[`${colour}-bg`]]: isFullTime,
                             'text-white': !isFullTime || WHITETEXTCOLOURS.includes(colour),
                             'text-black': isFullTime && colour === 'nrl-mclt',
@@ -99,29 +100,27 @@ export default function RoundFixture(
                     getDateString(clock.kickOffTimeLong)
                 }
             </a>
-            <div className="flex flex-row text-lg items-center justify-center gap-4 p-2">
+            <div className={`${commonClasses} ${responsiveClasses}`}>
+                {/* home icon, name & ladder pos */}
                 <TeamSection
-                    data={teamSectionData}
                     teamName={homeTeamName}
                     imgKey={homeTeamTheme?.key ?? ''}
                     position={homeTeamPos}
                     isHomeTeam={true}
-                    isWinning={winningTeam === 'homeTeam'}
+                />
+                {/* score and match status (pred / live / ft) */}
+                <MatchState
+                    matchData={teamSectionData}
                     modifiable={modifiable}
+                    mainSiteColour={colour}
                     modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
-                {
-                    getMatchState(teamSectionData, modifiable, colour)
-                }
+                {/* away icon, name & ladder pos */}
                 <TeamSection
-                    data={teamSectionData}
                     teamName={awayTeamName}
                     imgKey={awayTeamTheme?.key ?? ''}
                     position={awayTeamPos}
                     isHomeTeam={false}
-                    isWinning={winningTeam === 'awayTeam'}
-                    modifiable={modifiable}
-                    modifiedFixtureCb={modifiedFixtureCb as () => void}
                 />
             </div>
         </div>
@@ -147,119 +146,4 @@ function getDateString(date: string) {
     const number = parseInt(dateString.split(', ')[1].split(' ')[0]);
 
     return dateString.replace(',', '').replace(number.toString(), getOrdinalNumber(number));
-}
-
-/**
- * Get the match information to be displayed as part of a fixture.
- *
- * If the match has not kicked off, the kick off time is displayed. Otherwise,
- * the team scores will be displayed
- *
- * @param {Match} matchData data related to the match
- * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {string} mainSiteColour
- * @returns HTML object
- */
-function getMatchState(
-    matchData: Match,
-    modifiable: boolean,
-    mainSiteColour: string
-) {
-    let commonClasses = 'flex flex-row max-md:gap-3 md:gap-6 py-2';
-    const widthClasses = 'sm:w-[90px] md:w-[140px]';
-    const alignmentClasses = 'items-center justify-center text-center';
-
-    const { matchMode, matchState, clock } = matchData;
-
-    if (modifiable || matchState === 'FullTime' || matchMode === 'Live') {
-        commonClasses += ' pt-2';
-
-        return (
-            <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} w-15`}>
-                {
-                    getMatchContext(matchData, modifiable, mainSiteColour)
-                }
-            </div>
-        );
-    }
-
-    const kickoffTime = moment(clock.kickOffTimeLong).format('LT');
-
-    return (
-        <div className={`${commonClasses} ${alignmentClasses} ${widthClasses} min-w-15`}>
-            <div>{kickoffTime}</div>
-        </div>
-    );
-}
-
-/**
- * Get the status of a match (e.g. 1st Half, Full Time)
- *
- * @param {Match} matchData data related to the match
- * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {string} mainSiteColour
- * @returns HTML object
- */
-function getMatchContext(matchData: Match, modifiable: boolean, mainSiteColour: string) {
-    const { matchMode, matchState, clock } = matchData;
-
-    if ((modifiable && matchState !== 'FullTime' && matchMode !== 'Live') || matchState === 'FullTime') {
-        const isFullTime = matchState === 'FullTime';
-        const string = isFullTime ? 'FULL TIME' : 'PREDICTION';
-        const mobileString = isFullTime ? 'FT' : 'PRED';
-
-        const trueClasses = `${COLOURCSSVARIANTS[`${mainSiteColour}-bg`]} ${COLOURCSSVARIANTS[`${mainSiteColour}-border`]}`;
-
-        return (
-            <div className={
-                clsx(
-                    'border rounded-md px-2 py-1 w-15 sm:w-22.5 md:w-35',
-                    {
-                        [trueClasses]: isFullTime,
-                        'text-white': WHITETEXTCOLOURS.includes(mainSiteColour),
-                        'text-black': isFullTime && mainSiteColour === 'nrl-mclt',
-                        'border-indigo-400 bg-indigo-400 text-white': !isFullTime
-                    }
-                )
-            }>
-                <span className="md:block max-md:hidden">{string}</span>
-                <span className="md:hidden max-md:block">{mobileString}</span>
-            </div>
-        );
-    }
-
-    let matchPeriod = '';
-    switch (matchState) {
-        case 'FirstHalf':
-            matchPeriod = 'H1';
-            break;
-        case 'HalfTime':
-            matchPeriod = 'HT';
-            break;
-        case 'SecondHalf':
-            matchPeriod = 'H2';
-            break;
-        case 'ExtraTime':
-            matchPeriod = 'ET';
-            break;
-        default:
-            break;
-    }
-
-    if (matchMode === 'Live' && matchPeriod) {
-        const colourClasses = 'border-red-500 bg-red-500 text-white';
-        const widthClasses = 'w-[60px] sm:w-[90px] md:w-[140px]';
-
-        return (
-            <div className="flex flex-col gap-2 items-center text-md">
-                <div className={`border rounded-md px-2 py-1 ${colourClasses} ${widthClasses}`}>
-                    <span className="md:block max-md:hidden">{matchPeriod} | {clock.gameTime}</span>
-                    <span className="md:hidden max-md:block">{matchPeriod}</span>
-                </div>
-                <div className="md:hidden max-md:block">{clock.gameTime}</div>
-            </div>
-        );
-    }
-
-    return null;
 }

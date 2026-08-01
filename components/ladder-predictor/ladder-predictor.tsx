@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import LadderRow from '../ladder/ladder-row';
-import { TeamData, DrawInfo, Match } from '../../lib/definitions';
+import { TeamData, DrawInfo, Match, Prediction, PredictedMatch } from '../../lib/definitions';
 import { COLOURCSSVARIANTS as CCV, NUMS } from '@/lib/utils';
 import { getPageVariables, updateFixturesToShow } from '@/lib/nrl-draw-utils';
 import Fixtures from '../fixture/fixtures';
@@ -16,8 +16,6 @@ import { getMinPointsForSpots, getQualificationStatus } from '../../lib/qualific
 import clsx from 'clsx';
 import { useSearchParams } from 'next/navigation';
 import SeasonAndYearPicker from '../season-and-year-picker';
-
-type Prediction = Record<string, Record<string, string>>;
 
 export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) {
     // Empty string means info about the NRL will be fetched
@@ -50,7 +48,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
         currentRoundNo :
         (inFinalsFootball ? currentRoundNo : rounds);
 
-    const updateAllTeams = (slug: string, round: number, teamName: string, score: number) => {
+    const updateAllTeams = (slug: string, round: number, payload: PredictedMatch) => {
         const roundKey = round - 1;
 
         const fixtureToUpdate = seasonDrawInfo[roundKey].fixtures.find((fixture) => {
@@ -65,13 +63,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
 
         const homeTeamSlug = homeTeam.nickName.toLowerCase().replace(' ', '-');
         const awayTeamSlug = awayTeam.nickName.toLowerCase().replace(' ', '-');
-        const isAwayTeamUpdated = awayTeamSlug === teamName;
-
-        const teamToUpdate = isAwayTeamUpdated ? awayTeam : homeTeam;
-        const opponent = isAwayTeamUpdated ? homeTeam : awayTeam;
-
-        teamToUpdate.score = score;
-        const opponentScore = opponent.score || '';
 
         // Store user scores in localStorage
         const predictions: Prediction = localStorage[`predictedMatches${String(drawSeason)}${comp}`]
@@ -82,8 +73,8 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
         predictions[roundKey + 1] = predictions[roundKey + 1];
         predictions[String(roundKey + 1)] = predictions[String(roundKey + 1)] ?? {};
         predictions[String(roundKey + 1)][slug] = JSON.stringify({
-            [homeTeamSlug]: isAwayTeamUpdated ? opponentScore : teamToUpdate.score,
-            [awayTeamSlug]: isAwayTeamUpdated ? teamToUpdate.score : opponentScore
+            [homeTeamSlug]: payload.homeScore,
+            [awayTeamSlug]: payload.awayScore
         });
 
         let clearRoundOrAll = false;
@@ -153,13 +144,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
         else if (clearRound) {
             // Reset the scores for every predicted fixture for the chosen round and
             // delete the localStorage entry for that round
-            for (const fixture of seasonDrawInfo[roundNum - 1].fixtures) {
-                if (fixture.matchMode === 'Pre' || fixture.matchState === 'Upcoming') {
-                    fixture.homeTeam.score = '';
-                    fixture.awayTeam.score = '';
-                }
-            }
-
             delete predictedMatches[roundNum];
 
             localStorage[`predictedMatches${String(drawSeason)}${comp}`] = JSON.stringify(predictedMatches);
@@ -172,18 +156,6 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
 
         if (clearAll) {
             // Reset the scores for every predicted fixture and delete the localStorage entry
-            for (const round of seasonDrawInfo) {
-                if (round.selectedRoundId > rounds) {
-                    break;
-                }
-
-                for (const fixture of round.fixtures) {
-                    if (fixture.matchMode === 'Pre' || fixture.matchState === 'Upcoming') {
-                        fixture.homeTeam.score = '';
-                        fixture.awayTeam.score = '';
-                    }
-                }
-            }
             delete localStorage[`predictedMatches${String(drawSeason)}${comp}`];
         }
 
@@ -278,7 +250,7 @@ export default function LadderPredictor({seasonDraw}: {seasonDraw: DrawInfo[]}) 
                 updateCallback={updateFixturesCb}
                 lastRoundNo={inFinalsFootball ? currentRoundNo : rounds}
                 modifiable={!inFinalsFootball}
-                modifiedFixtureCb={updateAllTeams as (_slug: string, _round: number, _team: string, _score: number) => void}
+                modifiedFixtureCb={updateAllTeams}
             />
         </div>
     );

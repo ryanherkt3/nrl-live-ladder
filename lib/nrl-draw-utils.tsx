@@ -1,49 +1,6 @@
-import RoundFixture from '../components/fixture/round-fixture';
 import { DrawInfo, Match, TeamData, ByeTeam } from './definitions';
 import { constructTeamData, constructTeamStats, teamSortFunction } from './team-stats';
 import { NUMS } from './utils';
-
-/**
- * Get all the fixtures for a particular round
- *
- * @param {Match[]} fixtures the fixtures for the round
- * @param {Array<TeamData>} ladder ladder data
- * @param {boolean} isFinalsFootball if we are in finals football or not
- * @param {boolean} modifiable if the scores can be edited by the user (e.g. for the ladder predictor)
- * @param {Function | undefined} modifiedFixtureCb
- * @returns {Array<RoundFixture>}
- */
-export function getRoundFixtures(
-    fixtures: Match[],
-    ladder: TeamData[],
-    isFinalsFootball: boolean,
-    modifiable: boolean,
-    modifiedFixtureCb: undefined | ((_slug: string, _round: number, _team: string, _score: number) => void)
-) {
-    const liveFixtures = [];
-
-    for (const fixture of fixtures) {
-        const homeTeamWon = fixture.homeTeam.score > fixture.awayTeam.score;
-        const awayTeamWon = fixture.homeTeam.score < fixture.awayTeam.score;
-        const winningTeam = homeTeamWon ? 'homeTeam' : (awayTeamWon ? 'awayTeam' : 'draw');
-
-        liveFixtures.push(
-            <RoundFixture
-                key={fixtures.indexOf(fixture)}
-                data={fixture}
-                winningTeam={winningTeam}
-                ladder={ladder}
-                isFinalsFootball={isFinalsFootball}
-                modifiable={modifiable && fixture.matchMode === 'Pre'}
-                modifiedFixtureCb={
-                    modifiedFixtureCb as (_slug: string, _round: number, _team: string, _score: number) => void
-                }
-            />
-        );
-    }
-
-    return liveFixtures;
-}
 
 /**
  * Get all the page variables
