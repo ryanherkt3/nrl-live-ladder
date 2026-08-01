@@ -9,7 +9,7 @@ import FinalsRace from './finals-race';
 import { COMPID, NUMS } from '../lib/utils';
 import { DrawInfo, ReduxUpdateFlags } from '../lib/definitions';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDrawData, setDrawError } from '../state/draw/drawData';
+import { resetDraw, setDrawData, setDrawError } from '../state/draw/drawData';
 import { update as mainColourUpdate } from '../state/main-site-colour/mainSiteColour';
 import { RootState } from '../state/store';
 import { useEffect } from 'react';
@@ -99,7 +99,13 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
     useEffect(() => {
         const drawSeason = season ? parseInt(season) : new Date().getFullYear();
 
-        if (!drawData.length && !drawFetched) {
+        let resetOccurred = false;
+        if (comp !== mainSiteColour.colour.split('-')[0]) {
+            dispatch(resetDraw());
+            resetOccurred = true;
+        }
+
+        if (resetOccurred || (!drawData.length && !drawFetched)) {
             void fetchData(drawSeason);
 
             // Only re-fetch if in current season
@@ -107,7 +113,7 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                 if (drawSeason === new Date().getFullYear()) {
                     void fetchData(drawSeason);
                 }
-            }, 60000);
+            }, 20000);
 
             return () => {
                 clearInterval(intervalId);
