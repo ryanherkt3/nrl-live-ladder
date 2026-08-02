@@ -26,6 +26,8 @@
         "./*"
       ]
     },
+    "rootDir": "./" ,
+    "types": ["jest", "node"],
     "target": "ES2017"
   },
   "include": [
@@ -33,7 +35,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "tests/unit/**/*"
   ],
   "exclude": [
     "node_modules"

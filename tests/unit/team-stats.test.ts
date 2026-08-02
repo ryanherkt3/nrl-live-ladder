@@ -4,39 +4,42 @@
 
 // TODO cover lines 95,124,162,180-188 from team-stats.ts
 
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import { NUMS } from '../../lib/utils';
 import { TeamData } from '../../lib/definitions';
 import { constructTeamData, constructTeamStats, getMaxPoints, teamSortFunction } from '../../lib/team-stats';
 import localStorageMock from '../localStorageMock';
+import { expect, describe } from '@jest/globals';
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 describe('test suite max points', () => {
     it('Returns rounds times 2 as max points for an unbeaten team', () => {
-        expect(getMaxPoints(0, 0, 'nrl')).toBe(54);
-        expect(getMaxPoints(0, 0, 'nrlw')).toBe(22);
-        expect(getMaxPoints(0, 0, 'nsw')).toBe(52);
-        expect(getMaxPoints(0, 0, 'qld')).toBe(46);
+        expect(getMaxPoints(0, 0, 'nrl', 2026)).toBe(54);
+        expect(getMaxPoints(0, 0, 'nrlw', 2026)).toBe(22);
+        expect(getMaxPoints(0, 0, 'nsw', 2026)).toBe(52);
+        expect(getMaxPoints(0, 0, 'qld', 2026)).toBe(46);
     });
 
     it('Returns byes times 2 as max points for a winless team', () => {
-        expect(getMaxPoints(NUMS.nrl.MATCHES, 0, 'nrl')).toBe(6);
-        expect(getMaxPoints(NUMS.nrlw.MATCHES, 0, 'nrlw')).toBe(0);
-        expect(getMaxPoints(NUMS.nsw.MATCHES, 0, 'nsw')).toBe(4);
-        expect(getMaxPoints(NUMS.qld.MATCHES, 0, 'qld')).toBe(6);
+        expect(getMaxPoints(NUMS.nrl.MATCHES(2026), 0, 'nrl', 2026)).toBe(6);
+        expect(getMaxPoints(NUMS.nrlw.MATCHES(2026), 0, 'nrlw', 2026)).toBe(0);
+        expect(getMaxPoints(NUMS.nsw.MATCHES(2026), 0, 'nsw', 2026)).toBe(8);
+        expect(getMaxPoints(NUMS.qld.MATCHES(2026), 0, 'qld', 2026)).toBe(6);
     });
 
     it('Returns 33 as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
-        expect(getMaxPoints(10, 1, 'nrl')).toBe(33);
+        expect(getMaxPoints(10, 1, 'nrl', 2026)).toBe(33);
     });
     it('Returns 11 as max points for NRL team with 5 losses and 1 draw (5 wins)', () => {
-        expect(getMaxPoints(5, 1, 'nrlw')).toBe(11);
+        expect(getMaxPoints(5, 1, 'nrlw', 2026)).toBe(11);
     });
     it('Returns 31 as max points for NRL team with 10 losses and 1 draw (13 wins)', () => {
-        expect(getMaxPoints(10, 1, 'nsw')).toBe(31);
+        expect(getMaxPoints(10, 1, 'nsw', 2026)).toBe(31);
     });
     it('Returns 25 as max points for NRL team with 10 losses and 1 draw (9 wins)', () => {
-        expect(getMaxPoints(10, 1, 'qld')).toBe(25);
+        expect(getMaxPoints(10, 1, 'qld', 2026)).toBe(25);
     });
 });
 
@@ -79,19 +82,19 @@ describe('test suite team data construction', () => {
     ];
 
     it('initialises empty team list', () => {
-        const result = constructTeamData([], 'nrl');
+        const result = constructTeamData([], 'nrl', 2026);
         expect(result).toEqual([]);
     });
 
     it('initialises teams with correct structure', () => {
-        const result = constructTeamData(sampleTeams, 'nrl');
+        const result = constructTeamData(sampleTeams, 'nrl', 2026);
         expect(result.length).toBe(2);
         expect(result[0].name).toBe('Team1');
-        expect(result[0].theme.key).toBe('theme1');
+        expect(result[0].theme?.key).toBe('theme1');
     });
 
     it('initialises all stats to zero', () => {
-        const result = constructTeamData(sampleTeams, 'nrl')[0].stats;
+        const result = constructTeamData(sampleTeams, 'nrl', 2026)[0].stats;
         expect(result.played).toBe(0);
         expect(result.wins).toBe(0);
         expect(result.drawn).toBe(0);
@@ -147,7 +150,7 @@ describe('test suite team stats construction', () => {
                     maxPoints: 54
                 }
             }
-        ], 'nrl');
+        ], 'nrl', 2026);
     });
 
     const mockDraw = [{
@@ -219,7 +222,7 @@ describe('test suite team stats construction', () => {
                 noByePoints: 0,
                 maxPoints: 54
             }
-        }], 'nrl');
+        }], 'nrl', 2026);
         sampleTeams.push(byeTeam[0]);
 
         const drawWithBye = [{

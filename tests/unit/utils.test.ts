@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import { getShortCode, getOrdinalNumber } from '../../lib/utils';
+import { expect, describe } from '@jest/globals';
 
 describe('test suite short codes', () => {
     it('Returns correct codes for NRL teams', () => {
