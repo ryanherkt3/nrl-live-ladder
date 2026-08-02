@@ -108,6 +108,35 @@ export function constructTeamStats(
                 const byeTeam = teams.find((team: TeamData) => bye.teamNickName === team.name);
 
                 const playedRoundFixtures = round.fixtures.filter((fixture) => {
+                    // Count predictions as played fixtures
+                    if (modifiable) {
+                        if (fixture.matchMode !== 'Pre') {
+                            return true;
+                        }
+
+                        const teamsIndex = currentComp.includes('nrl') ? 4 : 6;
+                        const slug =
+                            fixture.matchCentreUrl.split('/').filter(i => i)[teamsIndex]; // homeTeam-v-awayTeam
+                        const storedPredictions =
+                            localStorage.getItem(`predictedMatches${String(currentYear)}${currentComp}`);
+
+                        if (!storedPredictions) {
+                            return false;
+                        }
+
+                        const parsedPredictions: unknown = JSON.parse(storedPredictions);
+                        if (!parsedPredictions || typeof parsedPredictions !== 'object') {
+                            return false;
+                        }
+
+                        const predictions = parsedPredictions as Partial<Record<number, Record<string, unknown>>>;
+                        const roundPredictions = predictions[round.selectedRoundId];
+
+                        const predictedRoundMatches = roundPredictions ? Object.keys(roundPredictions) : [];
+
+                        return predictedRoundMatches.includes(slug);
+                    }
+
                     return fixture.matchMode !== 'Pre';
                 });
 
