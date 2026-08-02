@@ -113,7 +113,7 @@ export default function DrawFetcher({pageName}: {pageName: string}) {
                 if (drawSeason === new Date().getFullYear()) {
                     void fetchData(drawSeason);
                 }
-            }, 20000);
+            }, 180000);
 
             return () => {
                 clearInterval(intervalId);

@@ -30,7 +30,7 @@
     min-height: calc(100vh - 160px);
 }
 
-/* Live match animations - TODO alternate one for red bg teams (ladder-row.tsx) */
+/* Live match animations */
 .live-match {
     -webkit-animation: live-animation 2s infinite;
 }
@@ -39,6 +39,16 @@
     0% { background-color: #f87171; }
     50% { background-color: #ef4444; }
     100% { background-color: #dc2626; }
+}
+
+.live-match-alt {
+    -webkit-animation: live-animation 2s infinite;
+}
+
+@keyframes live-animation-alt {
+    0% { background-color: #dcdcdc; }
+    50% { background-color: #ededed; }
+    100% { background-color: #ffffff; }
 }
 
 /* Number inputs */

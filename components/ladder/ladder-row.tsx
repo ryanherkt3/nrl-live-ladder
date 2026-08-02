@@ -69,6 +69,12 @@ export default function LadderRow(
         lightImageTeams.includes(nextTeamTooltip) &&
         darkBgQualifiedTeams.includes(name);
 
+    const redBgQualifiedTeams = [
+        'Dolphins', 'Dragons', // NRL
+        'Bears', // NRL/NSW/QLD
+        'Capras', 'Hunters', // QLD
+    ];
+
     return (
         <div
             className={
@@ -85,7 +91,18 @@ export default function LadderRow(
             <div className="w-[10%] md:w-[5%] flex justify-center flex-row gap-2 font-semibold">
                 {
                     isPlaying ?
-                        <div className="w-6 h-6 border rounded-full live-match border-red-600"></div> :
+                        <div
+                            className={
+                                clsx(
+                                    'w-6 h-6 border rounded-full',
+                                    {
+                                        'live-match border-red-600': isQualified && !redBgQualifiedTeams.includes(name),
+                                        'live-match-alt border-white':
+                                            isQualified && redBgQualifiedTeams.includes(name),
+                                    }
+                                )
+                            }
+                        ></div> :
                         <span>{position}</span>
                 }
             </div>
