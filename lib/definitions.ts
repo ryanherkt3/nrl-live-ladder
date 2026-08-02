@@ -71,7 +71,6 @@ export interface TeamStatuses {
     topTwo: number,
     topFour: number,
     finalsQualification: number,
-    eliminated: number,
 }
 
 export interface TeamPoints {

@@ -15,7 +15,6 @@ describe('test suite qualification', () => {
     });
 
     it('Returns the correct points required to achieve a certain status', () => {
-        expect(minPointsForSpots.eliminated).toBe(27);
         expect(minPointsForSpots.finalsQualification).toBe(37);
         expect(minPointsForSpots.topFour).toBe(35);
         expect(minPointsForSpots.topTwo).toBe(41);
