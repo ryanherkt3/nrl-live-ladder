@@ -96,7 +96,8 @@ export default function LadderRow(
                                 clsx(
                                     'w-6 h-6 border rounded-full',
                                     {
-                                        'live-match border-red-600': !redBgQualifiedTeams.includes(name),
+                                        'live-match border-red-600':
+                                            !isQualified || !redBgQualifiedTeams.includes(name),
                                         'live-match-alt border-white':
                                             isQualified && redBgQualifiedTeams.includes(name),
                                     }
