@@ -19,6 +19,9 @@ export function getQualificationStatus(
 
     const lastFinalist = topTeams[topTeams.length - 1];
     const { stats: lfStats } = lastFinalist;
+    // Count all byes for the bottom placed finalist when considering if a team
+    // can finish above them or not
+    const lfMinPoints = ((lfStats.wins + byes) * 2) + lfStats.drawn;
 
     const { wins, drawn, maxPoints, played } = team.stats;
     const { topTwo, topFour, finalsQualification } = minPointsForSpots;
@@ -47,13 +50,13 @@ export function getQualificationStatus(
     });
 
     const isEliminated =
-        (lastFinalist.name !== team.name && maxPoints < lfStats.points) ||
+        (lastFinalist.name !== team.name && maxPoints < lfMinPoints) ||
         (
             // Is also eliminated if last placed finals team has better points differential
             // when tied on points at end of season
             played === matches &&
             lastFinalist.name !== team.name &&
-            lfStats.points >= pointsWithByes &&
+            lfMinPoints >= pointsWithByes &&
             lfStats['points difference'] > team.stats['points difference']
         );
 
