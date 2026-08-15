@@ -88,9 +88,9 @@ export function getMinPointsForSpots(
     const finalsTeams = NUMS[currentComp].FINALS_TEAMS(currentYear);
 
     const teamsByMaxPoints = [...allTeams].sort((a: TeamData, b: TeamData) => {
-        return (b.stats.wins - a.stats.wins) ||
+        return (b.stats.maxPoints - a.stats.maxPoints) ||
             (b.stats['points difference'] - a.stats['points difference']) ||
-            (b.stats.maxPoints - a.stats.maxPoints);
+            (b.stats.wins - a.stats.wins);
     });
 
     const minPointsForSpots: TeamStatuses = {
