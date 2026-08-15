@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { TeamData, TeamStatuses } from './definitions';
 import { NUMS } from './utils';
 
@@ -14,7 +15,16 @@ export function getQualificationStatus(
     const byes = NUMS[currentComp].BYES(currentYear);
     const teams = NUMS[currentComp].TEAMS(currentYear);
 
-    const topTeams = [...allTeams];
+    const topTeams = [...allTeams].sort((a, b) => {
+        if (b.stats.noByePoints !== a.stats.noByePoints) {
+            return b.stats.noByePoints - a.stats.noByePoints;
+        }
+        if (b.stats['points difference'] - a.stats['points difference'] !== 0) {
+            return b.stats['points difference'] - a.stats['points difference'];
+        }
+
+        return (b.stats['points for'] / b.stats['points against']) - (a.stats['points for'] / a.stats['points against']);
+    });
     const bottomTeams = topTeams.splice(finalsTeams);
 
     const lastFinalist = topTeams[topTeams.length - 1];
