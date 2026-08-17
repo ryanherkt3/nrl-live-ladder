@@ -270,6 +270,8 @@ function getLadderStatus(
     const matches = NUMS[currentComp].MATCHES(drawSeason);
     const byes = NUMS[currentComp].BYES(drawSeason);
 
+    const currentPointsWithByes = ((teamInfo.stats.wins + byes) * 2) + teamInfo.stats.drawn;
+
     const teamsCanFinishAbove = teamList.filter((team: TeamData) => {
         const filteredTeamStats = team.stats;
         const filteredTeamPointsWithByes = ((team.stats.wins + byes) * 2) + team.stats.drawn;
@@ -288,14 +290,15 @@ function getLadderStatus(
         const filteredTeamHasFinished = filteredTeamStats.played === matches;
 
         if (team.name !== nickname) {
-            if (filteredTeamStats.maxPoints > currentPoints) {
+            if (filteredTeamStats.maxPoints > currentPointsWithByes) {
                 return true;
             }
-            if (filteredTeamStats.maxPoints < currentPoints) {
+            if (filteredTeamStats.maxPoints < currentPointsWithByes) {
                 return false;
             }
 
-            // If maxPoints is equal to a team's current points, check if the teams have finished or not:
+            // If maxPoints is equal to a team's current points with all byes counted,
+            // check if the teams have finished or not:
             // 1. Both finished > check points difference
             // 2. Only one has finished > check filtered team's points is greater than team's max points
             // 3. If both still playing then return true
@@ -303,7 +306,7 @@ function getLadderStatus(
                 return filteredTeamStats['points difference'] > teamInfo.stats['points difference'];
             }
             else if (isFinished || filteredTeamHasFinished) {
-                return filteredTeamStats.maxPoints >= currentPoints;
+                return filteredTeamStats.maxPoints >= currentPointsWithByes;
             }
 
             return true;
