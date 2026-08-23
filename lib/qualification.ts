@@ -70,6 +70,36 @@ export function getQualificationStatus(
             lfStats['points difference'] > team.stats['points difference']
         );
 
+    const teamsCanFinishBelow = allTeams.filter((at: TeamData) => {
+        const filteredTeamStats = at.stats;
+        const filteredTeamHasFinished = filteredTeamStats.played === matches;
+
+        if (at.name !== team.name) {
+            if (filteredTeamStats.maxPoints > pointsWithByes) {
+                return true;
+            }
+            if (filteredTeamStats.maxPoints < pointsWithByes) {
+                return false;
+            }
+
+            // If maxPoints is equal to a team's current points with all byes counted,
+            // check if the teams have finished or not:
+            // 1. Both finished > check points difference
+            // 2. Only one has finished > check filtered team's points is greater than team's max points
+            // 3. If both still playing then return true
+            if (filteredTeamHasFinished && played === maxPoints) {
+                return filteredTeamStats['points difference'] > team.stats['points difference'];
+            }
+            else if (played === maxPoints || filteredTeamHasFinished) {
+                return filteredTeamStats.maxPoints >= pointsWithByes;
+            }
+
+            return true;
+        }
+
+        return false;
+    });
+
     // Display if a team is eliminated, qualified for finals football, or in the top 2/4 of the ladder
     let qualificationStatus = '';
     if (isEliminated) {
@@ -81,8 +111,7 @@ export function getQualificationStatus(
     else if (pointsWithByes >= topFour && teams > 4) {
         qualificationStatus = '(T4)';
     }
-    else if (pointsWithByes >= finalsQualification ||
-            (played === matches && bottomTeamsCanFinishAbove.length >= teams - finalsTeams)) {
+    else if (pointsWithByes >= finalsQualification || teamsCanFinishBelow.length + 1 < finalsTeams) {
         qualificationStatus = '(Q)';
     }
 
