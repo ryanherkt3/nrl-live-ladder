@@ -42,7 +42,7 @@
 }
 
 .live-match-alt {
-    -webkit-animation: live-animation 2s infinite;
+    -webkit-animation: live-animation-alt 2s infinite;
 }
 
 @keyframes live-animation-alt {
